@@ -1,0 +1,14 @@
+﻿Event,Character,Dialogue,Emotion
+Prologue,데커스,...,Panic
+,데커스,여기는 ... ?,Panic
+,오프시아,데커스! 정신이 드십니까?,Angry
+,데커스,이건 도대체...,PanicOpenMouth
+,오프시아,다행히도. 성공적으로 Luse 기업 입구까진 진입했나 보군요.,Smile
+,오프시아,하지만. 소피아를 구하려면 주저할 시간이 없습니다.,Angry2
+,데커스,소피아... 내 딸을 말하는 건가?,OpenMouth
+,오프시아,충격으로 인해 약간의 기억이 손실된 걸로 보이네요.,Curious
+,오프시아,간단한 영상 자료를 빠르게 보내드리겠습니다.,Angry2
+end,,,
+AfterBoss,데커스,… 해치웠나?,Default
+,오프시아,역시.. 당신이라면 해낼 줄 알았습니다,Smile
+end,,,
