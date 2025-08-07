@@ -3,9 +3,15 @@ using UnityEngine;
 [System.Serializable] // 구조체가 인스펙터 창에 보이게 하기 위한 작업
 public struct TalkData
 {
-    public string name; // 대사 치는 캐릭터 이름
-    public string[] contexts; // 대사 내용
-    public string emotionState; // 캐릭터 감정상태
+    public string selectEventNumber; // 이벤트 번호
+    public string eventImage; // 이미지 파일 이름
+    public string[] showText; // 메인 대사
+    public string selectText1; // 순차적 선택지1 대사
+    public string triggerEvent1; // 랜덤 이벤트1 대사
+    public string selectText2; // 순차적 선택지2 대사
+    public string triggerEvent2; // 랜덤 이벤트2 대사
+    public string selectText3; // 순차적 선택지3 대사
+    public string triggerEvent3; // 랜덤 이벤트3 대사
 }
 
 [System.Serializable]
