@@ -45,7 +45,7 @@ public class DialogueParse : MonoBehaviour
         {
             string[] rowValues = ParseCsvLine(rows[i]);
 
-            if (rowValues[0].Trim() == "" || rowValues[0].Trim() == "end") continue;
+            if (rowValues[0].Trim() == "") continue;
 
             List<TalkData> talkDataList = new List<TalkData>();
             string eventName = rowValues[0].Trim();

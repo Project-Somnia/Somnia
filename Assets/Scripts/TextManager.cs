@@ -18,7 +18,7 @@ public class TextManager : MonoBehaviour
     TalkData[] talkDatas;
     public string storyEventName;
     private int currentPage = 0; // 대화문 개수 변수
-    public bool IsStory = true;
+    public bool IsStory = false;
 
     private static TextManager _instance;
     public static TextManager Instance
@@ -45,13 +45,15 @@ public class TextManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.I))
+        if (Input.GetKeyDown(KeyCode.I) && !IsStory)
         {
+            IsStory = true;
             storyEventName = "0_0";
             SetDialogue();
         }
-        if (Input.GetKeyDown(KeyCode.S))
+        if (Input.GetKeyDown(KeyCode.S) && !IsStory)
         {
+            IsStory = true;
             storyEventName = "0_1";
             SetDialogue();
         }
