@@ -20,22 +20,29 @@ public class TextManager : MonoBehaviour
     private int currentPage = 0; // 대화문 개수 변수
     public bool IsStory = false;
 
-    private static TextManager _instance;
+    private static TextManager instance;
     public static TextManager Instance
     {
         get
         {
-            if (_instance == null)
+            if (instance == null)
             {
-                _instance = FindFirstObjectByType(typeof(TextManager)) as TextManager;
-
-                if (_instance == null)
-                    Debug.Log("no Singleton obj");
+                Debug.LogError("No TextManagerInstance");
             }
-            return _instance;
+            return instance;
         }
     }
 
+
+    void Awake()
+    {
+        if (instance != null && instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        instance = this;
+    }
     public void SetDialogue()
     {
         talkDatas = this.GetComponent<Dialogue>().GetObjectDialogue();

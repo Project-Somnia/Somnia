@@ -73,6 +73,11 @@ public class DialogueParse : MonoBehaviour
 
                 } while (rowValues[1].Trim() == "" && rowValues[0].Trim() != "end");
 
+                if (GameManager.Instance.IsSelectEvent1)
+                {
+                    contextList.Add(talkData.selectText1);
+                }
+
                 talkData.showText = contextList.ToArray();
                 talkDataList.Add(talkData);
             }
