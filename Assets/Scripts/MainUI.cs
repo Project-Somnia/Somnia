@@ -51,6 +51,10 @@ public class MainUI : MonoBehaviour
             UpDownButton();
             IsCanStart = true;
         }
+        else if (fadeImg.gameObject.CompareTag("StartText"))
+        {
+            StartCoroutine(BlinkOut(startText));
+        }
     }
     IEnumerator FadeOut(Image fadeImg)
     {
@@ -62,6 +66,32 @@ public class MainUI : MonoBehaviour
             yield return new WaitForSeconds(0.01f); // 0.01초간 대기
         }
         fadeImg.gameObject.SetActive(false); // 이미지 끄기
+    }
+
+    IEnumerator BlinkIn(Image blinkImg)
+    {
+        blinkImg.gameObject.SetActive(true);
+        Color blinkCol = blinkImg.color; // 컬러 따오기
+        while (blinkCol.a < 1f) // 완전이 투명해질때까지
+        {
+            blinkCol.a += 0.03f; // 조금씩 투명해짐
+            blinkImg.color = blinkCol; //색 덮어씌우기
+            yield return new WaitForSeconds(0.01f); // 0.01초간 대기
+        }
+        StartCoroutine(BlinkOut(blinkImg));
+    }
+
+    IEnumerator BlinkOut(Image blinkImg)
+    {
+        Color blinkCol = blinkImg.color; // 컬러 따오기
+        while (blinkCol.a > 0.3f) // 완전이 투명해질때까지
+        {
+            blinkCol.a -= 0.03f; // 조금씩 투명해짐
+            blinkImg.color = blinkCol; //색 덮어씌우기
+            yield return new WaitForSeconds(0.01f); // 0.01초간 대기
+        }
+        blinkImg.gameObject.SetActive(false); // 이미지 끄기
+        StartCoroutine(BlinkIn(blinkImg));
     }
 
     void UpDownButton()

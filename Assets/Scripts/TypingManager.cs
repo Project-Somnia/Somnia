@@ -49,12 +49,12 @@ public class TypingManager : MonoBehaviour
         else
         {
             //문장이 끝났으므로 다른 문장을 받을 준비... 다이얼로그 초기화, 다이얼로그 세이브와 티엠피 세이브 초기화
-            tmpSave.text = "";
+            //tmpSave.text = "";
             isDialogEnd = true; // 호출자는 다이알로그 엔드를 보고 다음 동작을 진행해주면 됨.
             dialogsSave = null;
-            tmpSave = null;
+            //tmpSave = null;
             dialogNumber = 0;
-            textObj.text = "";
+            //textObj.text = "";
         }
     }
  
@@ -66,7 +66,7 @@ public class TypingManager : MonoBehaviour
         {
             if (isTypingEnd)
             {
-                tmpSave.text = ""; //비어있는 문장 넘겨서 초기화. 
+                //tmpSave.text = ""; //비어있는 문장 넘겨서 초기화. 
                 GetInputUp();
                 Typing(dialogsSave, tmpSave);
             }

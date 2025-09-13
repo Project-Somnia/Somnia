@@ -74,6 +74,7 @@ public class TextManager : MonoBehaviour
                     currentPage = talkDatas.Length;
                     IsStory = false;
                     currentPage = 0;
+                    //storyText.text = "";
                     Debug.Log("대사 끝");
                     return;
                 }
