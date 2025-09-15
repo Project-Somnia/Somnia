@@ -6,6 +6,7 @@ TagManager:
   tags:
   - BG
   - StartUI
+  - StartText
   layers:
   - Default
   - TransparentFX
