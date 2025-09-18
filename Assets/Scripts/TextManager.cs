@@ -55,13 +55,13 @@ public class TextManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.I) && !IsStory)
         {
             IsStory = true;
-            storyEventName = "0_0";
+            storyEventName = "1_0";
             SetDialogue();
         }
         if (Input.GetKeyDown(KeyCode.S) && !IsStory)
         {
             IsStory = true;
-            storyEventName = "0_1";
+            storyEventName = "1_1";
             SetDialogue();
         }
         if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0) && IsStory)

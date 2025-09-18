@@ -29,10 +29,10 @@ public class RemoveAd : MonoBehaviour
             Bottombanner.DestroyAd();
             Destroy(this.gameObject);
         }
+    }
 
-        if(Input.GetKeyDown(KeyCode.Space))
-        {
-            isAdRemoved = true;
-        }
+    public void Removead()
+    {
+        isAdRemoved = true;
     }
 }
