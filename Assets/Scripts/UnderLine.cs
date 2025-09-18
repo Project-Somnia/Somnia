@@ -1,25 +1,47 @@
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 
 public class Underline : MonoBehaviour
 {
     public TextMeshProUGUI tmpText;
+    public RectTransform content;
 
     [Header("Underline Settings")]
     [SerializeField] private Sprite underlineSprite;
-    [SerializeField] private float offsetY = -10f;   // 텍스트 밑으로 얼마나 내릴지
+    [SerializeField] private float offsetY = -40f;   // 줄 간격 (밑줄 간격)
     [SerializeField] private float height = 5f;      // 밑줄 두께
+    [SerializeField] private int fixedLineCount = 8; // 항상 깔아둘 줄 개수
+    private float fullWidth = 540;
+    private float underLinePosX = 12.5f;
 
     private List<Image> underlineImages = new List<Image>();
 
-    void Awake()
+    void Start()
     {
-        //tmpText = GetComponent<TextMeshProUGUI>();
+
+        // 8줄은 게임 시작 시 미리 고정으로 그림
+        for (int i = 0; i < fixedLineCount; i++)
+        {
+            GameObject go = new GameObject("FixedUnderline", typeof(RectTransform), typeof(Image));
+            //go.transform.SetParent(tmpText.rectTransform, false);
+            go.transform.SetParent(content, false);
+
+            Image img = go.GetComponent<Image>();
+            img.sprite = underlineSprite;
+            img.type = Image.Type.Sliced;
+
+            RectTransform rt = img.rectTransform;
+            rt.sizeDelta = new Vector2(fullWidth, height);
+            rt.anchoredPosition = new Vector2(underLinePosX, -(i+1) * offsetY); // 일정 간격으로 밑줄 배치
+
+            underlineImages.Add(img);
+            underlineImages[i].enabled = true;
+        }
     }
 
+    // 필요하다면 추가 줄을 동적으로 붙이는 로직
     void LateUpdate()
     {
         tmpText.ForceMeshUpdate();
@@ -27,50 +49,42 @@ public class Underline : MonoBehaviour
 
         int lineCount = textInfo.lineCount;
 
-        // 밑줄 오브젝트 수 맞추기
-        while (underlineImages.Count < lineCount)
+        // 8줄 이후의 추가 라인만 계산해서 붙이기
+        for (int i = fixedLineCount; i < lineCount; i++)
         {
-            GameObject go = new GameObject("Underline", typeof(RectTransform), typeof(Image));
-            go.transform.SetParent(transform, false);
+            if (i >= underlineImages.Count)
+            {
+                CreateUnderline();
+            }
 
-            Image img = go.GetComponent<Image>();
-            img.sprite = underlineSprite;
-            img.type = Image.Type.Sliced;
-            underlineImages.Add(img);
-        }
-        for (int i = lineCount; i < underlineImages.Count; i++)
-        {
-            underlineImages[i].enabled = false; // 필요 없는 건 숨김
-        }
-
-        // 각 줄마다 밑줄 배치
-        for (int i = 0; i < lineCount; i++)
-        {
             TMP_LineInfo line = textInfo.lineInfo[i];
-
             if (line.characterCount == 0)
             {
                 underlineImages[i].enabled = false;
                 continue;
             }
 
-            // 줄의 첫 번째 문자의 baseline 기준으로 y 좌표 가져오기
             TMP_CharacterInfo firstChar = textInfo.characterInfo[line.firstCharacterIndex];
-            Vector3 baseline = firstChar.bottomLeft;
-
-            // 텍스트 로컬 좌표 → 월드 좌표 → 다시 로컬로 변환
-            Vector3 worldBL = tmpText.transform.TransformPoint(baseline);
-            Vector3 localBL = transform.InverseTransformPoint(worldBL);
-
-            // 텍스트 전체 폭
-            float fullWidth = tmpText.rectTransform.rect.width;
+            float y = firstChar.baseLine - Mathf.Abs(offsetY) * 0.2f; // baseline 보정
 
             RectTransform rt = underlineImages[i].rectTransform;
-            rt.anchoredPosition = new Vector2(0, localBL.y + offsetY); // X는 중앙 기준
+            rt.anchoredPosition = new Vector2(0, y);
             rt.sizeDelta = new Vector2(fullWidth, height);
 
             underlineImages[i].enabled = true;
         }
+    }
 
+    private void CreateUnderline()
+    {
+        GameObject go = new GameObject("DynamicUnderline", typeof(RectTransform), typeof(Image));
+        go.transform.SetParent(tmpText.rectTransform, false);
+
+        Image img = go.GetComponent<Image>();
+        img.sprite = underlineSprite;
+        img.type = Image.Type.Sliced;
+        img.enabled = false;
+
+        underlineImages.Add(img);
     }
 }

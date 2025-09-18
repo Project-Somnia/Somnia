@@ -9,7 +9,6 @@ public class DialogueParse : MonoBehaviour
     public static Dictionary<string, TalkData[]> DialogueDictionary = new Dictionary<string, TalkData[]>();
     [SerializeField] List<ShowTalkData> ShowTalkDataList = new List<ShowTalkData>();
 
-    // ✅ 구글 시트 CSV 주소 (ID 교체하세요!)
     private string googleCsvUrl = "https://docs.google.com/spreadsheets/d/1XMHN-jTMhUGnjLoJdVjCC6levhM5KZKXHJGdw5wKP08/export?format=csv";
     public static TalkData[] GetDialogue(string eventName)
     {
@@ -45,7 +44,7 @@ public class DialogueParse : MonoBehaviour
         {
             string[] rowValues = ParseCsvLine(rows[i]);
 
-            if (rowValues[0].Trim() == "") continue;
+            if (rowValues[0].Trim() == "" || rowValues[0].Contains("#")) continue;
 
             List<TalkData> talkDataList = new List<TalkData>();
             string eventName = rowValues[0].Trim();
