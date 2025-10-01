@@ -6,6 +6,8 @@ public class RemoveAd : MonoBehaviour
 {   
     public static bool isAdRemoved = false;
 
+    public GameObject Button;
+
     [Header("Advertisement")]
 
         public Topbanner Topbanner;
@@ -25,6 +27,7 @@ public class RemoveAd : MonoBehaviour
     {    
         if(isAdRemoved)
         {   
+            Destroy(Button);
             Topbanner.DestroyAd();
             Bottombanner.DestroyAd();
             Destroy(this.gameObject);
