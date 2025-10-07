@@ -73,6 +73,7 @@ public class TextManager : MonoBehaviour
                 {
                     currentPage = talkDatas.Length;
                     IsStory = false;
+                    StoryChoice.fadeChoice();
                     currentPage = 0;
                     //storyText.text = "";
                     Debug.Log("대사 끝");

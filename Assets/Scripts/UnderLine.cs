@@ -12,7 +12,7 @@ public class Underline : MonoBehaviour
     [SerializeField] private Sprite underlineSprite;
     [SerializeField] private float offsetY = -40f;   // 줄 간격 (밑줄 간격)
     [SerializeField] private float height = 5f;      // 밑줄 두께
-    [SerializeField] private int fixedLineCount = 8; // 항상 깔아둘 줄 개수
+    [SerializeField] private int fixedLineCount = 6; // 항상 깔아둘 줄 개수
     private float fullWidth = 540;
     private float underLinePosX = 12.5f;
 
@@ -49,7 +49,7 @@ public class Underline : MonoBehaviour
 
         int lineCount = textInfo.lineCount;
 
-        // 8줄 이후의 추가 라인만 계산해서 붙이기
+        // 초기 줄 이후의 추가 라인만 계산해서 붙이기
         for (int i = fixedLineCount; i < lineCount; i++)
         {
             if (i >= underlineImages.Count)
