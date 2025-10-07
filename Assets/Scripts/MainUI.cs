@@ -12,8 +12,13 @@ public class MainUI : MonoBehaviour
     public Image bg3;
     public Image startButton;
     public Image startText;
+    public GameObject nextButtons;
+
     private bool IsFade = false;
     private bool IsCanStart = false;
+    private bool IsHalf = false;
+
+    private float fadeTime = 3f;
 
     public RectTransform target;  // 움직일 UI 오브젝트
     public float moveAmount = 10f; // 위아래로 이동할 거리
@@ -30,41 +35,39 @@ public class MainUI : MonoBehaviour
     }
     IEnumerator FadeIn(Image fadeImg)
     {
-        bool IsHalf = false;
+        Debug.Log("나여");
+
         fadeImg.gameObject.SetActive(true);
         Color fadeCol = fadeImg.color; // 컬러 따오기
-        while (fadeCol.a < 1f) // 완전이 불투명해질때까지
+
+        Tween t = fadeImg.DOFade(1, fadeTime);
+        yield return new WaitForSeconds(fadeTime / 2);
+        if (!IsHalf && fadeImg.gameObject.CompareTag("BG"))
         {
-            fadeCol.a += 0.005f; // 조금씩 불투명해짐
-            fadeImg.color = fadeCol; //색 덮어씌우기
-            if (fadeCol.a >= 0.5f && !IsHalf && fadeImg.gameObject.CompareTag("BG"))
-            {
-                IsHalf = true;
-                StartCoroutine(FadeIn(bg3));
-                StartCoroutine(FadeIn(startButton));
-                StartCoroutine(FadeIn(startText));
-            }
-            yield return new WaitForSeconds(0.01f); // 0.01초간 대기
+            IsHalf = true;
+            StartCoroutine(FadeIn(bg3));
+            StartCoroutine(FadeIn(startButton));
+            StartCoroutine(FadeIn(startText));
         }
+        yield return new WaitForSeconds(fadeTime / 2);
+
         if (fadeImg.gameObject.CompareTag("StartUI"))
         {
             UpDownButton();
-            IsCanStart = true;
+            //IsCanStart = true;
         }
         else if (fadeImg.gameObject.CompareTag("StartText"))
         {
             StartCoroutine(BlinkOut(startText));
         }
+        t.Kill();
     }
     IEnumerator FadeOut(Image fadeImg)
     {
         Color fadeCol = fadeImg.color; // 컬러 따오기
-        while (fadeCol.a > 0f) // 완전이 투명해질때까지
-        {
-            fadeCol.a -= 0.005f; // 조금씩 투명해짐
-            fadeImg.color = fadeCol; //색 덮어씌우기
-            yield return new WaitForSeconds(0.01f); // 0.01초간 대기
-        }
+        fadeImg.DOFade(0f, fadeTime);
+
+        yield return new WaitForSeconds(fadeTime);
         fadeImg.gameObject.SetActive(false); // 이미지 끄기
     }
 
@@ -72,25 +75,23 @@ public class MainUI : MonoBehaviour
     {
         blinkImg.gameObject.SetActive(true);
         Color blinkCol = blinkImg.color; // 컬러 따오기
-        while (blinkCol.a < 1f) // 완전이 투명해질때까지
-        {
-            blinkCol.a += 0.03f; // 조금씩 투명해짐
-            blinkImg.color = blinkCol; //색 덮어씌우기
-            yield return new WaitForSeconds(0.01f); // 0.01초간 대기
-        }
+        Tween t = blinkImg.DOFade(1f, fadeTime);
+        t.Kill();
+
+        yield return new WaitForSeconds(fadeTime);
+        if(!IsCanStart)
         StartCoroutine(BlinkOut(blinkImg));
     }
 
     IEnumerator BlinkOut(Image blinkImg)
     {
         Color blinkCol = blinkImg.color; // 컬러 따오기
-        while (blinkCol.a > 0.3f) // 완전이 투명해질때까지
-        {
-            blinkCol.a -= 0.03f; // 조금씩 투명해짐
-            blinkImg.color = blinkCol; //색 덮어씌우기
-            yield return new WaitForSeconds(0.01f); // 0.01초간 대기
-        }
+        Tween t = blinkImg.DOFade(0.3f, fadeTime);
+        t.Kill();
+
+        yield return new WaitForSeconds(fadeTime);
         blinkImg.gameObject.SetActive(false); // 이미지 끄기
+        if(!IsCanStart)
         StartCoroutine(BlinkIn(blinkImg));
     }
 
@@ -104,6 +105,13 @@ public class MainUI : MonoBehaviour
               .SetLoops(-1, LoopType.Yoyo); // 무한 반복, 왕복
     }
 
+    public void NextButton()
+    {
+        startButton.gameObject.SetActive(false);
+        startText.gameObject.SetActive(false);
+        nextButtons.SetActive(true);
+        IsCanStart = true;
+    }
     public void StartGame()
     {
         if (IsCanStart) SceneManager.LoadScene("Game");

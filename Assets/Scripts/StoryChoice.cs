@@ -56,7 +56,7 @@ public class StoryChoice : MonoBehaviour
         textColor.a = 0f;
         fadeText.color = textColor;
 
-        fadeImg.DOFade(1, fadeTime);
+        fadeImg.DOFade(1f, fadeTime);
         fadeText.DOFade(1f, fadeTime);
     }
 }
