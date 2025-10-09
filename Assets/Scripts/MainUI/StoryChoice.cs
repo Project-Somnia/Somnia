@@ -47,7 +47,7 @@ public class StoryChoice : MonoBehaviour
     {
         fadeImg.gameObject.SetActive(true);
         fadeText.gameObject.SetActive(true);
-        
+
         Color color = fadeImg.color;
         color.a = 0f;
         fadeImg.color = color;
@@ -58,5 +58,18 @@ public class StoryChoice : MonoBehaviour
 
         fadeImg.DOFade(1f, fadeTime);
         fadeText.DOFade(1f, fadeTime);
+    }
+
+    public void Choice1()
+    {
+        Health.healthM();
+    }
+    public void Choice2()
+    {
+        Health.mentalM();
+    }
+    public void Choice3()
+    {
+        Health.coinM();
     }
 }
