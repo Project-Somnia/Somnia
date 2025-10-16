@@ -18,7 +18,7 @@ public class MainUI : MonoBehaviour
     private bool IsCanStart = false;
     private bool IsHalf = false;
 
-    private float fadeTime = 3f;
+    private float fadeTime = 2f;
 
     public RectTransform target;  // 움직일 UI 오브젝트
     public float moveAmount = 10f; // 위아래로 이동할 거리

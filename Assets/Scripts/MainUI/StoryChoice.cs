@@ -2,12 +2,16 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.UI;
 using DG.Tweening;
 using TMPro;
 
 public class StoryChoice : MonoBehaviour
 {
+    public AudioSource audioSource;
+    public AudioClip plus;
+    public AudioClip minus;
     public float fadeTime = 1f;
 
     [Header("Choice Button and Text")]
@@ -22,6 +26,8 @@ public class StoryChoice : MonoBehaviour
 
     public static Action fadeChoice;
 
+    private bool IsCanSelect = false;
+
 
     void Awake()
     {
@@ -34,13 +40,14 @@ public class StoryChoice : MonoBehaviour
     IEnumerator FadeIn()
     {
         FadeInChoice(choice1, choiceText1);
-        yield return new WaitForSeconds(1.0f);
+        yield return new WaitForSeconds(0.5f);
 
         FadeInChoice(choice2, choiceText2);
-        yield return new WaitForSeconds(1.0f);
+        yield return new WaitForSeconds(0.5f);
 
         FadeInChoice(choice3, choiceText3);
-        yield return new WaitForSeconds(1.0f);
+        yield return new WaitForSeconds(0.5f);
+        IsCanSelect = true;
     }
 
     void FadeInChoice(Image fadeImg, TextMeshProUGUI fadeText)
@@ -62,14 +69,29 @@ public class StoryChoice : MonoBehaviour
 
     public void Choice1()
     {
-        Health.healthM();
+        if (IsCanSelect)
+        {
+            //audioSource.clip = minus;
+            audioSource.PlayOneShot(minus);
+            Health.healthM();
+        }
     }
     public void Choice2()
     {
-        Health.mentalM();
+        if (IsCanSelect)
+        {
+            //audioSource.clip = minus;
+            audioSource.PlayOneShot(minus);
+            Health.mentalM();
+        }
     }
     public void Choice3()
     {
-        Health.coinM();
+        if (IsCanSelect)
+        {
+            //audioSource.clip = minus;
+            audioSource.PlayOneShot(minus);
+            Health.coinM();
+        }
     }
 }

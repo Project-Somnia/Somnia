@@ -35,31 +35,36 @@ public class Health : MonoBehaviour
         healthBar.fillAmount = health / 3f;
         mentalBar.fillAmount = mental / 3f;
         coinBar.fillAmount = coin / 3f;
-        Debug.Log(healthBar.fillAmount);
     }
 
     public void HealthPlus()
     {
-        health += 1;
+        if (health < 3) health += 1;
+        else Debug.Log("이미 풀피!");
     }
     public void HealthMinus()
     {
-        health -= 1;
+        if (health > 0) health -= 1;
+        else Debug.Log("체력이 없습니다!!");
     }
     public void MentalPlus()
     {
-        mental += 1;
+        if (mental < 3) mental += 1;
+        Debug.Log("풀멘탈!");
     }
     public void MentalMinus()
     {
-        mental -= 1;
+        if (mental > 0) mental -= 1;
+        else Debug.Log("멘탈 부족!");
     }
     public void CoinPlus()
     {
-        coin += 1;
+        if (coin < 3) coin += 1;
+        else Debug.Log("이미 풀코인!");
     }
     public void CoinMinus()
     {
-        coin -= 1;
+        if (coin > 0) coin -= 1;
+        else Debug.Log("코인 부족!");
     }
 }
