@@ -53,6 +53,8 @@ public class DialogueParse : MonoBehaviour
             {
                 List<string> contextList = new List<string>();
                 TalkData talkData = new TalkData();
+
+                talkData.selectEventNumber = rowValues[0].Trim();
                 talkData.eventImage = rowValues[1].Trim();
                 talkData.selectText1 = rowValues[3].Trim();
                 talkData.triggerEvent1 = rowValues[4].Trim();
@@ -96,6 +98,7 @@ public class DialogueParse : MonoBehaviour
             ShowTalkData showTalk = new ShowTalkData(eventNames[i], talkDatasList[i]);
             ShowTalkDataList.Add(showTalk);
         }
+        TextManager.Instance.IsDialogSet = true;
     }
 
     // 쉼표 & 큰따옴표 파서

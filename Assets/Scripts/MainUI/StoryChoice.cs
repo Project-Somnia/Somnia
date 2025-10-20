@@ -25,6 +25,7 @@ public class StoryChoice : MonoBehaviour
     public TextMeshProUGUI choiceText3;
 
     public static Action fadeChoice;
+    public static Action setChoiceText;
 
     private bool IsCanSelect = false;
 
@@ -35,7 +36,13 @@ public class StoryChoice : MonoBehaviour
         {
             StartCoroutine("FadeIn");
         };
+
+        setChoiceText = () =>
+        {
+            SetChoiceText();
+        };
     }
+
 
     IEnumerator FadeIn()
     {
@@ -67,6 +74,12 @@ public class StoryChoice : MonoBehaviour
         fadeText.DOFade(1f, fadeTime);
     }
 
+    public void SetChoiceText()
+    {
+        choiceText1.text = TextManager.Instance.choiceText1;
+        choiceText2.text = TextManager.Instance.choiceText2;
+        choiceText3.text = TextManager.Instance.choiceText3;
+    }
     public void Choice1()
     {
         if (IsCanSelect)
