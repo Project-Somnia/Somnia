@@ -4,14 +4,23 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using DG.Tweening;
+using TMPro;
 
 public class MainUI : MonoBehaviour
 {
-    public Image bg;
-    public Image bg2;
-    public Image bg3;
-    public Image startButton;
-    public Image startText;
+    [Header("Backgrounds")]
+    public Image bg_1;
+    public Image bg_2;
+    public Image bg_3;
+
+    [Header("Buttons")]
+    public Image tapButton;
+    public Image tapText;
+    public Image newGameButton;
+    public TextMeshProUGUI newGameText;
+    public Image continueButton;
+    public TextMeshProUGUI continueText;
+
     public GameObject nextButtons;
 
     private bool IsFade = false;
@@ -29,40 +38,37 @@ public class MainUI : MonoBehaviour
         if (Input.GetMouseButtonDown(0) && !IsFade)
         {
             IsFade = true;
-            StartCoroutine(FadeOut(bg));
-            StartCoroutine(FadeIn(bg2));
+            StartCoroutine(FadeOut(bg_1));
+            StartCoroutine(FadeIn(bg_2));
         }
     }
     IEnumerator FadeIn(Image fadeImg)
     {
         fadeImg.gameObject.SetActive(true);
-        Color fadeCol = fadeImg.color; // 컬러 따오기
-
         Tween t = fadeImg.DOFade(1, fadeTime);
         yield return new WaitForSeconds(fadeTime / 2);
+
         if (!IsHalf && fadeImg.gameObject.CompareTag("BG"))
         {
             IsHalf = true;
-            StartCoroutine(FadeIn(bg3));
-            StartCoroutine(FadeIn(startButton));
-            StartCoroutine(FadeIn(startText));
+            StartCoroutine(FadeIn(bg_3));
+            StartCoroutine(FadeIn(newGameButton));
+            StartCoroutine(FadeIn(continueButton));
+            t = newGameText.DOFade(1, fadeTime);
+            t = continueText.DOFade(1, fadeTime);
         }
+
         yield return new WaitForSeconds(fadeTime / 2);
 
-        if (fadeImg.gameObject.CompareTag("StartUI"))
+        if (fadeImg.gameObject.CompareTag("TapTitle"))
         {
-            UpDownButton();
-            //IsCanStart = true;
-        }
-        else if (fadeImg.gameObject.CompareTag("StartText"))
-        {
-            StartCoroutine(BlinkOut(startText));
+            IsCanStart = true;
+            StartCoroutine(BlinkOut(fadeImg));
         }
         t.Kill();
     }
     IEnumerator FadeOut(Image fadeImg)
     {
-        Color fadeCol = fadeImg.color; // 컬러 따오기
         fadeImg.DOFade(0f, fadeTime);
 
         yield return new WaitForSeconds(fadeTime);
@@ -74,10 +80,9 @@ public class MainUI : MonoBehaviour
         blinkImg.gameObject.SetActive(true);
         Color blinkCol = blinkImg.color; // 컬러 따오기
         Tween t = blinkImg.DOFade(1f, fadeTime);
-        t.Kill();
 
         yield return new WaitForSeconds(fadeTime);
-        if(!IsCanStart)
+        t.Kill();
         StartCoroutine(BlinkOut(blinkImg));
     }
 
@@ -85,11 +90,11 @@ public class MainUI : MonoBehaviour
     {
         Color blinkCol = blinkImg.color; // 컬러 따오기
         Tween t = blinkImg.DOFade(0.3f, fadeTime);
-        t.Kill();
 
         yield return new WaitForSeconds(fadeTime);
+
+        t.Kill();
         blinkImg.gameObject.SetActive(false); // 이미지 끄기
-        if(!IsCanStart)
         StartCoroutine(BlinkIn(blinkImg));
     }
 
@@ -105,10 +110,14 @@ public class MainUI : MonoBehaviour
 
     public void NextButton()
     {
-        startButton.gameObject.SetActive(false);
-        startText.gameObject.SetActive(false);
-        nextButtons.SetActive(true);
-        IsCanStart = true;
+        tapButton.gameObject.SetActive(true);
+        tapText.gameObject.SetActive(true);
+
+        StartCoroutine(FadeIn(tapButton));
+        StartCoroutine(FadeIn(tapText));
+        UpDownButton();
+
+        nextButtons.SetActive(false);
     }
     public void StartGame()
     {
