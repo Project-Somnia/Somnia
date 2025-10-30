@@ -2,16 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Audio;
 using UnityEngine.UI;
 using DG.Tweening;
 using TMPro;
 
 public class StoryChoice : MonoBehaviour
 {
-    public AudioSource audioSource;
-    public AudioClip plus;
-    public AudioClip minus;
     public float fadeTime = 1f;
 
     [Header("Choice Button and Text")]
@@ -84,8 +80,6 @@ public class StoryChoice : MonoBehaviour
     {
         if (IsCanSelect)
         {
-            //audioSource.clip = minus;
-            audioSource.PlayOneShot(minus);
             Health.healthM();
         }
     }
@@ -93,8 +87,6 @@ public class StoryChoice : MonoBehaviour
     {
         if (IsCanSelect)
         {
-            //audioSource.clip = minus;
-            audioSource.PlayOneShot(minus);
             Health.mentalM();
         }
     }
@@ -102,8 +94,6 @@ public class StoryChoice : MonoBehaviour
     {
         if (IsCanSelect)
         {
-            //audioSource.clip = minus;
-            audioSource.PlayOneShot(minus);
             Health.coinM();
         }
     }

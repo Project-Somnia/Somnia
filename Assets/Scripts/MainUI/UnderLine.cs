@@ -34,6 +34,9 @@ public class Underline : MonoBehaviour
 
             RectTransform rt = img.rectTransform;
             rt.sizeDelta = new Vector2(fullWidth, height);
+
+            offsetY = tmpText.font.faceInfo.lineHeight * (tmpText.fontSize / tmpText.font.faceInfo.pointSize);
+            offsetY = offsetY / 1.06f;
             rt.anchoredPosition = new Vector2(underLinePosX, -(i+1) * offsetY); // 일정 간격으로 밑줄 배치
 
             underlineImages.Add(img);
@@ -65,6 +68,7 @@ public class Underline : MonoBehaviour
             }
 
             TMP_CharacterInfo firstChar = textInfo.characterInfo[line.firstCharacterIndex];
+            offsetY = tmpText.font.faceInfo.lineHeight * (tmpText.fontSize / tmpText.font.faceInfo.pointSize);
             float y = firstChar.baseLine - Mathf.Abs(offsetY) * 0.2f; // baseline 보정
 
             RectTransform rt = underlineImages[i].rectTransform;
