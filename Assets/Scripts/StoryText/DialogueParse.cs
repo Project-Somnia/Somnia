@@ -45,6 +45,7 @@ public class DialogueParse : MonoBehaviour
             string[] rowValues = ParseCsvLine(rows[i]);
 
             if (rowValues[0].Trim() == "" || rowValues[0].Contains("#")) continue;
+            //else if(rowValues[0].Trim() == ".") 
 
             List<TalkData> talkDataList = new List<TalkData>();
             string eventName = rowValues[0].Trim();
@@ -66,9 +67,7 @@ public class DialogueParse : MonoBehaviour
                 {
                     // contextList.Add(rowValues[2].Trim());
                     contextList.Add(rowValues[2].Trim('"', '\r', '\n'));
-
-                    if (++i < rows.Length)
-                        rowValues = ParseCsvLine(rows[i]);
+                    if (++i < rows.Length) rowValues = ParseCsvLine(rows[i]);
                     else
                         break;
 
@@ -84,7 +83,7 @@ public class DialogueParse : MonoBehaviour
             }
 
             DialogueDictionary.Add(eventName, talkDataList.ToArray());
-            
+
         }
     }
 
