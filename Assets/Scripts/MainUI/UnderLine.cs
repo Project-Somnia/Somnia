@@ -5,6 +5,7 @@ using TMPro;
 
 public class Underline : MonoBehaviour
 {
+    public ScrollRect scrollRect;
     public TextMeshProUGUI tmpText;
     public RectTransform content;
 
@@ -15,12 +16,14 @@ public class Underline : MonoBehaviour
     [SerializeField] private int fixedLineCount = 6; // 항상 깔아둘 줄 개수
     private float fullWidth = 540;
     private float underLinePosX = 12.5f;
+    private float prevHeight;
 
     private List<Image> underlineImages = new List<Image>();
 
     void Start()
     {
-
+        scrollRect.verticalNormalizedPosition = 0f;
+        float firstLine = 0f;
         // 8줄은 게임 시작 시 미리 고정으로 그림
         for (int i = 0; i < fixedLineCount; i++)
         {
@@ -31,14 +34,24 @@ public class Underline : MonoBehaviour
             Image img = go.GetComponent<Image>();
             img.sprite = underlineSprite;
             img.type = Image.Type.Sliced;
+            Color imgCol = img.color;
+            imgCol.a = 0.7f;
+            img.color = imgCol;
 
             RectTransform rt = img.rectTransform;
             rt.sizeDelta = new Vector2(fullWidth, height);
 
-            offsetY = tmpText.font.faceInfo.lineHeight * (tmpText.fontSize / tmpText.font.faceInfo.pointSize);
-            offsetY = offsetY / 1.06f;
-            rt.anchoredPosition = new Vector2(underLinePosX, -(i+1) * offsetY); // 일정 간격으로 밑줄 배치
-
+            if (i == 0)
+            {
+                offsetY = tmpText.font.faceInfo.lineHeight * (tmpText.fontSize / tmpText.font.faceInfo.pointSize);
+                firstLine = offsetY;
+                rt.anchoredPosition = new Vector2(underLinePosX, -offsetY);
+            }
+            else
+            {
+                offsetY = 53f;
+                rt.anchoredPosition = new Vector2(underLinePosX, -(i + 1) * offsetY); // 일정 간격으로 밑줄 배치
+            }
             underlineImages.Add(img);
             underlineImages[i].enabled = true;
         }
@@ -47,6 +60,7 @@ public class Underline : MonoBehaviour
     // 필요하다면 추가 줄을 동적으로 붙이는 로직
     void LateUpdate()
     {
+        AutoScroll();
         tmpText.ForceMeshUpdate();
         TMP_TextInfo textInfo = tmpText.textInfo;
 
@@ -71,6 +85,7 @@ public class Underline : MonoBehaviour
             offsetY = tmpText.font.faceInfo.lineHeight * (tmpText.fontSize / tmpText.font.faceInfo.pointSize);
             float y = firstChar.baseLine - Mathf.Abs(offsetY) * 0.2f; // baseline 보정
 
+            Debug.Log(i + "번째" + firstChar.baseLine);
             RectTransform rt = underlineImages[i].rectTransform;
             rt.anchoredPosition = new Vector2(0, y);
             rt.sizeDelta = new Vector2(fullWidth, height);
@@ -88,7 +103,22 @@ public class Underline : MonoBehaviour
         img.sprite = underlineSprite;
         img.type = Image.Type.Sliced;
         img.enabled = false;
+        Color imgCol = img.color;
+        imgCol.a = 0.7f;
+        img.color = imgCol;
 
         underlineImages.Add(img);
+    }
+
+    private void AutoScroll()
+    {
+        // content의 높이가 커졌는지 감지
+        float currentHeight = tmpText.preferredHeight;
+        if (currentHeight > prevHeight)
+        {
+            // 맨 아래로 자동 스크롤
+            scrollRect.verticalNormalizedPosition = 0f;
+            prevHeight = currentHeight;
+        }
     }
 }
