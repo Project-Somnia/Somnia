@@ -74,11 +74,11 @@ public class Setting : MonoBehaviour
     }
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
             IsSetting = !IsSetting;
             esc.SetActive(IsSetting);
-            sound.SetActive(IsSetting); 
+            sound.SetActive(IsSetting);
         }
     }
 }

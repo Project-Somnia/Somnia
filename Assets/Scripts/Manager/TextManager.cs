@@ -9,16 +9,18 @@ using TMPro;
 
 public class TextManager : MonoBehaviour
 {
-
-    public GameObject talkPanel;
     public TextMeshProUGUI storyText;
-    public TextMeshProUGUI nameText;
-    public Animator storyImageAnimator;
     string[] dialogStrings;
     TalkData[] talkDatas;
     public string storyEventName;
+
+    public string choiceText1;
+    public string choiceText2;
+    public string choiceText3;
+
     private int currentPage = 0; // 대화문 개수 변수
     public bool IsStory = false;
+    public bool IsDialogSet = false;
 
     private static TextManager instance;
     public static TextManager Instance
@@ -33,7 +35,6 @@ public class TextManager : MonoBehaviour
         }
     }
 
-
     void Awake()
     {
         if (instance != null && instance != this)
@@ -43,28 +44,10 @@ public class TextManager : MonoBehaviour
         }
         instance = this;
     }
-    public void SetDialogue()
-    {
-        talkDatas = this.GetComponent<Dialogue>().GetObjectDialogue();
-        TypingManager._instance.Typing(talkDatas[0].showText, storyText);
-        currentPage++;
-    }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.I) && !IsStory)
-        {
-            IsStory = true;
-            storyEventName = "1_0";
-            SetDialogue();
-        }
-        if (Input.GetKeyDown(KeyCode.S) && !IsStory)
-        {
-            IsStory = true;
-            storyEventName = "1_1";
-            SetDialogue();
-        }
-        if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0) && IsStory)
+        if ((Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) && IsStory)
         {
             TypingManager._instance.GetInputDown();
             if (TypingManager._instance.isTypingEnd)
@@ -73,6 +56,7 @@ public class TextManager : MonoBehaviour
                 {
                     currentPage = talkDatas.Length;
                     IsStory = false;
+                    StoryChoice.fadeChoice();
                     currentPage = 0;
                     //storyText.text = "";
                     Debug.Log("대사 끝");
@@ -83,5 +67,22 @@ public class TextManager : MonoBehaviour
             }
         }
     }
+
+    public void SetDialogue(string eventNumber)
+    {
+        storyEventName = eventNumber;
+        talkDatas = this.GetComponent<Dialogue>().GetObjectDialogue();
+        TypingManager._instance.Typing(talkDatas[0].showText, storyText);
+        currentPage++;
+
+        choiceText1 = talkDatas[0].selectText1;
+        choiceText2 = talkDatas[0].selectText2;
+        choiceText3 = talkDatas[0].selectText3;
+
+        StoryChoice.setChoiceText();
+        IsStory = true;
+    }
+
+    
 
 }
