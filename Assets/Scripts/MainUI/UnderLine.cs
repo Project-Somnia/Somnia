@@ -49,7 +49,7 @@ public class Underline : MonoBehaviour
             }
             else
             {
-                offsetY = 53f;
+                offsetY = 52.3f;
                 rt.anchoredPosition = new Vector2(underLinePosX, -(i + 1) * offsetY); // 일정 간격으로 밑줄 배치
             }
             underlineImages.Add(img);
