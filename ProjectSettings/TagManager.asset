@@ -5,8 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - BG
-  - StartUI
-  - StartText
+  - TapTitle
   layers:
   - Default
   - TransparentFX
