@@ -24,7 +24,8 @@ public class StoryChoice : MonoBehaviour
     public static Action setChoiceText;
 
     private bool IsCanSelect = false;
-
+    private string[] textArr = new string[3];
+    List<int> values = new List<int> { 0, 1, 2 };
 
     void Awake()
     {
@@ -72,9 +73,27 @@ public class StoryChoice : MonoBehaviour
 
     public void SetChoiceText()
     {
-        choiceText1.text = TextManager.Instance.choiceText1;
-        choiceText2.text = TextManager.Instance.choiceText2;
-        choiceText3.text = TextManager.Instance.choiceText3;
+        RandomShuffle();
+
+        textArr[values[0]] = TextManager.Instance.choiceText1;
+        textArr[values[1]] = TextManager.Instance.choiceText2;
+        textArr[values[2]] = TextManager.Instance.choiceText3;
+
+        choiceText1.text = textArr[0];
+        choiceText2.text = textArr[1];
+        choiceText3.text = textArr[2];
+    }
+
+    private void RandomShuffle()
+    {
+        // 랜덤하게 섞기
+        for (int i = 0; i < values.Count; i++)
+        {
+            int randomIndex = UnityEngine.Random.Range(0, values.Count);
+            int temp = values[i];
+            values[i] = values[randomIndex];
+            values[randomIndex] = temp;
+        }
     }
     public void Choice1()
     {

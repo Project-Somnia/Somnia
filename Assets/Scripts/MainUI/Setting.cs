@@ -63,7 +63,7 @@ public class Setting : MonoBehaviour
             audioMixer.SetFloat("OST", Mathf.Log10(ostVol) * 20);
         }
 
-        if (mainVol == 0)
+        if (sfxVol == 0)
         {
             audioMixer.SetFloat("SFX", -80);
         }

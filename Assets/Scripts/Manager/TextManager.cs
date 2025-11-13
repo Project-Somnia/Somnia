@@ -49,10 +49,10 @@ public class TextManager : MonoBehaviour
     {
         if ((Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) && IsStory)
         {
-            TypingManager._instance.GetInputDown();
-            if (TypingManager._instance.isTypingEnd)
+            TypingManager.Instance.GetInputDown();
+            if (TypingManager.Instance.isTypingEnd)
             {
-                if (currentPage == talkDatas.Length && TypingManager._instance.isDialogEnd)
+                if (currentPage == talkDatas.Length && TypingManager.Instance.isDialogEnd)
                 {
                     currentPage = talkDatas.Length;
                     IsStory = false;
@@ -62,7 +62,7 @@ public class TextManager : MonoBehaviour
                     Debug.Log("대사 끝");
                     return;
                 }
-                TypingManager._instance.Typing(talkDatas[currentPage].showText, storyText);
+                TypingManager.Instance.Typing(talkDatas[currentPage].showText, storyText);
                 currentPage++;
             }
         }
@@ -72,7 +72,7 @@ public class TextManager : MonoBehaviour
     {
         storyEventName = eventNumber;
         talkDatas = this.GetComponent<Dialogue>().GetObjectDialogue();
-        TypingManager._instance.Typing(talkDatas[0].showText, storyText);
+        TypingManager.Instance.Typing(talkDatas[0].showText, storyText);
         currentPage++;
 
         choiceText1 = talkDatas[0].selectText1;
