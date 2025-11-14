@@ -20,11 +20,24 @@ public class StoryChoice : MonoBehaviour
     public Image choice3;
     public TextMeshProUGUI choiceText3;
 
+    public GameObject underline;
+
     public static Action fadeChoice;
     public static Action setChoiceText;
 
     private bool IsCanSelect = false;
-    private string[] textArr = new string[3];
+    private struct ChoiceStruct
+    {
+        public string select;
+        public string trigger;
+
+        public ChoiceStruct(string select, string trigger)
+        {
+            this.select = select;
+            this.trigger = trigger;
+        }
+    }
+    ChoiceStruct[] choiceStructs = new ChoiceStruct[3];
     List<int> values = new List<int> { 0, 1, 2 };
 
     void Awake()
@@ -75,13 +88,32 @@ public class StoryChoice : MonoBehaviour
     {
         RandomShuffle();
 
-        textArr[values[0]] = TextManager.Instance.choiceText1;
-        textArr[values[1]] = TextManager.Instance.choiceText2;
-        textArr[values[2]] = TextManager.Instance.choiceText3;
+        choiceStructs[values[0]].select = TextManager.Instance.selectText[0];
+        choiceStructs[values[0]].trigger = TextManager.Instance.triggerEvent[0];
 
-        choiceText1.text = textArr[0];
-        choiceText2.text = textArr[1];
-        choiceText3.text = textArr[2];
+        choiceStructs[values[1]].select = TextManager.Instance.selectText[1];
+        choiceStructs[values[1]].trigger = TextManager.Instance.triggerEvent[1];
+
+        choiceStructs[values[2]].select = TextManager.Instance.selectText[2];
+        choiceStructs[values[2]].trigger = TextManager.Instance.triggerEvent[2];
+
+        choiceText1.text = choiceStructs[values[0]].select;
+        choiceText2.text = choiceStructs[values[1]].select;
+        choiceText3.text = choiceStructs[values[2]].select;
+    }
+
+    public void ChoiceOff()
+    {
+        choice1.gameObject.SetActive(false);
+        choiceText1.gameObject.SetActive(false);
+
+        choice2.gameObject.SetActive(false);
+        choiceText2.gameObject.SetActive(false);
+
+        choice3.gameObject.SetActive(false);
+        choiceText3.gameObject.SetActive(false);
+
+        Underline.reDraw();
     }
 
     private void RandomShuffle()
@@ -99,21 +131,47 @@ public class StoryChoice : MonoBehaviour
     {
         if (IsCanSelect)
         {
-            Health.healthM();
+            IsCanSelect = false;
+            CheckChoice(choiceText1.text);
+            ChoiceOff();
+            TextManager.Instance.SetDialogue(choiceStructs[values[0]].trigger);      
         }
     }
     public void Choice2()
     {
         if (IsCanSelect)
         {
-            Health.mentalM();
+            IsCanSelect = false;
+            CheckChoice(choiceText2.text);
+            ChoiceOff();
+            TextManager.Instance.SetDialogue(choiceStructs[values[1]].trigger);  
         }
     }
     public void Choice3()
     {
         if (IsCanSelect)
         {
-            Health.coinM();
+            IsCanSelect = false;
+            CheckChoice(choiceText3.text);
+            ChoiceOff();
+            TextManager.Instance.SetDialogue(choiceStructs[values[2]].trigger);
+        }
+    }
+
+    private void CheckChoice(string text)
+    {
+        Debug.Log("체크할 text"+text);
+        if (text.Contains("-1"))
+        {
+            if (text.Contains("체력")) Health.healthM();
+            else if (text.Contains("정신력")) Health.mentalM();
+            else if (text.Contains("돈")) Health.coinM();
+        }
+        else if (text.Contains("+1"))
+        {
+            if (text.Contains("체력")) Health.healthP();
+            else if (text.Contains("정신력")) Health.mentalP();
+            else if (text.Contains("돈")) Health.coinP();
         }
     }
 }

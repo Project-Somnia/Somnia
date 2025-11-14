@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 using System.Collections.Generic;
 using TMPro;
 
@@ -8,6 +9,7 @@ public class Underline : MonoBehaviour
     public ScrollRect scrollRect;
     public TextMeshProUGUI tmpText;
     public RectTransform content;
+    public static Action reDraw;
 
     [Header("Underline Settings")]
     [SerializeField] private Sprite underlineSprite;
@@ -20,7 +22,17 @@ public class Underline : MonoBehaviour
 
     private List<Image> underlineImages = new List<Image>();
 
+    void Awake()
+    {
+        reDraw += ClearUnderlines;
+        reDraw += SetFirstLine;
+    }
     void Start()
+    {
+        SetFirstLine();
+    }
+
+    public void SetFirstLine()
     {
         scrollRect.verticalNormalizedPosition = 0f;
         float firstLine = 0f;
@@ -68,7 +80,7 @@ public class Underline : MonoBehaviour
                 offsetY = 45f;
                 rt.anchoredPosition = new Vector2(underLinePosX, -(i + 1) * offsetY); // 일정 간격으로 밑줄 배치
             }
-            else if(i == 5)
+            else if (i == 5)
             {
                 offsetY = 45.5f;
                 rt.anchoredPosition = new Vector2(underLinePosX, -(i + 1) * offsetY); // 일정 간격으로 밑줄 배치
@@ -77,6 +89,18 @@ public class Underline : MonoBehaviour
             underlineImages[i].enabled = true;
         }
     }
+
+    public void ClearUnderlines()
+    {
+        for (int i = 0; i < underlineImages.Count; i++)
+        {
+            if (underlineImages[i] != null)
+                Destroy(underlineImages[i].gameObject);
+        }
+
+        underlineImages.Clear();
+    }
+
 
     // 필요하다면 추가 줄을 동적으로 붙이는 로직
     void LateUpdate()
@@ -106,7 +130,6 @@ public class Underline : MonoBehaviour
             offsetY = tmpText.font.faceInfo.lineHeight * (tmpText.fontSize / tmpText.font.faceInfo.pointSize);
             float y = firstChar.baseLine - Mathf.Abs(offsetY) * 0.2f; // baseline 보정
 
-            Debug.Log(i + "번째" + firstChar.baseLine);
             RectTransform rt = underlineImages[i].rectTransform;
             rt.anchoredPosition = new Vector2(0, y);
             rt.sizeDelta = new Vector2(fullWidth, height);
