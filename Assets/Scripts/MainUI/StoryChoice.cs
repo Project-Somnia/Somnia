@@ -81,6 +81,7 @@ public class StoryChoice : MonoBehaviour
         if (IsCanSelect)
         {
             Health.healthM();
+            Random1.isChapterEnd = true;
         }
     }
     public void Choice2()
@@ -88,6 +89,7 @@ public class StoryChoice : MonoBehaviour
         if (IsCanSelect)
         {
             Health.mentalM();
+            Random1.isChapterEnd = true;
         }
     }
     public void Choice3()
@@ -95,6 +97,7 @@ public class StoryChoice : MonoBehaviour
         if (IsCanSelect)
         {
             Health.coinM();
+            Random1.isChapterEnd = true;
         }
     }
 }

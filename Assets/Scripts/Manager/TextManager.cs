@@ -9,6 +9,8 @@ using TMPro;
 
 public class TextManager : MonoBehaviour
 {
+    public GameObject ChapterObject;
+    public GameObject RandomObject;
     public TextMeshProUGUI storyText;
     string[] dialogStrings;
     TalkData[] talkDatas;
@@ -21,6 +23,7 @@ public class TextManager : MonoBehaviour
     private int currentPage = 0; // 대화문 개수 변수
     public bool IsStory = false;
     public bool IsDialogSet = false;
+
 
     private static TextManager instance;
     public static TextManager Instance
@@ -47,29 +50,55 @@ public class TextManager : MonoBehaviour
 
     private void Update()
     {
-        if ((Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) && IsStory)
-        {
-            TypingManager._instance.GetInputDown();
-            if (TypingManager._instance.isTypingEnd)
+        if (Random1.isChapterEnd){
+            RandomObject.SetActive(true);
+            ChapterObject.SetActive(false);
+            if ((Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) && IsStory)
             {
-                if (currentPage == talkDatas.Length && TypingManager._instance.isDialogEnd)
+                TypingManager._instance.GetInputDown();
+                if (TypingManager._instance.isTypingEnd)
                 {
-                    currentPage = talkDatas.Length;
-                    IsStory = false;
-                    StoryChoice.fadeChoice();
-                    currentPage = 0;
-                    //storyText.text = "";
-                    Debug.Log("대사 끝");
-                    return;
+                    if (currentPage == talkDatas.Length && TypingManager._instance.isDialogEnd)
+                    {
+                        currentPage = talkDatas.Length;
+                        IsStory = false;
+                        StoryChoice.fadeChoice();
+                        currentPage = 0;
+                        //storyText.text = "";
+                        Debug.Log("대사 끝");
+                        return;
+                    }
+                    TypingManager._instance.Typing(talkDatas[currentPage].showText, storyText);
+                    currentPage++;
                 }
-                TypingManager._instance.Typing(talkDatas[currentPage].showText, storyText);
-                currentPage++;
+            }
+        }
+        else {
+            if ((Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) && IsStory)
+            {
+                TypingManager._instance.GetInputDown();
+                if (TypingManager._instance.isTypingEnd)
+                {
+                    if (currentPage == talkDatas.Length && TypingManager._instance.isDialogEnd)
+                    {
+                        currentPage = talkDatas.Length;
+                        IsStory = false;
+                        StoryChoice.fadeChoice();
+                        currentPage = 0;
+                        //storyText.text = "";
+                        Debug.Log("대사 끝");
+                        return;
+                    }
+                    TypingManager._instance.Typing(talkDatas[currentPage].showText, storyText);
+                    currentPage++;
+                }
             }
         }
     }
 
     public void SetDialogue(string eventNumber)
-    {
+    {   
+        storyText.text ="";
         storyEventName = eventNumber;
         talkDatas = this.GetComponent<Dialogue>().GetObjectDialogue();
         TypingManager._instance.Typing(talkDatas[0].showText, storyText);

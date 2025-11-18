@@ -9,6 +9,9 @@ public class Topbanner : MonoBehaviour
     BannerView _bannerView;
 
     // These ad units are configured to always serve test ads.
+    public void RequestBanner()
+    {   
+        // These ad units are configured to always serve test ads.
         #if UNITY_EDITOR
             string adUnitId = "unused";
         #elif UNITY_ANDROID
@@ -19,35 +22,71 @@ public class Topbanner : MonoBehaviour
             string adUnitId = "unexpected_platform";
         #endif
 
-  public void CreateBannerView()
-  {
-      Debug.Log("Creating banner view");
+    
+        // Clean up banner ad before creating a new one.
+        if (_bannerView != null)
+        {
+            _bannerView.Destroy();
+        }
 
-      // If we already have a banner, destroy the old one.
-      if (_bannerView != null)
-      {
-          DestroyAd();
-      }
+        AdSize adaptiveSize =
+                AdSize.GetCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(AdSize.FullWidth);
 
-      // Create a 320x50 banner at top of the screen
-      _bannerView = new BannerView(adUnitId, AdSize.Banner, AdPosition.Top);
-  }
+        _bannerView = new BannerView(adUnitId, adaptiveSize, AdPosition.Top);
 
-public void LoadAd()
-{
-    // create an instance of a banner view first.
-    if(_bannerView == null)
-    {
-        CreateBannerView();
+        // Register for ad events.
+        _bannerView.OnBannerAdLoaded += OnBannerAdLoaded;
+        _bannerView.OnBannerAdLoadFailed += OnBannerAdLoadFailed;
+
+        AdRequest adRequest = new AdRequest();
+
+        // Load a banner ad.
+        _bannerView.LoadAd(adRequest);
     }
 
-    // create our request used to load the ad.
-    var adRequest = new AdRequest();
+    private void OnBannerAdLoaded()
+    {
+        Debug.Log("Banner view loaded an ad with response : "
+                 + _bannerView.GetResponseInfo());
 
-    // send the request to load the ad.
-    Debug.Log("Loading banner ad.");
-    _bannerView.LoadAd(adRequest);
-}
+        Debug.Log($"Ad Height: {_bannerView.GetHeightInPixels()}, Width: {_bannerView.GetWidthInPixels()}");
+    }
+
+    private void OnBannerAdLoadFailed(LoadAdError error)
+    {
+        Debug.LogError("Banner view failed to load an ad with error : "
+                + error);
+    }
+
+//   public void CreateBannerView()
+//   {
+//       Debug.Log("Creating banner view");
+
+//       // If we already have a banner, destroy the old one.
+//       if (_bannerView != null)
+//       {
+//           DestroyAd();
+//       }
+
+//       // Create a 320x50 banner at top of the screen
+//       _bannerView = new BannerView(_adUnitId, AdSize.Banner, AdPosition.Top);
+//   }
+
+// public void LoadAd()
+// {
+//     // create an instance of a banner view first.
+//     if(_bannerView == null)
+//     {
+//         CreateBannerView();
+//     }
+
+//     // create our request used to load the ad.
+//     var adRequest = new AdRequest();
+
+//     // send the request to load the ad.
+//     Debug.Log("Loading banner ad.");
+//     _bannerView.LoadAd(adRequest);
+// }
 
 public void DestroyAd()
 {
@@ -69,7 +108,7 @@ public void DestroyAd()
         {
             // This callback is called once the MobileAds SDK is initialized.
         }); 
-        this.LoadAd();
+        this.RequestBanner();
     }
 
     // Update is called once per frame

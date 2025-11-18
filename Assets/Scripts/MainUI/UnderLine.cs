@@ -85,7 +85,7 @@ public class Underline : MonoBehaviour
             offsetY = tmpText.font.faceInfo.lineHeight * (tmpText.fontSize / tmpText.font.faceInfo.pointSize);
             float y = firstChar.baseLine - Mathf.Abs(offsetY) * 0.2f; // baseline 보정
 
-            Debug.Log(i + "번째" + firstChar.baseLine);
+            // Debug.Log(i + "번째" + firstChar.baseLine);
             RectTransform rt = underlineImages[i].rectTransform;
             rt.anchoredPosition = new Vector2(0, y);
             rt.sizeDelta = new Vector2(fullWidth, height);

@@ -6,12 +6,12 @@ public class RemoveAd : MonoBehaviour
 {   
     public static bool isAdRemoved = false;
 
-    public GameObject Button;
+    public GameObject RightSlideHolder;
 
     [Header("Advertisement")]
 
         public Topbanner Topbanner;
-        public Bottombanner Bottombanner;
+        // public Bottombanner Bottombanner;
 
     // Start is called before the first frame update
     void Start()
@@ -27,9 +27,9 @@ public class RemoveAd : MonoBehaviour
     {    
         if(isAdRemoved)
         {   
-            Destroy(Button);
+            Destroy(RightSlideHolder);
             Topbanner.DestroyAd();
-            Bottombanner.DestroyAd();
+            // Bottombanner.DestroyAd();
             Destroy(this.gameObject);
         }
     }
