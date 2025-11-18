@@ -87,19 +87,18 @@ public class StoryChoice : MonoBehaviour
     public void SetChoiceText()
     {
         RandomShuffle();
+        choiceStructs[0].select = TextManager.Instance.selectText[values[0]];
+        choiceStructs[0].trigger = TextManager.Instance.triggerEvent[values[0]];
 
-        choiceStructs[values[0]].select = TextManager.Instance.selectText[0];
-        choiceStructs[values[0]].trigger = TextManager.Instance.triggerEvent[0];
+        choiceStructs[1].select = TextManager.Instance.selectText[values[1]];
+        choiceStructs[1].trigger = TextManager.Instance.triggerEvent[values[1]];
 
-        choiceStructs[values[1]].select = TextManager.Instance.selectText[1];
-        choiceStructs[values[1]].trigger = TextManager.Instance.triggerEvent[1];
+        choiceStructs[2].select = TextManager.Instance.selectText[values[2]];
+        choiceStructs[2].trigger = TextManager.Instance.triggerEvent[values[2]];
 
-        choiceStructs[values[2]].select = TextManager.Instance.selectText[2];
-        choiceStructs[values[2]].trigger = TextManager.Instance.triggerEvent[2];
-
-        choiceText1.text = choiceStructs[values[0]].select;
-        choiceText2.text = choiceStructs[values[1]].select;
-        choiceText3.text = choiceStructs[values[2]].select;
+        choiceText1.text = choiceStructs[0].select;
+        choiceText2.text = choiceStructs[1].select;
+        choiceText3.text = choiceStructs[2].select;
     }
 
     public void ChoiceOff()
@@ -134,7 +133,7 @@ public class StoryChoice : MonoBehaviour
             IsCanSelect = false;
             CheckChoice(choiceText1.text);
             ChoiceOff();
-            TextManager.Instance.SetDialogue(choiceStructs[values[0]].trigger);      
+            TextManager.Instance.SetDialogue(choiceStructs[0].trigger);      
         }
     }
     public void Choice2()
@@ -144,7 +143,7 @@ public class StoryChoice : MonoBehaviour
             IsCanSelect = false;
             CheckChoice(choiceText2.text);
             ChoiceOff();
-            TextManager.Instance.SetDialogue(choiceStructs[values[1]].trigger);  
+            TextManager.Instance.SetDialogue(choiceStructs[1].trigger);  
         }
     }
     public void Choice3()
@@ -154,13 +153,12 @@ public class StoryChoice : MonoBehaviour
             IsCanSelect = false;
             CheckChoice(choiceText3.text);
             ChoiceOff();
-            TextManager.Instance.SetDialogue(choiceStructs[values[2]].trigger);
+            TextManager.Instance.SetDialogue(choiceStructs[2].trigger);
         }
     }
 
     private void CheckChoice(string text)
     {
-        Debug.Log("체크할 text"+text);
         if (text.Contains("-1"))
         {
             if (text.Contains("체력")) Health.healthM();
