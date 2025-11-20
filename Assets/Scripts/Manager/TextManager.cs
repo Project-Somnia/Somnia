@@ -16,9 +16,9 @@ public class TextManager : MonoBehaviour
     TalkData[] talkDatas;
     public string storyEventName;
 
-    public string choiceText1;
-    public string choiceText2;
-    public string choiceText3;
+    public string[] selectText = new string[3];
+    public string[] triggerEvent = new string[3];
+    public string showTextDup;
 
     private int currentPage = 0; // 대화문 개수 변수
     public bool IsStory = false;
@@ -50,16 +50,14 @@ public class TextManager : MonoBehaviour
 
     private void Update()
     {
-        if (Random1.isChapterEnd){
-            RandomObject.SetActive(true);
-            ChapterObject.SetActive(false);
-            if ((Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) && IsStory)
+        if ((Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) && IsStory)
+        {
+            TypingManager.Instance.GetInputDown();
+            if (TypingManager.Instance.isTypingEnd)
             {
-                TypingManager._instance.GetInputDown();
-                if (TypingManager._instance.isTypingEnd)
+                if (currentPage == talkDatas.Length && TypingManager.Instance.isDialogEnd)
                 {
-                    if (currentPage == talkDatas.Length && TypingManager._instance.isDialogEnd)
-                    {
+            
                         currentPage = talkDatas.Length;
                         IsStory = false;
                         StoryChoice.fadeChoice();
@@ -67,51 +65,61 @@ public class TextManager : MonoBehaviour
                         //storyText.text = "";
                         Debug.Log("대사 끝");
                         return;
-                    }
-                    TypingManager._instance.Typing(talkDatas[currentPage].showText, storyText);
-                    currentPage++;
+                    
                 }
-            }
-        }
-        else {
-            if ((Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) && IsStory)
-            {
-                TypingManager._instance.GetInputDown();
-                if (TypingManager._instance.isTypingEnd)
-                {
-                    if (currentPage == talkDatas.Length && TypingManager._instance.isDialogEnd)
-                    {
-                        currentPage = talkDatas.Length;
-                        IsStory = false;
-                        StoryChoice.fadeChoice();
-                        currentPage = 0;
-                        //storyText.text = "";
-                        Debug.Log("대사 끝");
-                        return;
-                    }
-                    TypingManager._instance.Typing(talkDatas[currentPage].showText, storyText);
-                    currentPage++;
-                }
+                TypingManager.Instance.Typing(talkDatas[currentPage].showText, storyText);
+                currentPage++;
             }
         }
     }
 
     public void SetDialogue(string eventNumber)
-    {   
-        storyText.text ="";
+    {
+        storyText.text = "";
         storyEventName = eventNumber;
         talkDatas = this.GetComponent<Dialogue>().GetObjectDialogue();
-        TypingManager._instance.Typing(talkDatas[0].showText, storyText);
+        TypingManager.Instance.Typing(talkDatas[0].showText, storyText);
         currentPage++;
 
-        choiceText1 = talkDatas[0].selectText1;
-        choiceText2 = talkDatas[0].selectText2;
-        choiceText3 = talkDatas[0].selectText3;
+        selectText[0] = talkDatas[0].selectText1;
+        selectText[1] = talkDatas[0].selectText2;
+        selectText[2] = talkDatas[0].selectText3;
+
+        triggerEvent[0] = talkDatas[0].triggerEvent1;
+        triggerEvent[1] = talkDatas[0].triggerEvent2;
+        triggerEvent[2] = talkDatas[0].triggerEvent3;
 
         StoryChoice.setChoiceText();
         IsStory = true;
+
+        StartCoroutine("WaitAndSet");
     }
 
-    
+    public void CheckShowText(string text)
+    {
+        if (text.Contains("-1"))
+        {
+            if (text.Contains("체력")) Health.healthM();
+            else if (text.Contains("정신력")) Health.mentalM();
+            else if (text.Contains("돈")) Health.coinM();
+        }
+        else if (text.Contains("+1"))
+        {
+            if (text.Contains("체력")) Health.healthP();
+            else if (text.Contains("정신력")) Health.mentalP();
+            else if (text.Contains("돈")) Health.coinP();
+        }
+    }
+
+    IEnumerator WaitAndSet()
+    {
+        while (!IsDialogSet)
+        {
+            yield return new WaitForSeconds(0.1f);
+        }
+        showTextDup = talkDatas[0].showText[0];
+        Debug.Log(showTextDup);
+        CheckShowText(showTextDup);
+    }
 
 }
