@@ -133,7 +133,7 @@ public class StoryChoice : MonoBehaviour
             IsCanSelect = false;
             CheckChoice(choiceText1.text);
             ChoiceOff();
-            TextManager.Instance.SetDialogue(choiceStructs[0].trigger);      
+            TextManager.Instance.SetDialogueFromChoice(choiceStructs[0].trigger);      
         }
     }
     public void Choice2()
@@ -143,7 +143,7 @@ public class StoryChoice : MonoBehaviour
             IsCanSelect = false;
             CheckChoice(choiceText2.text);
             ChoiceOff();
-            TextManager.Instance.SetDialogue(choiceStructs[1].trigger);  
+            TextManager.Instance.SetDialogueFromChoice(choiceStructs[1].trigger);  
         }
     }
     public void Choice3()
@@ -153,7 +153,7 @@ public class StoryChoice : MonoBehaviour
             IsCanSelect = false;
             CheckChoice(choiceText3.text);
             ChoiceOff();
-            TextManager.Instance.SetDialogue(choiceStructs[2].trigger);
+            TextManager.Instance.SetDialogueFromChoice(choiceStructs[2].trigger);
         }
     }
 

@@ -55,12 +55,6 @@ public class TypingManager : MonoBehaviour
         tmpSave = textObj;
         if (dialogNumber < dialogs.Length)
         {
-            // 텍스트에 .이 포함되 있으면 엔터 넣기
-            if (dialogs[dialogNumber].Contains("."))
-            {
-                dialogs[dialogNumber] += "\n";
-                dialogsSave = dialogs;
-            }
             char[] chars = dialogs[dialogNumber].ToCharArray(); //받아온 다이얼 로그를 char로 변환.
             StartCoroutine(Typer(chars, textObj)); //레퍼런스로 넘겨보는거 테스트 해보자.
         }
