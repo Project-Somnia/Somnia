@@ -45,7 +45,7 @@ public class DialogueParse : MonoBehaviour
             string[] rowValues = ParseCsvLine(rows[i]);
 
             if (rowValues[0].Trim() == "" || rowValues[0].Contains("#")) continue;
-            //else if(rowValues[0].Trim() == ".") 
+            
 
             List<TalkData> talkDataList = new List<TalkData>();
             string eventName = rowValues[0].Trim();
@@ -65,8 +65,10 @@ public class DialogueParse : MonoBehaviour
                 talkData.triggerEvent3 = rowValues[8].Trim();
                 do
                 {
-                    // contextList.Add(rowValues[2].Trim());
-                    contextList.Add(rowValues[2].Trim('"', '\r', '\n'));
+                    // 텍스트에 .이 포함되어 있으면 엔터 넣기
+                    if(rowValues[2].Contains(".")) rowValues[2] += "\n";
+                    
+                    contextList.Add(rowValues[2].Trim('"', '\r'));
                     if (++i < rows.Length) rowValues = ParseCsvLine(rows[i]);
                     else
                         break;

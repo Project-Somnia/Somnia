@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 using System.Collections.Generic;
 using TMPro;
 
@@ -8,6 +9,7 @@ public class Underline : MonoBehaviour
     public ScrollRect scrollRect;
     public TextMeshProUGUI tmpText;
     public RectTransform content;
+    public static Action reDraw;
 
     [Header("Underline Settings")]
     [SerializeField] private Sprite underlineSprite;
@@ -20,17 +22,28 @@ public class Underline : MonoBehaviour
 
     private List<Image> underlineImages = new List<Image>();
 
+    void Awake()
+    {
+        reDraw += ClearUnderlines;
+        reDraw += SetFirstLine;
+    }
     void Start()
+    {
+        SetFirstLine();
+    }
+
+    public void SetFirstLine()
     {
         scrollRect.verticalNormalizedPosition = 0f;
         float firstLine = 0f;
-        // 8줄은 게임 시작 시 미리 고정으로 그림
+
+        // 미리 고정으로 그리는 줄(기본 6개)
         for (int i = 0; i < fixedLineCount; i++)
         {
             GameObject go = new GameObject("FixedUnderline", typeof(RectTransform), typeof(Image));
-            //go.transform.SetParent(tmpText.rectTransform, false);
             go.transform.SetParent(content, false);
 
+            // 줄 이미지 설정
             Image img = go.GetComponent<Image>();
             img.sprite = underlineSprite;
             img.type = Image.Type.Sliced;
@@ -47,15 +60,47 @@ public class Underline : MonoBehaviour
                 firstLine = offsetY;
                 rt.anchoredPosition = new Vector2(underLinePosX, -offsetY);
             }
-            else
+            else if (i == 1)
             {
-                offsetY = 52.3f;
+                offsetY = 42f;
+                rt.anchoredPosition = new Vector2(underLinePosX, -(i + 1) * offsetY); // 일정 간격으로 밑줄 배치
+            }
+            else if (i == 2)
+            {
+                offsetY = 44f;
+                rt.anchoredPosition = new Vector2(underLinePosX, -(i + 1) * offsetY); // 일정 간격으로 밑줄 배치
+            }
+            else if (i == 3)
+            {
+                offsetY = 44.5f;
+                rt.anchoredPosition = new Vector2(underLinePosX, -(i + 1) * offsetY); // 일정 간격으로 밑줄 배치
+            }
+            else if (i == 4)
+            {
+                offsetY = 45f;
+                rt.anchoredPosition = new Vector2(underLinePosX, -(i + 1) * offsetY); // 일정 간격으로 밑줄 배치
+            }
+            else if (i == 5)
+            {
+                offsetY = 45.5f;
                 rt.anchoredPosition = new Vector2(underLinePosX, -(i + 1) * offsetY); // 일정 간격으로 밑줄 배치
             }
             underlineImages.Add(img);
             underlineImages[i].enabled = true;
         }
     }
+
+    public void ClearUnderlines()
+    {
+        for (int i = 0; i < underlineImages.Count; i++)
+        {
+            if (underlineImages[i] != null)
+                Destroy(underlineImages[i].gameObject);
+        }
+
+        underlineImages.Clear();
+    }
+
 
     // 필요하다면 추가 줄을 동적으로 붙이는 로직
     void LateUpdate()
@@ -85,7 +130,6 @@ public class Underline : MonoBehaviour
             offsetY = tmpText.font.faceInfo.lineHeight * (tmpText.fontSize / tmpText.font.faceInfo.pointSize);
             float y = firstChar.baseLine - Mathf.Abs(offsetY) * 0.2f; // baseline 보정
 
-            Debug.Log(i + "번째" + firstChar.baseLine);
             RectTransform rt = underlineImages[i].rectTransform;
             rt.anchoredPosition = new Vector2(0, y);
             rt.sizeDelta = new Vector2(fullWidth, height);
