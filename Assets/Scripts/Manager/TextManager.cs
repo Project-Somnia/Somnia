@@ -72,6 +72,7 @@ public class TextManager : MonoBehaviour
     {
         storyText.text = "";
         storyEventName = eventNumber;
+        
         talkDatas = this.GetComponent<Dialogue>().GetObjectDialogue();
         TypingManager.Instance.Typing(talkDatas[0].showText, storyText);
         currentPage++;
