@@ -121,6 +121,6 @@ public class MainUI : MonoBehaviour
     }
     public void StartGame()
     {
-        if (IsCanStart) SceneManager.LoadScene("Game");
+        if (IsCanStart) SceneManager.LoadScene("GameKabocha");
     }
 }
