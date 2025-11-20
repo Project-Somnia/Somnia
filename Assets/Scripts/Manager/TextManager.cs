@@ -9,6 +9,8 @@ using TMPro;
 
 public class TextManager : MonoBehaviour
 {
+    public GameObject ChapterObject;
+    public GameObject RandomObject;
     public TextMeshProUGUI storyText;
     string[] dialogStrings;
     TalkData[] talkDatas;
@@ -21,6 +23,7 @@ public class TextManager : MonoBehaviour
     private int currentPage = 0; // 대화문 개수 변수
     public bool IsStory = false;
     public bool IsDialogSet = false;
+
 
     private static TextManager instance;
     public static TextManager Instance
@@ -54,13 +57,15 @@ public class TextManager : MonoBehaviour
             {
                 if (currentPage == talkDatas.Length && TypingManager.Instance.isDialogEnd)
                 {
-                    currentPage = talkDatas.Length;
-                    IsStory = false;
-                    StoryChoice.fadeChoice();
-                    currentPage = 0;
-                    //storyText.text = "";
-                    Debug.Log("대사 끝");
-                    return;
+            
+                        currentPage = talkDatas.Length;
+                        IsStory = false;
+                        StoryChoice.fadeChoice();
+                        currentPage = 0;
+                        //storyText.text = "";
+                        Debug.Log("대사 끝");
+                        return;
+                    
                 }
                 TypingManager.Instance.Typing(talkDatas[currentPage].showText, storyText);
                 currentPage++;
