@@ -8,4 +8,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Resources/Scenes/Title.unity
     guid: 047f5585519a64c4d94e19b55b431fd9
+  - enabled: 1
+    path: Assets/Resources/Scenes/GameKabocha.unity
+    guid: 763af390448535a4989705896423e31c
   m_configObjects: {}

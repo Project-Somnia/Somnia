@@ -53,7 +53,9 @@ public class MainUI : MonoBehaviour
             IsHalf = true;
             StartCoroutine(FadeIn(bg_3));
             StartCoroutine(FadeIn(newGameButton));
-            StartCoroutine(FadeIn(continueButton));
+
+            if(GameManager.Instance.IsCanContinue) StartCoroutine(FadeIn(continueButton));
+            
             t = newGameText.DOFade(1, fadeTime);
             t = continueText.DOFade(1, fadeTime);
         }
@@ -121,6 +123,16 @@ public class MainUI : MonoBehaviour
     }
     public void StartGame()
     {
-        if (IsCanStart) SceneManager.LoadScene("GameKabocha");
+        if (IsCanStart) 
+        {
+            GameManager.Instance.IsContinue = false;
+            SceneManager.LoadScene("GameKabocha");
+        }
+    }
+    public void ContinueGame()
+    {
+        SaveLoadManager.Instance.LoadGameData();
+        GameManager.Instance.IsContinue = true;
+        SceneManager.LoadScene("GameKabocha");
     }
 }

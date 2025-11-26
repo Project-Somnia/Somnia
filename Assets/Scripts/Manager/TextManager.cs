@@ -63,7 +63,6 @@ public class TextManager : MonoBehaviour
                         StoryChoice.fadeChoice();
                         currentPage = 0;
                         //storyText.text = "";
-                        Debug.Log("대사 끝");
                         return;
                     
                 }
@@ -93,6 +92,9 @@ public class TextManager : MonoBehaviour
         StoryChoice.setChoiceText();
         IsStory = true;
 
+        SaveLoadManager.Instance.eventNumber = eventNumber;
+        SaveLoadManager.Instance.SaveGameData();
+
         StartCoroutine("WaitAndSet");
     }
 
@@ -119,7 +121,6 @@ public class TextManager : MonoBehaviour
             yield return new WaitForSeconds(0.1f);
         }
         showTextDup = talkDatas[0].showText[0];
-        Debug.Log(showTextDup);
         CheckShowText(showTextDup);
     }
 
