@@ -40,6 +40,9 @@ public class Health : MonoBehaviour
     public int mental;
     public int coin;
 
+    [Header("GameOver")]
+    public GameOverUI gameOverUI;
+
     private void Awake()
     {
         healthP += HealthPlus;
@@ -72,10 +75,24 @@ public class Health : MonoBehaviour
             audioSource.PlayOneShot(minus);
         }
 
-        if (health == 0) hp_1.gameObject.SetActive(false);
         if (health == 1) hp_2.gameObject.SetActive(false);
         if (health == 2) hp_3.gameObject.SetActive(false);
-        else Debug.Log("체력이 없습니다!!");
+        if (health == 0)
+    {   
+        hp_1.gameObject.SetActive(false);
+
+        Debug.Log("체력이 0입니다.");
+
+            if (gameOverUI != null)
+            {
+                gameOverUI.ShowGameOver();
+            }
+            else
+            {
+                Debug.LogWarning("Health에 GameOverUI가 할당되어 있지 않습니다.");
+            }
+    }
+    
     }
     public void MentalPlus()
     {

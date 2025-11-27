@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,14 +19,19 @@ public class Reward : MonoBehaviour
 
         private RewardedAd _rewardedAd;
 
+        private Action _onUserEarnedReward;
+
     public void LoadRewardAd()
     {
         LoadAd();
     }
-    public void ShowRewardAd()
+
+    public void ShowRewardAd(Action onUserEarnedReward = null)
     {
         // ServerSideVerification(_rewardedAd);
+        _onUserEarnedReward = onUserEarnedReward;
         ShowAd(_rewardedAd);
+
     }
 
     public void Start()
@@ -37,6 +43,7 @@ public class Reward : MonoBehaviour
         });
 
         // Create our request used to load the ad.
+
     }
 
     void LoadAd()
@@ -81,6 +88,10 @@ public class Reward : MonoBehaviour
                 {
                     Debug.Log($"User earned reward: {reward.Amount} {reward.Type}");
                     // The ad was showen and the user earned a reward.
+
+                    // ★ 여기서 콜백 실행
+                    _onUserEarnedReward?.Invoke();
+                    _onUserEarnedReward = null;
                 }
 
                 );

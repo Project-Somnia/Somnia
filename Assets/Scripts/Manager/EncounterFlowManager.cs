@@ -2,25 +2,38 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class EncounterFlowManager : MonoBehaviour
-{
-    public static EncounterFlowManager Instance { get; private set; }
-
+{   
     [Range(0f, 1f)]
-    public float randomEncounterRate = 0.9f; // 0.3 = 30% 확률
+    public float randomEncounterRate = 0.1f; // 0.3 = 30% 확률
 
     // stage 번호 (1,2,3...) 별 랜덤 인카운터 리스트
     private List<string> randomEncounterCandidates = new List<string>();
 
     private bool isBuilt = false;
 
-    private void Awake()
+    private static EncounterFlowManager instance;
+    public static EncounterFlowManager Instance
     {
-        if (Instance != null && Instance != this)
+        get
+        {
+            if (instance == null)
+            {
+                Debug.LogError("No EncounterFlowManagerInstance");
+            }
+            return instance;
+        }
+    }
+
+    
+
+    void Awake()
+    {
+        if (instance != null && instance != this)
         {
             Destroy(gameObject);
             return;
         }
-        Instance = this;
+        instance = this;
 
         // DontDestroyOnLoad(gameObject);
     }
@@ -50,7 +63,8 @@ public class EncounterFlowManager : MonoBehaviour
         if (isCrossStage)
         {
             if (UnityEngine.Random.value < randomEncounterRate)
-            {
+            {   
+                Debug.Log($"{randomEncounterRate}");
                 string randomId = GetRandomEncounterGlobal();
                 if (!string.IsNullOrEmpty(randomId))
                 {
