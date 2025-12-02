@@ -135,6 +135,8 @@ public class Health : MonoBehaviour
             audioSource.PlayOneShot(plus);
 
             SaveLoadManager.Instance.health = health;
+            SaveLoadManager.Instance.mental = mental;
+            SaveLoadManager.Instance.coin = coin;
             SaveLoadManager.Instance.SaveGameData();
         }
         else Debug.Log("이미 풀피!");
@@ -147,6 +149,8 @@ public class Health : MonoBehaviour
             audioSource.PlayOneShot(minus);
 
             SaveLoadManager.Instance.health = health;
+            SaveLoadManager.Instance.mental = mental;
+            SaveLoadManager.Instance.coin = coin;
             SaveLoadManager.Instance.SaveGameData();
         }
         else Debug.Log("체력이 없습니다!!");
@@ -158,7 +162,9 @@ public class Health : MonoBehaviour
             mental += 1;
             audioSource.PlayOneShot(plus);
 
+            SaveLoadManager.Instance.health = health;
             SaveLoadManager.Instance.mental = mental;
+            SaveLoadManager.Instance.coin = coin;
             SaveLoadManager.Instance.SaveGameData();
         }
         Debug.Log("풀멘탈!");
@@ -170,7 +176,9 @@ public class Health : MonoBehaviour
             mental -= 1;
             audioSource.PlayOneShot(minus);
 
+            SaveLoadManager.Instance.health = health;
             SaveLoadManager.Instance.mental = mental;
+            SaveLoadManager.Instance.coin = coin;
             SaveLoadManager.Instance.SaveGameData();
         }
         else Debug.Log("멘탈 부족!");
@@ -182,6 +190,8 @@ public class Health : MonoBehaviour
             coin += 1;
             audioSource.PlayOneShot(plus);
 
+            SaveLoadManager.Instance.health = health;
+            SaveLoadManager.Instance.mental = mental;
             SaveLoadManager.Instance.coin = coin;
             SaveLoadManager.Instance.SaveGameData();
         }
@@ -194,6 +204,8 @@ public class Health : MonoBehaviour
             coin -= 1;
             audioSource.PlayOneShot(minus);
 
+            SaveLoadManager.Instance.health = health;
+            SaveLoadManager.Instance.mental = mental;
             SaveLoadManager.Instance.coin = coin;
             SaveLoadManager.Instance.SaveGameData();
         }

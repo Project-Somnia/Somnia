@@ -23,7 +23,7 @@ public class TextManager : MonoBehaviour
     private int currentPage = 0; // 대화문 개수 변수
     public bool IsStory = false;
     public bool IsDialogSet = false;
-
+    private bool IsPreventDup = false;
 
     private static TextManager instance;
     public static TextManager Instance
@@ -100,6 +100,12 @@ public class TextManager : MonoBehaviour
 
     public void CheckShowText(string text)
     {
+        // 불러오기 했는데 -나 +가 포함되어 있으면 리턴
+        if(GameManager.Instance.IsContinue && !IsPreventDup)
+        {
+            IsPreventDup = true;
+            return;
+        }
         if (text.Contains("-1"))
         {
             if (text.Contains("체력")) Health.healthM();
