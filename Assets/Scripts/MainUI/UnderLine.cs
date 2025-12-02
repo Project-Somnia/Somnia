@@ -16,7 +16,7 @@ public class Underline : MonoBehaviour
     [SerializeField] private float offsetY = -40f;   // 줄 간격 (밑줄 간격)
     [SerializeField] private float height = 5f;      // 밑줄 두께
     [SerializeField] private int fixedLineCount = 6; // 항상 깔아둘 줄 개수
-    private float fullWidth = 540;
+    private float fullWidth = 560;
     private float underLinePosX = 12.5f;
     private float prevHeight;
 
@@ -131,7 +131,7 @@ public class Underline : MonoBehaviour
             float y = firstChar.baseLine - Mathf.Abs(offsetY) * 0.2f; // baseline 보정
 
             RectTransform rt = underlineImages[i].rectTransform;
-            rt.anchoredPosition = new Vector2(0, y);
+            rt.anchoredPosition = new Vector2(underLinePosX, y);
             rt.sizeDelta = new Vector2(fullWidth, height);
 
             underlineImages[i].enabled = true;
@@ -141,12 +141,13 @@ public class Underline : MonoBehaviour
     private void CreateUnderline()
     {
         GameObject go = new GameObject("DynamicUnderline", typeof(RectTransform), typeof(Image));
+        //go.transform.SetParent(content, false);
         go.transform.SetParent(tmpText.rectTransform, false);
 
         Image img = go.GetComponent<Image>();
         img.sprite = underlineSprite;
         img.type = Image.Type.Sliced;
-        img.enabled = false;
+        //img.enabled = false;
         Color imgCol = img.color;
         imgCol.a = 0.7f;
         img.color = imgCol;

@@ -21,6 +21,8 @@ public class StoryChoice : MonoBehaviour
     public TextMeshProUGUI choiceText3;
 
     public GameObject underline;
+    public Sprite canSelectChoice;
+    public Sprite cantSelectChoice;
 
     public static Action fadeChoice;
     public static Action setChoiceText;
@@ -30,11 +32,13 @@ public class StoryChoice : MonoBehaviour
     {
         public string select;
         public string trigger;
+        public bool IsBlink;
 
-        public ChoiceStruct(string select, string trigger)
+        public ChoiceStruct(string select, string trigger, bool IsBlink)
         {
             this.select = select;
             this.trigger = trigger;
+            this.IsBlink = IsBlink;
         }
     }
     ChoiceStruct[] choiceStructs = new ChoiceStruct[3];
@@ -86,15 +90,34 @@ public class StoryChoice : MonoBehaviour
 
     public void SetChoiceText()
     {
-        RandomShuffle();
-        choiceStructs[0].select = TextManager.Instance.selectText[values[0]];
-        choiceStructs[0].trigger = TextManager.Instance.triggerEvent[values[0]];
+        choiceStructs[0].IsBlink = false;
+        choiceStructs[1].IsBlink = false;
+        choiceStructs[2].IsBlink = false;
 
-        choiceStructs[1].select = TextManager.Instance.selectText[values[1]];
-        choiceStructs[1].trigger = TextManager.Instance.triggerEvent[values[1]];
+        int chkGap = 2;
+        // 랜덤하게 섞기
+        for (int i = 0; i < 3; i++)
+        {
+            if (TextManager.Instance.selectText[i] == "")
+            {
+                choiceStructs[chkGap].select = TextManager.Instance.selectText[i];
+                choiceStructs[chkGap].trigger = TextManager.Instance.triggerEvent[i];
+                choiceStructs[chkGap].IsBlink = true;
+                chkGap -= 1;
+            }
+        }
+        for (int i = 0; i <= chkGap; i++)
+        {
+            choiceStructs[i].select = TextManager.Instance.selectText[i];
+            choiceStructs[i].trigger = TextManager.Instance.triggerEvent[i];
+        }
 
-        choiceStructs[2].select = TextManager.Instance.selectText[values[2]];
-        choiceStructs[2].trigger = TextManager.Instance.triggerEvent[values[2]];
+        if (choiceStructs[0].IsBlink) choice1.sprite = cantSelectChoice;
+        else choice1.sprite = canSelectChoice;
+        if (choiceStructs[1].IsBlink) choice2.sprite = cantSelectChoice;
+        else choice2.sprite = canSelectChoice;
+        if (choiceStructs[2].IsBlink) choice3.sprite = cantSelectChoice;
+        else choice3.sprite = canSelectChoice;
 
         choiceText1.text = choiceStructs[0].select;
         choiceText2.text = choiceStructs[1].select;
@@ -114,41 +137,29 @@ public class StoryChoice : MonoBehaviour
 
         Underline.reDraw();
     }
-
-    private void RandomShuffle()
-    {
-        // 랜덤하게 섞기
-        for (int i = 0; i < values.Count; i++)
-        {
-            int randomIndex = UnityEngine.Random.Range(0, values.Count);
-            int temp = values[i];
-            values[i] = values[randomIndex];
-            values[randomIndex] = temp;
-        }
-    }
     public void Choice1()
     {
-        if (IsCanSelect)
+        if (IsCanSelect && !choiceStructs[0].IsBlink)
         {
             IsCanSelect = false;
             CheckChoice(choiceText1.text);
             ChoiceOff();
-            TextManager.Instance.SetDialogue(choiceStructs[0].trigger);      
+            TextManager.Instance.SetDialogue(choiceStructs[0].trigger);
         }
     }
     public void Choice2()
     {
-        if (IsCanSelect)
+        if (IsCanSelect && !choiceStructs[1].IsBlink)
         {
             IsCanSelect = false;
             CheckChoice(choiceText2.text);
             ChoiceOff();
-            TextManager.Instance.SetDialogue(choiceStructs[1].trigger);  
+            TextManager.Instance.SetDialogue(choiceStructs[1].trigger);
         }
     }
     public void Choice3()
     {
-        if (IsCanSelect)
+        if (IsCanSelect && !choiceStructs[2].IsBlink)
         {
             IsCanSelect = false;
             CheckChoice(choiceText3.text);

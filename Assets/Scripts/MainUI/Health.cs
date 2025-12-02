@@ -49,6 +49,83 @@ public class Health : MonoBehaviour
         coinP += CoinPlus;
         coinM += CoinMinus;
     }
+    void Start()
+    {
+        if (GameManager.Instance.IsContinue)
+        {
+            health = SaveLoadManager.Instance.health;
+            mental = SaveLoadManager.Instance.mental;
+            coin = SaveLoadManager.Instance.coin;
+        }
+    }
+
+    void Update()
+    {
+        HealthUpdate();
+    }
+    // 체력,정신력,코인 값에 따라 UI 지속적으로 업데이트
+    void HealthUpdate()
+    {
+        // 체력 업데이트
+        if (health == 1)
+        {
+            hp_1.gameObject.SetActive(true);
+            hp_2.gameObject.SetActive(false);
+            hp_3.gameObject.SetActive(false);
+        }
+        else if (health == 2)
+        {
+            hp_1.gameObject.SetActive(true);
+            hp_2.gameObject.SetActive(true);
+            hp_3.gameObject.SetActive(false);
+        }
+        else if (health == 3)
+        {
+            hp_1.gameObject.SetActive(true);
+            hp_2.gameObject.SetActive(true);
+            hp_3.gameObject.SetActive(true);
+        }
+
+        // 정신력 업데이트
+        if (mental == 1)
+        {
+            mt_1.gameObject.SetActive(true);
+            mt_2.gameObject.SetActive(false);
+            mt_3.gameObject.SetActive(false);
+        }
+        else if (mental == 2)
+        {
+            mt_1.gameObject.SetActive(true);
+            mt_2.gameObject.SetActive(true);
+            mt_3.gameObject.SetActive(false);
+        }
+        else if (mental == 3)
+        {
+            mt_1.gameObject.SetActive(true);
+            mt_2.gameObject.SetActive(true);
+            mt_3.gameObject.SetActive(true);
+        }
+
+        // 코인 업데이트
+        if (coin == 1)
+        {
+            coin_1.gameObject.SetActive(true);
+            coin_2.gameObject.SetActive(false);
+            coin_3.gameObject.SetActive(false);
+        }
+        else if (coin == 2)
+        {
+            coin_1.gameObject.SetActive(true);
+            coin_2.gameObject.SetActive(true);
+            coin_3.gameObject.SetActive(false);
+        }
+        else if (coin == 3)
+        {
+            coin_1.gameObject.SetActive(true);
+            coin_2.gameObject.SetActive(true);
+            coin_3.gameObject.SetActive(true);
+        }
+    }
 
     public void HealthPlus()
     {
@@ -56,12 +133,10 @@ public class Health : MonoBehaviour
         {
             health += 1;
             audioSource.PlayOneShot(plus);
+
+            SaveLoadManager.Instance.health = health;
+            SaveLoadManager.Instance.SaveGameData();
         }
-
-        if (health == 1) hp_1.gameObject.SetActive(true);
-        if (health == 2) hp_2.gameObject.SetActive(true);
-        if (health == 3) hp_3.gameObject.SetActive(true);
-
         else Debug.Log("이미 풀피!");
     }
     public void HealthMinus()
@@ -70,11 +145,10 @@ public class Health : MonoBehaviour
         {
             health -= 1;
             audioSource.PlayOneShot(minus);
-        }
 
-        if (health == 0) hp_1.gameObject.SetActive(false);
-        if (health == 1) hp_2.gameObject.SetActive(false);
-        if (health == 2) hp_3.gameObject.SetActive(false);
+            SaveLoadManager.Instance.health = health;
+            SaveLoadManager.Instance.SaveGameData();
+        }
         else Debug.Log("체력이 없습니다!!");
     }
     public void MentalPlus()
@@ -83,11 +157,10 @@ public class Health : MonoBehaviour
         {
             mental += 1;
             audioSource.PlayOneShot(plus);
-        }
 
-        if (mental == 1) mt_1.gameObject.SetActive(true);
-        if (mental == 2) mt_2.gameObject.SetActive(true);
-        if (mental == 3) mt_3.gameObject.SetActive(true);
+            SaveLoadManager.Instance.mental = mental;
+            SaveLoadManager.Instance.SaveGameData();
+        }
         Debug.Log("풀멘탈!");
     }
     public void MentalMinus()
@@ -96,11 +169,10 @@ public class Health : MonoBehaviour
         {
             mental -= 1;
             audioSource.PlayOneShot(minus);
-        }
 
-        if (mental == 0) mt_1.gameObject.SetActive(false);
-        if (mental == 1) mt_2.gameObject.SetActive(false);
-        if (mental == 2) mt_3.gameObject.SetActive(false);
+            SaveLoadManager.Instance.mental = mental;
+            SaveLoadManager.Instance.SaveGameData();
+        }
         else Debug.Log("멘탈 부족!");
     }
     public void CoinPlus()
@@ -109,11 +181,10 @@ public class Health : MonoBehaviour
         {
             coin += 1;
             audioSource.PlayOneShot(plus);
-        }
 
-        if (coin == 1) coin_1.gameObject.SetActive(true);
-        if (coin == 2) coin_2.gameObject.SetActive(true);
-        if (coin == 3) coin_3.gameObject.SetActive(true);
+            SaveLoadManager.Instance.coin = coin;
+            SaveLoadManager.Instance.SaveGameData();
+        }
         else Debug.Log("이미 풀코인!");
     }
     public void CoinMinus()
@@ -122,11 +193,10 @@ public class Health : MonoBehaviour
         {
             coin -= 1;
             audioSource.PlayOneShot(minus);
-        }
 
-        if (coin == 0) coin_1.gameObject.SetActive(false);
-        if (coin == 1) coin_2.gameObject.SetActive(false);
-        if (coin == 2) coin_3.gameObject.SetActive(false);
+            SaveLoadManager.Instance.coin = coin;
+            SaveLoadManager.Instance.SaveGameData();
+        }
         else Debug.Log("코인 부족!");
     }
 }

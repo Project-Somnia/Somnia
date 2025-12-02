@@ -259,8 +259,8 @@ PlayerSettings:
   clonedFromGUID: c19f32bac17ee4170b3bf8a6a0333fb9
   templatePackageId: com.unity.template.universal-2d@2.1.2
   templateDefaultScene: Assets/Scenes/SampleScene.unity
-  useCustomMainManifest: 0
-  useCustomLauncherManifest: 1
+  useCustomMainManifest: 1
+  useCustomLauncherManifest: 0
   useCustomMainGradleTemplate: 1
   useCustomLauncherGradleManifest: 1
   useCustomBaseGradleTemplate: 0
@@ -271,8 +271,8 @@ PlayerSettings:
   AndroidTargetDevices: 0
   AndroidSplashScreenScale: 0
   androidSplashScreen: {fileID: 0}
-  AndroidKeystoreName: C:/Users/Administrator/user.keystore
-  AndroidKeyaliasName: somnia key
+  AndroidKeystoreName: '{inproject}: user.keystore'
+  AndroidKeyaliasName: hobak
   AndroidEnableArmv9SecurityFeatures: 0
   AndroidBuildApkPerCpuArchitecture: 0
   AndroidTVCompatibility: 0
@@ -895,11 +895,11 @@ PlayerSettings:
   apiCompatibilityLevel: 6
   activeInputHandler: 0
   windowsGamepadBackendHint: 0
-  cloudProjectId: 60f68b21-6dd0-4798-8b7c-906c6d14a84c
+  cloudProjectId: 47a9b2b3-9a78-494d-b1fd-5af8c3c791d7
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: ProjectLamb_Somnia
-  organizationId: ivorycoffee
+  projectName: Somnia
+  organizationId: hobak
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}
