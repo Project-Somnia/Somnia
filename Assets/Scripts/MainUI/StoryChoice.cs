@@ -21,6 +21,8 @@ public class StoryChoice : MonoBehaviour
     public TextMeshProUGUI choiceText3;
 
     public GameObject underline;
+    public Sprite canSelectChoice;
+    public Sprite cantSelectChoice;
 
     public static Action fadeChoice;
     public static Action setChoiceText;
@@ -110,12 +112,12 @@ public class StoryChoice : MonoBehaviour
             choiceStructs[i].trigger = TextManager.Instance.triggerEvent[i];
         }
 
-        if (choiceStructs[0].IsBlink) choice1.color = new Color32(100, 100, 100, 255);
-        else choice1.color = new Color32(255, 255, 255, 255);
-        if (choiceStructs[1].IsBlink) choice2.color = new Color32(100, 100, 100, 255);
-        else choice2.color = new Color32(255, 255, 255, 255);
-        if (choiceStructs[2].IsBlink) choice3.color = new Color32(100, 100, 100, 255);
-        else choice3.color = new Color32(255, 255, 255, 255);
+        if (choiceStructs[0].IsBlink) choice1.sprite = cantSelectChoice;
+        else choice1.sprite = canSelectChoice;
+        if (choiceStructs[1].IsBlink) choice2.sprite = cantSelectChoice;
+        else choice2.sprite = canSelectChoice;
+        if (choiceStructs[2].IsBlink) choice3.sprite = cantSelectChoice;
+        else choice3.sprite = canSelectChoice;
 
         choiceText1.text = choiceStructs[0].select;
         choiceText2.text = choiceStructs[1].select;
