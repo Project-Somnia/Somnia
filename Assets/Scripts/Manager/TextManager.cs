@@ -24,6 +24,7 @@ public class TextManager : MonoBehaviour
     public bool IsStory = false;
     public bool IsDialogSet = false;
     private bool IsPreventDup = false;
+    private bool IsPreventFadeDup = false;
 
     private int currentPage = 0; // 대화문 개수 변수
     private float fadeTime = 2f;
@@ -60,10 +61,10 @@ public class TextManager : MonoBehaviour
         instance = this;
     }
 
-    // void Start()
-    // {
-    //     FadePaint(paint,newPaint);
-    // }
+    void Start()
+    {
+        paint.DOFade(1f,fadeTime);
+    }
 
     private void Update()
     {
@@ -155,8 +156,9 @@ public class TextManager : MonoBehaviour
             paintIdx = Array.FindIndex(paintSprites, x => currentPaint.Contains(x.name));
             Debug.Log(paintNum);
             Debug.Log(paintName);
-            FadePaint(paint, newPaint);
+            if(IsPreventFadeDup) FadePaint(paint, newPaint);
         }
+        IsPreventFadeDup = true;
     }
 
     void FadePaint(Image curPaint, Image nextPaint)
@@ -166,7 +168,7 @@ public class TextManager : MonoBehaviour
         // 짝수
         if (fadeCnt % 2 == 0)
         {
-            newPaint.sprite = paintSprites[paintIdx];
+            nextPaint.sprite = paintSprites[paintIdx];
 
             Color curCol = curPaint.color;
             curCol.a = 1f;
@@ -176,16 +178,12 @@ public class TextManager : MonoBehaviour
             nextCol.a = 0f;
             nextPaint.color = nextCol;
 
-            paint.sprite = newPaint.sprite;
-
             curPaint.DOFade(0f, fadeTime);
             nextPaint.DOFade(1f, fadeTime);
-
-            paint.gameObject.SetActive(false);
         }
         else
         {
-            paint.sprite = paintSprites[paintIdx];
+            curPaint.sprite = paintSprites[paintIdx];
 
             Color curCol = curPaint.color;
             curCol.a = 0f;
@@ -195,12 +193,8 @@ public class TextManager : MonoBehaviour
             nextCol.a = 1f;
             nextPaint.color = nextCol;
 
-            newPaint.sprite = paint.sprite;
-
             curPaint.DOFade(1f, fadeTime);
             nextPaint.DOFade(0f, fadeTime);
-
-            newPaint.gameObject.SetActive(false);
         }
         fadeCnt++;
     }
