@@ -21,11 +21,14 @@ public class TextManager : MonoBehaviour
     public string[] triggerEvent = new string[3];
     public string showTextDup;
 
+    private int currentPage = 0; // 대화문 개수 변수
+    public string pendingMainEventId;
     public bool IsStory = false;
     public bool IsDialogSet = false;
     private bool IsPreventDup = false;
     private bool IsPreventFadeDup = false;
 
+    
     private int currentPage = 0; // 대화문 개수 변수
     private float fadeTime = 2f;
 
@@ -89,7 +92,7 @@ public class TextManager : MonoBehaviour
             }
         }
     }
-
+    
     public void SetDialogue(string eventNumber)
     {
         storyText.text = "";
@@ -122,6 +125,39 @@ public class TextManager : MonoBehaviour
         CheckShowText(showTextDup);
 
         //StartCoroutine("WaitAndSet");
+    }
+
+    public void SetDialogueFromChoice(string triggerEventId)
+    {
+        if (triggerEventId == "RETURN_MAIN")
+    {
+        if (!string.IsNullOrEmpty(pendingMainEventId))
+        {
+            string mainId = pendingMainEventId;
+
+            // 한 번 쓰면 비워준다 (다음 랜덤에 영향 없게)
+            pendingMainEventId = null;
+
+            SetDialogue(mainId);
+            return;
+        }
+        else
+        {
+            Debug.LogError("RETURN_MAIN인데 pendingMainEventId가 비어 있음");
+            return;
+        }
+    }
+
+        string finalId = triggerEventId;
+
+        // EncounterFlowManager가 존재하면 랜덤 인카운터 로직 적용
+        if (EncounterFlowManager.Instance != null)
+        {
+            // storyEventName = 현재 진행 중인 메인/랜덤 이벤트
+            finalId = EncounterFlowManager.Instance.DecideNextEvent(storyEventName, triggerEventId);
+        }
+
+        SetDialogue(finalId);
     }
 
     public void CheckShowText(string text)
