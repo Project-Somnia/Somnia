@@ -50,35 +50,43 @@ public static class SaveSystem
     // ================================
     private static byte[] GetOrCreateUserKey()
     {
-        if (PlayerPrefs.HasKey(KEY_PREF))
+        for (int i = 0; i < 2; i++)
         {
-            string wrappedKey = PlayerPrefs.GetString(KEY_PREF);
-            byte[] key = UnwrapKey(wrappedKey);
-
-            if (key == null)
+            if (PlayerPrefs.HasKey(KEY_PREF))
             {
+                string wrappedKey = PlayerPrefs.GetString(KEY_PREF);
+                byte[] key = UnwrapKey(wrappedKey);
+
+                if (key != null)
+                {
+                    return key; // 성공
+                }
+
                 Debug.LogError("키 복호화 실패 - 새 키를 생성합니다");
                 PlayerPrefs.DeleteKey(KEY_PREF);
-                return GetOrCreateUserKey(); // 재귀 호출로 새 키 생성
+                PlayerPrefs.Save();
+                // 재귀 대신 반복문으로 재시도 (i가 1이면 다음 루프에서 새 키 생성)
+                continue;
             }
 
-            return key;
+            // 새 키 생성
+            byte[] newKey = new byte[KEY_SIZE];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(newKey);
+            }
+
+            // 암호화해서 저장
+            PlayerPrefs.SetString(KEY_PREF, WrapKey(newKey));
+            PlayerPrefs.Save();
+
+            Debug.Log("<color=yellow>새 AES 사용자 키 생성 완료!</color>");
+
+            return newKey;
         }
-
-        // 새 키 생성
-        byte[] newKey = new byte[KEY_SIZE];
-        using (var rng = RandomNumberGenerator.Create())
-        {
-            rng.GetBytes(newKey);
-        }
-
-        // 암호화해서 저장
-        PlayerPrefs.SetString(KEY_PREF, WrapKey(newKey));
-        PlayerPrefs.Save();
-
-        Debug.Log("<color=yellow>새 AES 사용자 키 생성 완료!</color>");
-
-        return newKey;
+        // 두 번 시도 후에도 실패하면 null 반환
+        Debug.LogError("키 생성 및 복구 실패");
+        return null;
     }
 
     // ================================
@@ -315,7 +323,7 @@ public static class SaveSystem
         {
             aes.Key = key;
 
-            byte[] iv = new byte[aes.BlockSize / 8];
+            byte[] iv = new byte[IV_SIZE];
             byte[] cipherBytes = new byte[data.Length - iv.Length];
 
             Buffer.BlockCopy(data, 0, iv, 0, iv.Length);
@@ -411,13 +419,13 @@ public class SaveLoadManager : MonoBehaviour
             Destroy(gameObject);
         }
         // 저장데이터 만들기
-        loadData = SaveSystem.Load();
-        if (loadData == null) SaveGameData();
+        // loadData = SaveSystem.Load();
+        // if (loadData == null) SaveGameData();
     }
-    void Start()
-    {
-        LoadGameData();
-    }
+    // void Start()
+    // {
+    //     LoadGameData();
+    // }
 
     public void LoadGameData()
     {
@@ -447,8 +455,8 @@ public class SaveLoadManager : MonoBehaviour
     {
         health = 3;
         mental = 3;
-        coin = 3;
-        eventNumber = "1_1";
+        coin = 1;
+        eventNumber = "1_0";
 
         saveData = new SaveData(health, mental, coin, eventNumber, paintName);
         SaveSystem.Save(saveData);
