@@ -70,7 +70,7 @@ public static class SaveSystem
         #endif
         if (!File.Exists(saveFilePath))
         {
-            Debug.LogError("No such saveFile exists");
+            //Debug.LogError("No such saveFile exists");
             return null;
         }
 
@@ -96,7 +96,7 @@ public class SaveLoadManager : MonoBehaviour
 
     public int health = 3;
     public int mental = 3;
-    public int coin = 3;
+    public int coin = 1;
     public string eventNumber;
 
     SaveData saveData;
@@ -113,6 +113,9 @@ public class SaveLoadManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        // 저장데이터 만들기
+        loadData = SaveSystem.Load();
+        if(loadData == null) SaveGameData();
     }
     void Start()
     {

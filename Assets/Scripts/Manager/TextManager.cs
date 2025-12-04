@@ -184,14 +184,13 @@ public class TextManager : MonoBehaviour
     private void SetPaint(string paintName)
     {
         paintName = paintName.Replace(".png", "");
+        if(paintName == "Empty") return;
         paintNum = paintName.Split("_")[0];
         
         if (currentPaint == "" || currentPaint != paintName)
         {
             currentPaint = paintName;
             paintIdx = Array.FindIndex(paintSprites, x => currentPaint.Contains(x.name));
-            Debug.Log(paintNum);
-            Debug.Log(paintName);
             if(IsPreventFadeDup) FadePaint(paint, newPaint);
         }
         IsPreventFadeDup = true;
