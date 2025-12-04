@@ -7,18 +7,20 @@ using UnityEngine;
 [System.Serializable]
 public class SaveData
 {
-    public SaveData(int health, int mental, int coin, string eventNumber)
+    public SaveData(int health, int mental, int coin, string eventNumber, string paintName)
     {
         _health = health;
         _mental = mental;
         _coin = coin;
         _eventNumber = eventNumber;
+        _paintName = paintName;
     }
 
     public int _health;
     public int _mental;
     public int _coin;
     public string _eventNumber;
+    public string _paintName;
 }
 
 public static class SaveSystem
@@ -98,6 +100,7 @@ public class SaveLoadManager : MonoBehaviour
     public int mental = 3;
     public int coin = 1;
     public string eventNumber;
+    public string paintName;
 
     SaveData saveData;
     SaveData loadData;
@@ -138,10 +141,11 @@ public class SaveLoadManager : MonoBehaviour
         mental = loadData._mental;
         coin = loadData._coin;
         eventNumber = loadData._eventNumber;
+        paintName = loadData._paintName;
     }
     public void SaveGameData()
     {
-        saveData = new SaveData(health, mental, coin, eventNumber);
+        saveData = new SaveData(health, mental, coin, eventNumber, paintName);
         SaveSystem.Save(saveData);
     }
 
@@ -152,7 +156,7 @@ public class SaveLoadManager : MonoBehaviour
         coin = 3;
         eventNumber = "1_1";
         
-        saveData = new SaveData(health, mental, coin, eventNumber);
+        saveData = new SaveData(health, mental, coin, eventNumber, paintName);
         SaveSystem.Save(saveData);
     }
 }
