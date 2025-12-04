@@ -5,6 +5,8 @@
 # This .gitignore file should be placed at the root of your Unity project directory
 #
 # Get latest from https://github.com/github/gitignore/blob/main/Unity.gitignore
+/GoogleMobileAds/
+/ExternalDependencyManager/
 /FMOD/
 /Fmod/
 /FmodProject/
@@ -80,6 +82,8 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 # Ignore Plugins
+Assets/ExternalDependencyManager/*
+Assets/GoogleMobileAds/*
 Assets/Plugins/*
 Assets/Packages/*
 Assets/Resources/*

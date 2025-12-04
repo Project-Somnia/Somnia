@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    private static GameManager instance;
+    private static GameManager instance = null;
     public static GameManager Instance
     {
         get
@@ -19,13 +19,16 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        if (instance != null && instance != this)
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(this.gameObject);
+        }
+        else
         {
             Destroy(gameObject);
-            return;
         }
-        instance = this;
     }
-
-    public bool IsSelectEvent1 = false;
+    public bool IsCanContinue = false;
+    public bool IsContinue = false;
 }
