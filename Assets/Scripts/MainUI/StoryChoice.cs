@@ -95,9 +95,12 @@ public class StoryChoice : MonoBehaviour
         choiceStructs[2].IsBlink = false;
 
         int chkGap = 2;
+        int notGap = 0;
         // 랜덤하게 섞기
         for (int i = 0; i < 3; i++)
         {
+            Debug.Log(i + "현재텍스트" + TextManager.Instance.selectText[i]);
+            Debug.Log(i + "옮긴텍스트" + choiceStructs[chkGap].select);
             if (TextManager.Instance.selectText[i] == "")
             {
                 choiceStructs[chkGap].select = TextManager.Instance.selectText[i];
@@ -105,12 +108,18 @@ public class StoryChoice : MonoBehaviour
                 choiceStructs[chkGap].IsBlink = true;
                 chkGap -= 1;
             }
+            else
+            {
+                choiceStructs[notGap].select = TextManager.Instance.selectText[i];
+                choiceStructs[notGap].trigger = TextManager.Instance.triggerEvent[i];
+                notGap++;
+            }
         }
-        for (int i = 0; i <= chkGap; i++)
-        {
-            choiceStructs[i].select = TextManager.Instance.selectText[i];
-            choiceStructs[i].trigger = TextManager.Instance.triggerEvent[i];
-        }
+        // for (int i = 0; i <= chkGap; i++)
+        // {
+        //     choiceStructs[i].select = TextManager.Instance.selectText[i];
+        //     choiceStructs[i].trigger = TextManager.Instance.triggerEvent[i];
+        // }
 
         if (choiceStructs[0].IsBlink) choice1.sprite = cantSelectChoice;
         else choice1.sprite = canSelectChoice;
