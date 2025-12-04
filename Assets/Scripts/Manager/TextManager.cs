@@ -26,12 +26,15 @@ public class TextManager : MonoBehaviour
     public bool IsDialogSet = false;
     private bool IsPreventDup = false;
     private bool IsPreventFadeDup = false;
+    private bool IsPaintEmpty = false;
+
     private float fadeTime = 2f;
 
     [Header("Paint Sets")]
     public Image paint;
     public Image newPaint;
     public Sprite[] paintSprites = new Sprite[9];
+    public Sprite empty;
     private string currentPaint = "";
     private string paintNum = "";
     private int paintIdx = 0;
@@ -180,9 +183,10 @@ public class TextManager : MonoBehaviour
     private void SetPaint(string paintName)
     {
         paintName = paintName.Replace(".png", "");
-        if(paintName == "Empty") return;
         paintNum = paintName.Split("_")[0];
-        
+
+        if(paintName == "Empty") IsPaintEmpty = true;
+
         if (currentPaint == "" || currentPaint != paintName)
         {
             currentPaint = paintName;
@@ -199,7 +203,12 @@ public class TextManager : MonoBehaviour
         // 짝수
         if (fadeCnt % 2 == 0)
         {
-            nextPaint.sprite = paintSprites[paintIdx];
+            if(IsPaintEmpty)
+            {
+                IsPaintEmpty = false;
+                nextPaint.sprite = empty;
+            }
+            else nextPaint.sprite = paintSprites[paintIdx];
 
             Color curCol = curPaint.color;
             curCol.a = 1f;
@@ -214,7 +223,12 @@ public class TextManager : MonoBehaviour
         }
         else
         {
-            curPaint.sprite = paintSprites[paintIdx];
+            if(IsPaintEmpty)
+            {
+                IsPaintEmpty = false;
+                curPaint.sprite = empty;
+            }
+            else curPaint.sprite = paintSprites[paintIdx];
 
             Color curCol = curPaint.color;
             curCol.a = 0f;
