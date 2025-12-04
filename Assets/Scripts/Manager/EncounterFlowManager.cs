@@ -4,7 +4,7 @@ using UnityEngine;
 public class EncounterFlowManager : MonoBehaviour
 {   
     [Range(0f, 1f)]
-    public float randomEncounterRate = 0.1f; // 0.3 = 30% 확률
+    public float randomEncounterRate = 0.9f; // 0.3 = 30% 확률
 
     // stage 번호 (1,2,3...) 별 랜덤 인카운터 리스트
     private List<string> randomEncounterCandidates = new List<string>();
