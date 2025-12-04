@@ -99,8 +99,6 @@ public class StoryChoice : MonoBehaviour
         // 랜덤하게 섞기
         for (int i = 0; i < 3; i++)
         {
-            Debug.Log(i + "현재텍스트" + TextManager.Instance.selectText[i]);
-            Debug.Log(i + "옮긴텍스트" + choiceStructs[chkGap].select);
             if (TextManager.Instance.selectText[i] == "")
             {
                 choiceStructs[chkGap].select = TextManager.Instance.selectText[i];
