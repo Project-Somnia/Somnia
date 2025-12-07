@@ -68,7 +68,7 @@ public class TextManager : MonoBehaviour
 
     void Start()
     {
-        paint.DOFade(1f,fadeTime);
+        StartCoroutine("WaitAndSet");
     }
 
     private void Update()
@@ -188,13 +188,15 @@ public class TextManager : MonoBehaviour
         paintName = paintName.Replace(".png", "");
         paintNum = paintName.Split("_")[0];
 
-        if(paintName == "Empty") IsPaintEmpty = true;
+        if (paintName == "Empty") IsPaintEmpty = true;
 
         if (currentPaint == "" || currentPaint != paintName)
         {
             currentPaint = paintName;
+            SaveLoadManager.Instance.paintName = paintName;
+            SaveLoadManager.Instance.SaveGameData();
             paintIdx = Array.FindIndex(paintSprites, x => currentPaint.Contains(x.name));
-            if(IsPreventFadeDup) FadePaint(paint, newPaint);
+            if (IsPreventFadeDup) FadePaint(paint, newPaint);
         }
         IsPreventFadeDup = true;
     }
@@ -206,7 +208,7 @@ public class TextManager : MonoBehaviour
         // 짝수
         if (fadeCnt % 2 == 0)
         {
-            if(IsPaintEmpty)
+            if (IsPaintEmpty)
             {
                 IsPaintEmpty = false;
                 nextPaint.sprite = empty;
@@ -226,7 +228,7 @@ public class TextManager : MonoBehaviour
         }
         else
         {
-            if(IsPaintEmpty)
+            if (IsPaintEmpty)
             {
                 IsPaintEmpty = false;
                 curPaint.sprite = empty;
@@ -247,14 +249,23 @@ public class TextManager : MonoBehaviour
         fadeCnt++;
     }
 
-    // IEnumerator WaitAndSet()
-    // {
-    //     while (!IsDialogSet)
-    //     {
-    //         yield return new WaitForSeconds(0.1f);
-    //     }
-    //     showTextDup = talkDatas[0].showText[0];
-    //     CheckShowText(showTextDup);
-    // }
+    IEnumerator WaitAndSet()
+    {
+        while (!IsDialogSet)
+        {
+            yield return new WaitForSeconds(0.1f);
+        }
+        if (GameManager.Instance.IsContinue)
+        {
+            currentPaint = SaveLoadManager.Instance.paintName;
+            if (currentPaint == "empty") paint.sprite = empty;
+            else
+            {
+                paintIdx = Array.FindIndex(paintSprites, x => currentPaint.Contains(x.name));
+                paint.sprite = paintSprites[paintIdx];
+            }
+        }
+        paint.DOFade(1f, fadeTime);
+    }
 
 }
