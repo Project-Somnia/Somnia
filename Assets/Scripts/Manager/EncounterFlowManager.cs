@@ -88,7 +88,7 @@ public class EncounterFlowManager : MonoBehaviour
         randomEncounterCandidates.Clear();
 
         // DialogueParse.DialogueDictionary: CSV 파싱이 끝나면 eventName -> TalkData[] 저장됨
-        foreach (var kvp in DialogueParse.DialogueDictionary)
+        foreach (var kvp in DialogueParse.Instance.DialogueDictionary)
         {
             string eventId = kvp.Key; // "1_0", "2_0", "R_1_0" 등
             

@@ -150,15 +150,8 @@ public class Health : MonoBehaviour
         {
             health -= 1;
             audioSource.PlayOneShot(minus);
-
-            SaveLoadManager.Instance.health = health;
-            SaveLoadManager.Instance.mental = mental;
-            SaveLoadManager.Instance.coin = coin;
-            SaveLoadManager.Instance.SaveGameData();
         }
 
-        if (health == 1) hp_2.gameObject.SetActive(false);
-        if (health == 2) hp_3.gameObject.SetActive(false);
         if (health == 0)
     {   
         hp_1.gameObject.SetActive(false);
@@ -167,14 +160,17 @@ public class Health : MonoBehaviour
 
             if (gameOverUI != null)
             {
-                gameOverUI.ShowGameOver();
+                gameOverUI.ShowHpGameOver();
             }
             else
             {
                 Debug.LogWarning("Health에 GameOverUI가 할당되어 있지 않습니다.");
             }
     }
-    
+            SaveLoadManager.Instance.health = health;
+            SaveLoadManager.Instance.mental = mental;
+            SaveLoadManager.Instance.coin = coin;
+            SaveLoadManager.Instance.SaveGameData();
     }
     public void MentalPlus()
     {
@@ -196,14 +192,28 @@ public class Health : MonoBehaviour
         {
             mental -= 1;
             audioSource.PlayOneShot(minus);
+        }
+        if (mental == 0)
+    {   
+        hp_1.gameObject.SetActive(false);
 
+        Debug.Log("체력이 0입니다.");
+
+            if (gameOverUI != null)
+            {
+                gameOverUI.ShowMentalGameOver();
+            }
+            else
+            {
+                Debug.LogWarning("Mental에 GameOverUI가 할당되어 있지 않습니다.");
+            }
+    }
             SaveLoadManager.Instance.health = health;
             SaveLoadManager.Instance.mental = mental;
             SaveLoadManager.Instance.coin = coin;
             SaveLoadManager.Instance.SaveGameData();
-        }
-        else Debug.Log("멘탈 부족!");
     }
+
     public void CoinPlus()
     {
         if (coin < 3)
