@@ -11,7 +11,6 @@ using TMPro;
 public class TextManager : MonoBehaviour
 {
     public GameObject ChapterObject;
-    public GameObject RandomObject;
     public TextMeshProUGUI storyText;
     string[] dialogStrings;
     TalkData[] talkDatas;
@@ -77,14 +76,12 @@ public class TextManager : MonoBehaviour
             {
                 if (currentPage == talkDatas.Length && TypingManager.Instance.isDialogEnd)
                 {
-
                     currentPage = talkDatas.Length;
                     IsStory = false;
                     StoryChoice.fadeChoice();
                     currentPage = 0;
                     //storyText.text = "";
                     return;
-
                 }
                 TypingManager.Instance.Typing(talkDatas[currentPage].showText, storyText);
                 currentPage++;
