@@ -19,6 +19,8 @@
 /[Bb]uilds/
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
+/UserData/
+/userData/
 
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
@@ -95,7 +97,8 @@ Assets/Feel/*
 Assets/Pixel\ Crushers/*
 Assets/Editor\ Default\ Resources/*
 Assets/Gizmos/*
-Assets/UserData.json
+/Assets/UserData.json/*
+/Assets/UserData.json.bak/*
 
 # Ignore Vscode
 .vscode/
