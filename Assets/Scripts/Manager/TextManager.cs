@@ -11,7 +11,6 @@ using TMPro;
 public class TextManager : MonoBehaviour
 {
     public GameObject ChapterObject;
-    public GameObject RandomObject;
     public TextMeshProUGUI storyText;
     string[] dialogStrings;
     TalkData[] talkDatas;
@@ -29,8 +28,6 @@ public class TextManager : MonoBehaviour
     private bool IsPreventFadeDup = false;
     private bool IsPaintEmpty = false;
 
-    
-    private int currentPage = 0; // 대화문 개수 변수
     private float fadeTime = 2f;
 
     [Header("Paint Sets")]

@@ -4,7 +4,7 @@ using UnityEngine;
 public class EncounterFlowManager : MonoBehaviour
 {   
     [Range(0f, 1f)]
-    public float randomEncounterRate = 0.1f; // 0.3 = 30% 확률
+    public float randomEncounterRate = 0.9f; // 0.3 = 30% 확률
 
     // stage 번호 (1,2,3...) 별 랜덤 인카운터 리스트
     private List<string> randomEncounterCandidates = new List<string>();
@@ -88,7 +88,7 @@ public class EncounterFlowManager : MonoBehaviour
         randomEncounterCandidates.Clear();
 
         // DialogueParse.DialogueDictionary: CSV 파싱이 끝나면 eventName -> TalkData[] 저장됨
-        foreach (var kvp in DialogueParse.DialogueDictionary)
+        foreach (var kvp in DialogueParse.Instance.DialogueDictionary)
         {
             string eventId = kvp.Key; // "1_0", "2_0", "R_1_0" 등
             

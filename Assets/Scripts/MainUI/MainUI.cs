@@ -130,13 +130,13 @@ public class MainUI : MonoBehaviour
         if (IsCanStart) 
         {
             GameManager.Instance.IsContinue = false;
-            SceneManager.LoadScene("GameKabocha");
+            SceneManager.LoadScene("GameKabocha2");
         }
     }
     public void ContinueGame()
     {
         SaveLoadManager.Instance.LoadGameData();
         GameManager.Instance.IsContinue = true;
-        SceneManager.LoadScene("GameKabocha");
+        SceneManager.LoadScene("GameKabocha2");
     }
 }
