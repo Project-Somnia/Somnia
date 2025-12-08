@@ -69,7 +69,8 @@ public class TextManager : MonoBehaviour
 
     private void Update()
     {
-        if ((Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) && IsStory)
+        //if ((Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) && IsStory)
+        if (IsStory)
         {
             TypingManager.Instance.GetInputDown();
             if (TypingManager.Instance.isTypingEnd)
