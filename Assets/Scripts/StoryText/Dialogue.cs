@@ -34,6 +34,6 @@ public class Dialogue : MonoBehaviour
 
     public TalkData[] GetObjectDialogue()
     {
-        return DialogueParse.GetDialogue(TextManager.Instance.storyEventName);
+        return DialogueParse.Instance.GetDialogue(TextManager.Instance.storyEventName);
     }
 }

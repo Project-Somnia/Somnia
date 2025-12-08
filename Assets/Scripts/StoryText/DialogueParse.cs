@@ -6,16 +6,37 @@ using UnityEngine.Networking;
 
 public class DialogueParse : MonoBehaviour
 {
-    public static Dictionary<string, TalkData[]> DialogueDictionary = new Dictionary<string, TalkData[]>();
+    public Dictionary<string, TalkData[]> DialogueDictionary = new Dictionary<string, TalkData[]>();
     [SerializeField] List<ShowTalkData> ShowTalkDataList = new List<ShowTalkData>();
 
     private string googleCsvUrl = "https://docs.google.com/spreadsheets/d/1XMHN-jTMhUGnjLoJdVjCC6levhM5KZKXHJGdw5wKP08/export?format=csv";
-    public static TalkData[] GetDialogue(string eventName)
+    public TalkData[] GetDialogue(string eventName)
     {
         return DialogueDictionary[eventName];
     }
+
+    private static DialogueParse instance;
+    public static DialogueParse Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                Debug.LogError("No TextManagerInstance");
+            }
+            return instance;
+        }
+    }
+    
     private void Awake()
     {
+        if (instance != null && instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        instance = this;
+
         StartCoroutine(DownloadAndParseCSV());
     }
 

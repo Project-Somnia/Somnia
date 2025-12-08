@@ -33,6 +33,10 @@ public class MainUI : MonoBehaviour
     public float moveAmount = 10f; // 위아래로 이동할 거리
     public float duration = 0.5f;  // 한 번 이동하는 데 걸리는 시간
 
+    void Start()
+    {
+        SaveLoadManager.Instance.LoadGameData();
+    }
     void Update()
     {
         if (Input.GetMouseButtonDown(0) && !IsFade)
@@ -126,13 +130,13 @@ public class MainUI : MonoBehaviour
         if (IsCanStart) 
         {
             GameManager.Instance.IsContinue = false;
-            SceneManager.LoadScene("GameKabocha");
+            SceneManager.LoadScene("GameKabocha2");
         }
     }
     public void ContinueGame()
     {
         SaveLoadManager.Instance.LoadGameData();
         GameManager.Instance.IsContinue = true;
-        SceneManager.LoadScene("GameKabocha");
+        SceneManager.LoadScene("GameKabocha2");
     }
 }

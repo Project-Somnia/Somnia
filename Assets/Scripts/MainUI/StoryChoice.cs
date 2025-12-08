@@ -95,6 +95,7 @@ public class StoryChoice : MonoBehaviour
         choiceStructs[2].IsBlink = false;
 
         int chkGap = 2;
+        int notGap = 0;
         // 랜덤하게 섞기
         for (int i = 0; i < 3; i++)
         {
@@ -105,12 +106,18 @@ public class StoryChoice : MonoBehaviour
                 choiceStructs[chkGap].IsBlink = true;
                 chkGap -= 1;
             }
+            else
+            {
+                choiceStructs[notGap].select = TextManager.Instance.selectText[i];
+                choiceStructs[notGap].trigger = TextManager.Instance.triggerEvent[i];
+                notGap++;
+            }
         }
-        for (int i = 0; i <= chkGap; i++)
-        {
-            choiceStructs[i].select = TextManager.Instance.selectText[i];
-            choiceStructs[i].trigger = TextManager.Instance.triggerEvent[i];
-        }
+        // for (int i = 0; i <= chkGap; i++)
+        // {
+        //     choiceStructs[i].select = TextManager.Instance.selectText[i];
+        //     choiceStructs[i].trigger = TextManager.Instance.triggerEvent[i];
+        // }
 
         if (choiceStructs[0].IsBlink) choice1.sprite = cantSelectChoice;
         else choice1.sprite = canSelectChoice;
@@ -144,7 +151,7 @@ public class StoryChoice : MonoBehaviour
             IsCanSelect = false;
             CheckChoice(choiceText1.text);
             ChoiceOff();
-            TextManager.Instance.SetDialogue(choiceStructs[0].trigger);
+            TextManager.Instance.SetDialogueFromChoice(choiceStructs[0].trigger);      
         }
     }
     public void Choice2()
@@ -154,7 +161,7 @@ public class StoryChoice : MonoBehaviour
             IsCanSelect = false;
             CheckChoice(choiceText2.text);
             ChoiceOff();
-            TextManager.Instance.SetDialogue(choiceStructs[1].trigger);
+            TextManager.Instance.SetDialogueFromChoice(choiceStructs[1].trigger);  
         }
     }
     public void Choice3()
@@ -164,7 +171,7 @@ public class StoryChoice : MonoBehaviour
             IsCanSelect = false;
             CheckChoice(choiceText3.text);
             ChoiceOff();
-            TextManager.Instance.SetDialogue(choiceStructs[2].trigger);
+            TextManager.Instance.SetDialogueFromChoice(choiceStructs[2].trigger);
         }
     }
 
