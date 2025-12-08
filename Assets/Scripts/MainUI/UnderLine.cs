@@ -19,6 +19,7 @@ public class Underline : MonoBehaviour
     private float fullWidth = 560;
     private float underLinePosX = 12.5f;
     private float prevHeight;
+    private float scrollSensitivity = 10f;
 
     private List<Image> underlineImages = new List<Image>();
 
@@ -31,6 +32,12 @@ public class Underline : MonoBehaviour
     {
         SetFirstLine();
         scrollRect.verticalNormalizedPosition = 0f;
+        scrollRect.horizontal = false;
+        scrollRect.vertical = true;
+
+        // 이것만 추가하면 마우스 휠로 스크롤 가능
+        scrollRect.movementType = ScrollRect.MovementType.Clamped;
+        scrollRect.scrollSensitivity = scrollSensitivity;
     }
 
     // void OnEnable()
