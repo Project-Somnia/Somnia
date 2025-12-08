@@ -112,6 +112,9 @@ Assets/UserData.json
 .fmod_editor.log
 Assets/UserData.json
 
+# Ignore UserData
+UserData.json*
+
 # Never ignore DLLs in the FMOD subfolder.
 !/[Aa]ssets/Plugins/FMOD/**/lib/*
 
