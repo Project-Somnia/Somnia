@@ -30,11 +30,16 @@ public class Underline : MonoBehaviour
     void Start()
     {
         SetFirstLine();
+        scrollRect.verticalNormalizedPosition = 0f;
     }
+
+    // void OnEnable()
+    // {
+    //     scrollRect = FindObjectOfType<ScrollRect>();
+    // }
 
     public void SetFirstLine()
     {
-        scrollRect.verticalNormalizedPosition = 0f;
         float firstLine = 0f;
 
         // 미리 고정으로 그리는 줄(기본 6개)

@@ -95,7 +95,9 @@ Assets/Feel/*
 Assets/Pixel\ Crushers/*
 Assets/Editor\ Default\ Resources/*
 Assets/Gizmos/*
-Assets/UserData.json
+
+# Ignore UserData
+UserData.json*
 
 # Ignore Vscode
 .vscode/

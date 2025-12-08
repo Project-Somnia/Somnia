@@ -24,6 +24,7 @@ public class TextManager : MonoBehaviour
     public string pendingMainEventId;
     public bool IsStory = false;
     public bool IsDialogSet = false;
+    public bool IsFastText = false;
     private bool IsPreventDup = false;
     private bool IsPreventFadeDup = false;
     private bool IsPaintEmpty = false;
@@ -70,21 +71,22 @@ public class TextManager : MonoBehaviour
 
     private void Update()
     {
-        if ((Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) && IsStory)
+        //if ((Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) && IsStory)
+        if (IsStory)
         {
+            if(Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) IsFastText = true;
             TypingManager.Instance.GetInputDown();
             if (TypingManager.Instance.isTypingEnd)
             {
                 if (currentPage == talkDatas.Length && TypingManager.Instance.isDialogEnd)
                 {
-
                     currentPage = talkDatas.Length;
                     IsStory = false;
+                    IsFastText = false;
                     StoryChoice.fadeChoice();
                     currentPage = 0;
                     //storyText.text = "";
                     return;
-
                 }
                 TypingManager.Instance.Typing(talkDatas[currentPage].showText, storyText);
                 currentPage++;
