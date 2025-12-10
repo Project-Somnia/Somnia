@@ -63,6 +63,9 @@ public class GameOverUI : MonoBehaviour
     public void OnClickQuit()
     {
         Time.timeScale = 1f;
+        GameManager.Instance.IsContinue = false;
+        GameManager.Instance.IsCanContinue = false;
+        GameManager.Instance.IsRetry = true;
         // 여기서 메인메뉴로 나가거나, 리트라이 씬 로드 등 원하는 동작
         SceneManager.LoadScene("Title");
     }

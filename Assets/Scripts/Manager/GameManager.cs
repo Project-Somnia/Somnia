@@ -31,4 +31,5 @@ public class GameManager : MonoBehaviour
     }
     public bool IsCanContinue = false;
     public bool IsContinue = false;
+    public bool IsRetry = false;
 }

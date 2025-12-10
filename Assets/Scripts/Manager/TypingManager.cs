@@ -79,13 +79,11 @@ public class TypingManager : MonoBehaviour
             if (isTypingEnd)
             {
                 //tmpSave.text = ""; //비어있는 문장 넘겨서 초기화. 
-                Debug.Log("어 끝났어");
                 GetInputUp();
                 Typing(dialogsSave, tmpSave);
             }
             else if(TextManager.Instance.IsFastText)
             {
-                Debug.Log("빨리빨리");
                 characterTime = timeForCharacter_Fast; //빠른 문장 넘김.
             }
         }
