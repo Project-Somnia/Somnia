@@ -6,7 +6,9 @@ using UnityEngine.Audio;
 using UnityEngine.UI;
 
 public class Health : MonoBehaviour
-{
+{   
+    public CameraShake Camera;
+
     [Header("Actions")]
     public static Action healthP;
     public static Action healthM;
@@ -145,7 +147,9 @@ public class Health : MonoBehaviour
         else Debug.Log("이미 풀피!");
     }
     public void HealthMinus()
-    {
+    {   
+        Camera.VibrateForTime(0.2f);
+
         if (health > 0)
         {
             health -= 1;
@@ -187,7 +191,8 @@ public class Health : MonoBehaviour
         Debug.Log("풀멘탈!");
     }
     public void MentalMinus()
-    {
+    {   
+        Camera.VibrateForTime(0.2f);
         if (mental > 0)
         {
             mental -= 1;
