@@ -129,6 +129,7 @@ public class MainUI : MonoBehaviour
     {
         if (IsCanStart) 
         {
+            GameManager.Instance.IsRetry = false;
             GameManager.Instance.IsContinue = false;
             SceneManager.LoadScene("GameKabocha2");
         }

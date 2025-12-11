@@ -98,6 +98,7 @@ Assets/Gizmos/*
 
 # Ignore UserData
 UserData.json*
+Assets/UserData.json*
 
 # Ignore Vscode
 .vscode/
@@ -112,7 +113,6 @@ UserData.json*
 
 # Edit from neoskyclad
 .fmod_editor.log
-Assets/UserData.json
 
 # Never ignore DLLs in the FMOD subfolder.
 !/[Aa]ssets/Plugins/FMOD/**/lib/*

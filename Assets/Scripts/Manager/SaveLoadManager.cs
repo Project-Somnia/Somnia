@@ -437,7 +437,7 @@ public class SaveLoadManager : MonoBehaviour
             return;
         }
 
-        GameManager.Instance.IsCanContinue = true;
+        else if(loadData != null && !GameManager.Instance.IsRetry) GameManager.Instance.IsCanContinue = true;
 
         health = loadData._health;
         mental = loadData._mental;

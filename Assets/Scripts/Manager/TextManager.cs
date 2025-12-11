@@ -74,13 +74,13 @@ public class TextManager : MonoBehaviour
         //if ((Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) && IsStory)
         if (IsStory)
         {
-            if(Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) IsFastText = true;
+            if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) IsFastText = true;
             TypingManager.Instance.GetInputDown();
             if (TypingManager.Instance.isTypingEnd)
             {
                 if (currentPage == talkDatas.Length && TypingManager.Instance.isDialogEnd)
                 {
-                    currentPage = talkDatas.Length;
+                    //currentPage = talkDatas.Length;
                     IsStory = false;
                     IsFastText = false;
                     StoryChoice.fadeChoice();
@@ -88,12 +88,12 @@ public class TextManager : MonoBehaviour
                     //storyText.text = "";
                     return;
                 }
-                TypingManager.Instance.Typing(talkDatas[currentPage].showText, storyText);
-                currentPage++;
+                // TypingManager.Instance.Typing(talkDatas[currentPage].showText, storyText);
+                // currentPage++;
             }
         }
     }
-    
+
     public void SetDialogue(string eventNumber)
     {
         storyText.text = "";
@@ -131,23 +131,23 @@ public class TextManager : MonoBehaviour
     public void SetDialogueFromChoice(string triggerEventId)
     {
         if (triggerEventId == "RETURN_MAIN")
-    {
-        if (!string.IsNullOrEmpty(pendingMainEventId))
         {
-            string mainId = pendingMainEventId;
+            if (!string.IsNullOrEmpty(pendingMainEventId))
+            {
+                string mainId = pendingMainEventId;
 
-            // 한 번 쓰면 비워준다 (다음 랜덤에 영향 없게)
-            pendingMainEventId = null;
+                // 한 번 쓰면 비워준다 (다음 랜덤에 영향 없게)
+                pendingMainEventId = null;
 
-            SetDialogue(mainId);
-            return;
+                SetDialogue(mainId);
+                return;
+            }
+            else
+            {
+                Debug.LogError("RETURN_MAIN인데 pendingMainEventId가 비어 있음");
+                return;
+            }
         }
-        else
-        {
-            Debug.LogError("RETURN_MAIN인데 pendingMainEventId가 비어 있음");
-            return;
-        }
-    }
 
         string finalId = triggerEventId;
 
@@ -187,7 +187,7 @@ public class TextManager : MonoBehaviour
         paintName = paintName.Replace(".png", "");
         paintNum = paintName.Split("_")[0];
 
-        if (paintName == "Empty") IsPaintEmpty = true;
+        if (paintName == "Empty" || paintName == "") IsPaintEmpty = true;
 
         if (currentPaint == "" || currentPaint != paintName)
         {
