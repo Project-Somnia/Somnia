@@ -131,13 +131,13 @@ public class MainUI : MonoBehaviour
         {
             GameManager.Instance.IsRetry = false;
             GameManager.Instance.IsContinue = false;
-            SceneManager.LoadScene("GameKabocha2");
+            SceneManager.LoadScene("GameKabocha");
         }
     }
     public void ContinueGame()
     {
         SaveLoadManager.Instance.LoadGameData();
         GameManager.Instance.IsContinue = true;
-        SceneManager.LoadScene("GameKabocha2");
+        SceneManager.LoadScene("GameKabocha");
     }
 }

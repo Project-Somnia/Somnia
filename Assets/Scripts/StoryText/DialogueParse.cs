@@ -8,8 +8,7 @@ public class DialogueParse : MonoBehaviour
 {
     public Dictionary<string, TalkData[]> DialogueDictionary = new Dictionary<string, TalkData[]>();
     [SerializeField] List<ShowTalkData> ShowTalkDataList = new List<ShowTalkData>();
-
-    private string googleCsvUrl = "https://docs.google.com/spreadsheets/d/1XMHN-jTMhUGnjLoJdVjCC6levhM5KZKXHJGdw5wKP08/export?format=csv";
+    [SerializeField] private TextAsset csvFile = null;
     public TalkData[] GetDialogue(string eventName)
     {
         return DialogueDictionary[eventName];
@@ -37,24 +36,14 @@ public class DialogueParse : MonoBehaviour
         }
         instance = this;
 
-        StartCoroutine(DownloadAndParseCSV());
+        GetSetCsv();
     }
 
-    IEnumerator DownloadAndParseCSV()
+    void GetSetCsv()
     {
-        UnityWebRequest www = UnityWebRequest.Get(googleCsvUrl);
-        yield return www.SendWebRequest();
-
-        if (www.result != UnityWebRequest.Result.Success)
-        {
-            Debug.LogError("CSV 다운로드 실패: " + www.error);
-        }
-        else
-        {
-            string csvText = www.downloadHandler.text;
-            SetTalkDictionary(csvText);
-            SetShowTalkData();
-        }
+        string csvText = csvFile.text.Substring(0, csvFile.text.Length - 1);
+        SetTalkDictionary(csvText);
+        SetShowTalkData();
     }
 
     public void SetTalkDictionary(string csvText)
