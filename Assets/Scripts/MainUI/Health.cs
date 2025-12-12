@@ -45,6 +45,10 @@ public class Health : MonoBehaviour
     [Header("GameOver")]
     public GameOverUI gameOverUI;
 
+    private enum PendingGameOverType { None, HpZero, MentalZero }
+    private PendingGameOverType pendingGameOver = PendingGameOverType.None;
+    private bool isWaitingGameOver = false;
+
     private void Awake()
     {
         healthP += HealthPlus;
@@ -165,7 +169,7 @@ public class Health : MonoBehaviour
 
             if (gameOverUI != null)
             {
-                gameOverUI.ShowHpGameOver();
+                RequestGameOver(PendingGameOverType.HpZero);
             }
             else
             {
@@ -209,7 +213,7 @@ public class Health : MonoBehaviour
 
             if (gameOverUI != null)
             {
-                gameOverUI.ShowMentalGameOver();
+                RequestGameOver(PendingGameOverType.MentalZero);
             }
             else
             {
@@ -250,4 +254,44 @@ public class Health : MonoBehaviour
         }
         else Debug.Log("코인 부족!");
     }
+    private void RequestGameOver(PendingGameOverType type)
+    {
+        // 이미 예약돼 있으면 덮어쓰지 않게(원하면 덮어쓰도록 바꿔도 됨)
+        if (pendingGameOver != PendingGameOverType.None) return;
+
+        pendingGameOver = type;
+
+        if (!isWaitingGameOver)
+            StartCoroutine(WaitStoryEndAndShowGameOver());
+    }
+
+    private IEnumerator WaitStoryEndAndShowGameOver()
+    {
+        isWaitingGameOver = true;
+
+        // 텍스트 출력이 모두 끝나서 IsStory가 false가 될 때까지 대기
+        // (TextManager가 없으면 바로 진행)
+        yield return new WaitUntil(() => TextManager.Instance.IsStory == false);
+
+        // 한 프레임 넘겨서 UI/상태 정리될 시간 주기(선택)
+        yield return null;
+
+        if (gameOverUI == null)
+        {
+            pendingGameOver = PendingGameOverType.None;
+            isWaitingGameOver = false;
+            yield break;
+        }
+
+        // 기다리는 동안 값이 바뀌었을 수도 있으니 안전 체크
+        if (pendingGameOver == PendingGameOverType.HpZero && health <= 0)
+            gameOverUI.ShowHpGameOver();      // 여기서 Time.timeScale = 0 됨 :contentReference[oaicite:3]{index=3}
+        else if (pendingGameOver == PendingGameOverType.MentalZero && mental <= 0)
+            gameOverUI.ShowMentalGameOver();
+
+        // 이후 재사용 대비
+        pendingGameOver = PendingGameOverType.None;
+        isWaitingGameOver = false;
+    }
 }
+
