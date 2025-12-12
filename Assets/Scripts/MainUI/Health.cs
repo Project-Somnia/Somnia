@@ -6,7 +6,9 @@ using UnityEngine.Audio;
 using UnityEngine.UI;
 
 public class Health : MonoBehaviour
-{
+{   
+    public ScreenShake screenShake;
+
     [Header("Actions")]
     public static Action healthP;
     public static Action healthM;
@@ -145,7 +147,10 @@ public class Health : MonoBehaviour
         else Debug.Log("이미 풀피!");
     }
     public void HealthMinus()
-    {
+    {   
+        if (screenShake != null)
+        screenShake.Shake(0.4f);
+
         if (health > 0)
         {
             health -= 1;
@@ -187,7 +192,10 @@ public class Health : MonoBehaviour
         Debug.Log("풀멘탈!");
     }
     public void MentalMinus()
-    {
+    {   
+        if (screenShake != null)
+        screenShake.Shake(0.4f);
+
         if (mental > 0)
         {
             mental -= 1;
@@ -195,9 +203,9 @@ public class Health : MonoBehaviour
         }
         if (mental == 0)
     {   
-        hp_1.gameObject.SetActive(false);
+        mt_1.gameObject.SetActive(false);
 
-        Debug.Log("체력이 0입니다.");
+        Debug.Log("정신력이 0입니다.");
 
             if (gameOverUI != null)
             {
