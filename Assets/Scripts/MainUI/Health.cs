@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class Health : MonoBehaviour
 {   
-    public CameraShake Camera;
+    public ScreenShake screenShake;
 
     [Header("Actions")]
     public static Action healthP;
@@ -148,7 +148,8 @@ public class Health : MonoBehaviour
     }
     public void HealthMinus()
     {   
-        Camera.VibrateForTime(0.2f);
+        if (screenShake != null)
+        screenShake.Shake(0.4f);
 
         if (health > 0)
         {
@@ -192,7 +193,9 @@ public class Health : MonoBehaviour
     }
     public void MentalMinus()
     {   
-        Camera.VibrateForTime(0.2f);
+        if (screenShake != null)
+        screenShake.Shake(0.4f);
+
         if (mental > 0)
         {
             mental -= 1;
@@ -200,9 +203,9 @@ public class Health : MonoBehaviour
         }
         if (mental == 0)
     {   
-        hp_1.gameObject.SetActive(false);
+        mt_1.gameObject.SetActive(false);
 
-        Debug.Log("체력이 0입니다.");
+        Debug.Log("정신력이 0입니다.");
 
             if (gameOverUI != null)
             {
