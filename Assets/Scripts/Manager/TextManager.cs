@@ -195,9 +195,8 @@ public class TextManager : MonoBehaviour
             SaveLoadManager.Instance.paintName = paintName;
             SaveLoadManager.Instance.SaveGameData();
             paintIdx = Array.FindIndex(paintSprites, x => currentPaint.Contains(x.name));
-            if (IsPreventFadeDup) FadePaint(paint, newPaint);
+            FadePaint(paint, newPaint);
         }
-        IsPreventFadeDup = true;
     }
 
     void FadePaint(Image curPaint, Image nextPaint)
@@ -214,9 +213,12 @@ public class TextManager : MonoBehaviour
             }
             else nextPaint.sprite = paintSprites[paintIdx];
 
-            Color curCol = curPaint.color;
-            curCol.a = 1f;
-            curPaint.color = curCol;
+            if (IsPreventFadeDup)
+            {
+                Color curCol = curPaint.color;
+                curCol.a = 1f;
+                curPaint.color = curCol;
+            }
 
             Color nextCol = nextPaint.color;
             nextCol.a = 0f;
@@ -246,6 +248,7 @@ public class TextManager : MonoBehaviour
             nextPaint.DOFade(0f, fadeTime);
         }
         fadeCnt++;
+        IsPreventFadeDup = true;
     }
 
     IEnumerator WaitAndSet()
