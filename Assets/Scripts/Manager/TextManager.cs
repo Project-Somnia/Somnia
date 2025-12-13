@@ -250,6 +250,7 @@ public class TextManager : MonoBehaviour
         }
         IsPreventFadeDup = true;
         fadeCnt++;
+        IsPreventFadeDup = true;
     }
 
     IEnumerator WaitAndSet()
