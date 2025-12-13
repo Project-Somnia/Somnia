@@ -110,14 +110,14 @@ public static class SaveSystem
             {
                 string backupPath = SaveFilePath + ".bak";
                 File.Copy(SaveFilePath, backupPath, true);
-                Debug.Log("백업 생성: " + backupPath);
+                //Debug.Log("백업 생성: " + backupPath);
             }
 
             // AES 암호화
             byte[] encryptedBytes = Encrypt(json, key);
 
             File.WriteAllBytes(SaveFilePath, encryptedBytes);
-            Debug.Log("<color=green>Save Success (Encrypted): " + SaveFilePath + "</color>");
+            //Debug.Log("<color=green>Save Success (Encrypted): " + SaveFilePath + "</color>");
         }
         catch (Exception e)
         {

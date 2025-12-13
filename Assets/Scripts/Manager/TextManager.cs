@@ -157,7 +157,6 @@ public class TextManager : MonoBehaviour
             // storyEventName = 현재 진행 중인 메인/랜덤 이벤트
             finalId = EncounterFlowManager.Instance.DecideNextEvent(storyEventName, triggerEventId);
         }
-
         SetDialogue(finalId);
     }
 
@@ -186,18 +185,19 @@ public class TextManager : MonoBehaviour
     {
         paintName = paintName.Replace(".png", "");
         paintNum = paintName.Split("_")[0];
+        Debug.Log("paintname :" + paintName);
 
         if (paintName == "Empty" || paintName == "") IsPaintEmpty = true;
+        Debug.Log("ispaintempty" + IsPaintEmpty);
 
-        if (currentPaint == "" || currentPaint != paintName)
+        if (currentPaint == "" || currentPaint == "empty" || currentPaint != paintName)
         {
             currentPaint = paintName;
             SaveLoadManager.Instance.paintName = paintName;
             SaveLoadManager.Instance.SaveGameData();
             paintIdx = Array.FindIndex(paintSprites, x => currentPaint.Contains(x.name));
-            if (IsPreventFadeDup) FadePaint(paint, newPaint);
+            FadePaint(paint, newPaint);
         }
-        IsPreventFadeDup = true;
     }
 
     void FadePaint(Image curPaint, Image nextPaint)
@@ -214,9 +214,12 @@ public class TextManager : MonoBehaviour
             }
             else nextPaint.sprite = paintSprites[paintIdx];
 
-            Color curCol = curPaint.color;
-            curCol.a = 1f;
-            curPaint.color = curCol;
+            if (IsPreventFadeDup)
+            {
+                Color curCol = curPaint.color;
+                curCol.a = 1f;
+                curPaint.color = curCol;
+            }
 
             Color nextCol = nextPaint.color;
             nextCol.a = 0f;
@@ -245,6 +248,7 @@ public class TextManager : MonoBehaviour
             curPaint.DOFade(1f, fadeTime);
             nextPaint.DOFade(0f, fadeTime);
         }
+        IsPreventFadeDup = true;
         fadeCnt++;
     }
 
