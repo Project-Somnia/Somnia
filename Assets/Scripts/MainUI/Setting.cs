@@ -16,8 +16,9 @@ public class Setting : MonoBehaviour
     private float ostVol;
     private float sfxVol;
     private bool IsSetting = false;
-    public GameObject esc;
-    public GameObject sound;
+
+    public GameObject canvasMenu;
+    public GameObject canvasSound;
 
 
     public void Start()
@@ -37,6 +38,22 @@ public class Setting : MonoBehaviour
     public void BackToTitle()
     {
         SceneManager.LoadScene("Title");
+    }
+    public void canvasSoundOn()
+    {
+        canvasSound.SetActive(true);
+    }
+    public void canvasSoundOff()
+    {
+        canvasSound.SetActive(false);
+    }
+    public void canvasMenuOn()
+    {
+        canvasMenu.SetActive(true);
+    }
+    public void canvasMenuOff()
+    {
+        canvasMenu.SetActive(false);
     }
 
     public void SetVolume()
@@ -76,9 +93,7 @@ public class Setting : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            IsSetting = !IsSetting;
-            esc.SetActive(IsSetting);
-            sound.SetActive(IsSetting);
+            canvasMenuOn();
         }
     }
 }
