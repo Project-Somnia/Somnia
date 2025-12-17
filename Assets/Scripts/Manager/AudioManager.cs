@@ -55,6 +55,7 @@ public class AudioManager : MonoBehaviour
 
     public void SetAudioTrack(string eventNumber)
     {
+        Debug.Log("현재 들어온 오디오트랙" + eventNumber);
         if(eventNumber == "1" || eventNumber == "2" || eventNumber == "3") 
             SwapTrack(audioClips[0]);
         else if(eventNumber == "4" || eventNumber == "5" || eventNumber == "6") 

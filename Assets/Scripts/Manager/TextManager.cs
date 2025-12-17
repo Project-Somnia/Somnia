@@ -76,7 +76,7 @@ public class TextManager : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) IsFastText = true;
             TypingManager.Instance.GetInputDown();
-            CheckShowText(talkDatas[0].showText[currentPage]);
+            //CheckShowText(talkDatas[0].showText[currentPage]);
             if (TypingManager.Instance.isTypingEnd)
             {
                 if (currentPage == talkDatas.Length && TypingManager.Instance.isDialogEnd)
@@ -122,7 +122,7 @@ public class TextManager : MonoBehaviour
 
         // 스토리 텍스트 확인
         showTextDup = talkDatas[0].showText[0];
-        //CheckShowText(showTextDup);
+        CheckShowText(showTextDup);
 
         //StartCoroutine("WaitAndSet");
     }
@@ -290,40 +290,39 @@ public class TextManager : MonoBehaviour
         if (curSplitEvent == splitEventName) return;
 
         //1,2,3은 같은 음악
-        if (curSplitEvent == "1" && splitEventName == "2" || curSplitEvent == "3")
+        if (curSplitEvent == "1" && splitEventName == "2" || splitEventName == "3")
             return;
 
-        if (curSplitEvent == "2" && splitEventName == "1" || curSplitEvent == "3")
+        if (curSplitEvent == "2" && splitEventName == "1" || splitEventName == "3")
             return;
 
-        if (curSplitEvent == "3" && splitEventName == "1" || curSplitEvent == "2")
+        if (curSplitEvent == "3" && splitEventName == "1" || splitEventName == "2")
             return;
 
         //4,5,6은 같은 음악
-        if (curSplitEvent == "4" && splitEventName == "5" || curSplitEvent == "6")
+        if (curSplitEvent == "4" && splitEventName == "5" || splitEventName == "6")
             return;
 
-        if (curSplitEvent == "5" && splitEventName == "4" || curSplitEvent == "6")
+        if (curSplitEvent == "5" && splitEventName == "4" || splitEventName == "6")
             return;
 
-        if (curSplitEvent == "6" && splitEventName == "4" || curSplitEvent == "5")
+        if (curSplitEvent == "6" && splitEventName == "4" || splitEventName == "5")
             return;
 
         //7,8,9는 같은 음악
-        if (curSplitEvent == "7" && splitEventName == "8" || curSplitEvent == "9")
+        if (curSplitEvent == "7" && splitEventName == "8" || splitEventName == "9")
             return;
 
-        if (curSplitEvent == "8" && splitEventName == "7" || curSplitEvent == "9")
+        if (curSplitEvent == "8" && splitEventName == "7" || splitEventName == "9")
             return;
 
-        if (curSplitEvent == "9" && splitEventName == "7" || curSplitEvent == "8")
+        if (curSplitEvent == "9" && splitEventName == "7" || splitEventName == "8")
             return;
 
         //10,11은 같은 음악
         if (curSplitEvent == "10" && splitEventName == "11")
             return;
-
-        Debug.Log("speventname = " + splitEventName);
+            
         curSplitEvent = splitEventName;
         AudioManager.Instance.SetAudioTrack(splitEventName);
     }

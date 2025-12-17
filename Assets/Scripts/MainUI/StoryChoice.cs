@@ -114,7 +114,7 @@ public class StoryChoice : MonoBehaviour
             }
         }
 
-        CheckTruth();
+        CheckRequire();
 
         if (choiceStructs[0].IsBlink) choice1.sprite = cantSelectChoice;
         else choice1.sprite = canSelectChoice;
@@ -128,13 +128,14 @@ public class StoryChoice : MonoBehaviour
         choiceText3.text = choiceStructs[2].select;
     }
 
-    private void CheckTruth()
+    private void CheckRequire()
     {
         for (int i = 0; i < 3; i++)
         {
-            if (choiceStructs[i].select.Contains("정원사를 알고있다"))
+            // 진실의 조각 관련 체크
+            if (choiceStructs[i].select == "정원사를 알고있다.")
             {
-                if (GameManager.Instance.truthPiece <= 0) return;
+                if (GameManager.Instance.truthPiece <= 0) choiceStructs[i].IsBlink = true;
                 else
                 {
                     int ran = UnityEngine.Random.Range(0, 10);
@@ -142,9 +143,42 @@ public class StoryChoice : MonoBehaviour
                     else choiceStructs[i].IsBlink = true;
                 }
             }
-            else if (choiceStructs[i].select.Contains("그들이 익숙하다") && GameManager.Instance.truthPiece <= 0)
+            else if (choiceStructs[i].select == "그들이 익숙하다.")
             {
-                choiceStructs[i].IsBlink = true;
+                // 진실의 조각 없으면 투명하게
+                if(GameManager.Instance.truthPiece <= 0) choiceStructs[i].IsBlink = true;
+                else choiceStructs[i].IsBlink = false;
+            }
+            
+            // 확률에 의한 트리거 이동
+            if(choiceStructs[i].select == "사격한다.")
+            {
+                Debug.Log("007");
+                if(choiceStructs[i].trigger == "4_2_A_1")
+                {
+                    int ran = UnityEngine.Random.Range(0,10);
+                    if(ran < 3) choiceStructs[i].trigger = "4_2_A_1";
+                    else if(ran >= 3 && ran < 6) choiceStructs[i].trigger = "4_2_A_1_2";
+                    else choiceStructs[i].trigger = "4_2_A_1_3";
+                }
+                else if(choiceStructs[i].trigger == "4_2_A_1_2")
+                {
+                    int ran = UnityEngine.Random.Range(0,10);
+                    if(ran < 5) choiceStructs[i].trigger = "4_2_A_1_2";
+                    else choiceStructs[i].trigger = "4_2_A_1_3";
+                }
+            }
+
+            if(choiceStructs[i].select == "물건을 더 둘러본다.")
+            {
+                if(SaveLoadManager.Instance.coin >= 1) choiceStructs[i].IsBlink = false;
+                else choiceStructs[i].IsBlink = true;
+            }
+
+            if(choiceStructs[i].select == "주운 돈을 둔다.")
+            {
+                if(SaveLoadManager.Instance.coin >= 1) choiceStructs[i].IsBlink = false;
+                else choiceStructs[i].IsBlink = true;
             }
         }
     }

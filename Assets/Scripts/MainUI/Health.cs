@@ -76,7 +76,13 @@ public class Health : MonoBehaviour
     void HealthUpdate()
     {
         // 체력 업데이트
-        if (health == 1)
+        if (health == 0)
+        {
+            hp_1.gameObject.SetActive(false);
+            hp_2.gameObject.SetActive(false);
+            hp_3.gameObject.SetActive(false);
+        }
+        else if (health == 1)
         {
             hp_1.gameObject.SetActive(true);
             hp_2.gameObject.SetActive(false);
@@ -96,7 +102,13 @@ public class Health : MonoBehaviour
         }
 
         // 정신력 업데이트
-        if (mental == 1)
+        if (mental == 0)
+        {
+            mt_1.gameObject.SetActive(false);
+            mt_2.gameObject.SetActive(false);
+            mt_3.gameObject.SetActive(false);
+        }
+        else if (mental == 1)
         {
             mt_1.gameObject.SetActive(true);
             mt_2.gameObject.SetActive(false);
