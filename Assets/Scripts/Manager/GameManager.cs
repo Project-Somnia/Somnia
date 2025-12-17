@@ -29,7 +29,14 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
+    void Start()
+    {
+        truthPiece = SaveLoadManager.Instance.truthPiece;
+    }
+
     public bool IsCanContinue = false;
     public bool IsContinue = false;
     public bool IsRetry = false;
+    public int truthPiece = 0;
 }

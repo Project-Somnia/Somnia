@@ -34,7 +34,7 @@ public class TextManager : MonoBehaviour
     [Header("Paint Sets")]
     public Image paint;
     public Image newPaint;
-    public Sprite[] paintSprites = new Sprite[9];
+    public Sprite[] paintSprites = new Sprite[10];
     public Sprite empty;
     private string currentPaint = "";
     private string paintNum = "";
@@ -72,25 +72,21 @@ public class TextManager : MonoBehaviour
 
     private void Update()
     {
-        //if ((Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) && IsStory)
         if (IsStory)
         {
             if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) IsFastText = true;
             TypingManager.Instance.GetInputDown();
+            CheckShowText(talkDatas[0].showText[currentPage]);
             if (TypingManager.Instance.isTypingEnd)
             {
                 if (currentPage == talkDatas.Length && TypingManager.Instance.isDialogEnd)
                 {
-                    //currentPage = talkDatas.Length;
                     IsStory = false;
                     IsFastText = false;
                     StoryChoice.fadeChoice();
                     currentPage = 0;
-                    //storyText.text = "";
                     return;
                 }
-                // TypingManager.Instance.Typing(talkDatas[currentPage].showText, storyText);
-                // currentPage++;
             }
         }
     }
@@ -126,7 +122,7 @@ public class TextManager : MonoBehaviour
 
         // 스토리 텍스트 확인
         showTextDup = talkDatas[0].showText[0];
-        CheckShowText(showTextDup);
+        //CheckShowText(showTextDup);
 
         //StartCoroutine("WaitAndSet");
     }
@@ -173,13 +169,25 @@ public class TextManager : MonoBehaviour
         }
         if (text.Contains("-1"))
         {
-            if (text.Contains("체력")) Health.healthM();
+            if (text.Contains("진실의 조각") && GameManager.Instance.truthPiece > 0)
+            {
+                GameManager.Instance.truthPiece -= 1;
+                SaveLoadManager.Instance.truthPiece = GameManager.Instance.truthPiece;
+                SaveLoadManager.Instance.SaveGameData();
+            }
+            else if (text.Contains("체력")) Health.healthM();
             else if (text.Contains("정신력")) Health.mentalM();
             else if (text.Contains("돈")) Health.coinM();
         }
         else if (text.Contains("+1"))
         {
-            if (text.Contains("체력")) Health.healthP();
+            if (text.Contains("진실의 조각") && GameManager.Instance.truthPiece < 5)
+            {
+                GameManager.Instance.truthPiece += 1;
+                SaveLoadManager.Instance.truthPiece = GameManager.Instance.truthPiece;
+                SaveLoadManager.Instance.SaveGameData();
+            }
+            else if (text.Contains("체력")) Health.healthP();
             else if (text.Contains("정신력")) Health.mentalP();
             else if (text.Contains("돈")) Health.coinP();
         }
@@ -196,7 +204,9 @@ public class TextManager : MonoBehaviour
             currentPaint = paintName;
             SaveLoadManager.Instance.paintName = paintName;
             SaveLoadManager.Instance.SaveGameData();
+
             paintIdx = Array.FindIndex(paintSprites, x => currentPaint.Contains(x.name));
+
             FadePaint(paint, newPaint);
         }
     }

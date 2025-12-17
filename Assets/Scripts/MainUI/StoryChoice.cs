@@ -113,11 +113,8 @@ public class StoryChoice : MonoBehaviour
                 notGap++;
             }
         }
-        // for (int i = 0; i <= chkGap; i++)
-        // {
-        //     choiceStructs[i].select = TextManager.Instance.selectText[i];
-        //     choiceStructs[i].trigger = TextManager.Instance.triggerEvent[i];
-        // }
+
+        CheckTruth();
 
         if (choiceStructs[0].IsBlink) choice1.sprite = cantSelectChoice;
         else choice1.sprite = canSelectChoice;
@@ -131,6 +128,26 @@ public class StoryChoice : MonoBehaviour
         choiceText3.text = choiceStructs[2].select;
     }
 
+    private void CheckTruth()
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            if (choiceStructs[i].select.Contains("정원사를 알고있다"))
+            {
+                if (GameManager.Instance.truthPiece <= 0) return;
+                else
+                {
+                    int ran = UnityEngine.Random.Range(0, 10);
+                    if (ran < 4) choiceStructs[i].IsBlink = false;
+                    else choiceStructs[i].IsBlink = true;
+                }
+            }
+            else if (choiceStructs[i].select.Contains("그들이 익숙하다") && GameManager.Instance.truthPiece <= 0)
+            {
+                choiceStructs[i].IsBlink = true;
+            }
+        }
+    }
     public void ChoiceOff()
     {
         choice1.gameObject.SetActive(false);
@@ -151,7 +168,7 @@ public class StoryChoice : MonoBehaviour
             IsCanSelect = false;
             CheckChoice(choiceText1.text);
             ChoiceOff();
-            TextManager.Instance.SetDialogueFromChoice(choiceStructs[0].trigger);      
+            TextManager.Instance.SetDialogueFromChoice(choiceStructs[0].trigger);
         }
     }
     public void Choice2()
@@ -161,7 +178,7 @@ public class StoryChoice : MonoBehaviour
             IsCanSelect = false;
             CheckChoice(choiceText2.text);
             ChoiceOff();
-            TextManager.Instance.SetDialogueFromChoice(choiceStructs[1].trigger);  
+            TextManager.Instance.SetDialogueFromChoice(choiceStructs[1].trigger);
         }
     }
     public void Choice3()
@@ -177,6 +194,16 @@ public class StoryChoice : MonoBehaviour
 
     private void CheckChoice(string text)
     {
+        if(text.Contains("그들을 공격한다"))
+        {
+            int ran = UnityEngine.Random.Range(0,10);
+            if(ran < 5) Health.healthM();
+        }
+        else if(text.Contains("그들을 밀친다"))
+        {
+            int ran = UnityEngine.Random.Range(0,10);
+            if(ran < 5) Health.healthM();
+        }
         if (text.Contains("-1"))
         {
             if (text.Contains("체력")) Health.healthM();

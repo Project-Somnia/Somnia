@@ -11,13 +11,14 @@ using UnityEngine;
 [System.Serializable]
 public class SaveData
 {
-    public SaveData(int health, int mental, int coin, string eventNumber, string paintName)
+    public SaveData(int health, int mental, int coin, string eventNumber, string paintName, int truthPiece)
     {
         _health = health;
         _mental = mental;
         _coin = coin;
         _eventNumber = eventNumber;
         _paintName = paintName;
+        _truthPiece = truthPiece;
     }
 
     public int _health;
@@ -25,6 +26,7 @@ public class SaveData
     public int _coin;
     public string _eventNumber;
     public string _paintName;
+    public int _truthPiece;
 }
 
 public static class SaveSystem
@@ -403,6 +405,7 @@ public class SaveLoadManager : MonoBehaviour
     public int coin = 1;
     public string eventNumber;
     public string paintName;
+    public int truthPiece;
 
     SaveData saveData;
     SaveData loadData;
@@ -444,10 +447,12 @@ public class SaveLoadManager : MonoBehaviour
         coin = loadData._coin;
         eventNumber = loadData._eventNumber;
         paintName = loadData._paintName;
+        truthPiece = loadData._truthPiece;
+        
     }
     public void SaveGameData()
     {
-        saveData = new SaveData(health, mental, coin, eventNumber, paintName);
+        saveData = new SaveData(health, mental, coin, eventNumber, paintName, truthPiece);
         SaveSystem.Save(saveData);
     }
 
@@ -458,7 +463,7 @@ public class SaveLoadManager : MonoBehaviour
         coin = 1;
         eventNumber = "1_0";
 
-        saveData = new SaveData(health, mental, coin, eventNumber, paintName);
+        saveData = new SaveData(health, mental, coin, eventNumber, paintName, truthPiece);
         SaveSystem.Save(saveData);
     }
 }
