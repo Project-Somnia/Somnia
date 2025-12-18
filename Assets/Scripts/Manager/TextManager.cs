@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Collections;
@@ -173,7 +174,7 @@ public class TextManager : MonoBehaviour
         for (int i = 0; i < talkDatas[0].showText.Length; i++)
         {
             text = talkDatas[0].showText[i];
-            if (text.Contains("-"))
+            if (text.Contains("-") && text.Any(char.IsDigit))
             {
                 //숫자만 자르기
                 int count = int.Parse(Regex.Match(text, @"\d+").Value);
@@ -217,7 +218,7 @@ public class TextManager : MonoBehaviour
                 else if (text.Contains("정신력")) Health.Instance.MentalMinus(count);
                 else if (text.Contains("돈")) Health.Instance.CoinMinus(count);
             }
-            else if (text.Contains("+"))
+            else if (text.Contains("+") && text.Any(char.IsDigit))
             {
                 //숫자만 자르기
                 int count = int.Parse(Regex.Match(text, @"\d+").Value);
