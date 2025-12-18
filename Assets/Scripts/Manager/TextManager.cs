@@ -17,6 +17,7 @@ public class TextManager : MonoBehaviour
     string[] dialogStrings;
     TalkData[] talkDatas;
     public string storyEventName;
+    
 
     public string[] selectText = new string[3];
     public string[] triggerEvent = new string[3];
@@ -31,6 +32,11 @@ public class TextManager : MonoBehaviour
     private bool IsPreventFadeDup = false;
     private bool IsPaintEmpty = false;
 
+    [Header("Audio Sets")]
+    public AudioSource audioSource;
+    public AudioClip plus;
+    public AudioClip minus;
+
     [Header("Paint Sets")]
     public Image paint;
     public Image newPaint;
@@ -38,7 +44,7 @@ public class TextManager : MonoBehaviour
     public Sprite empty;
     private string currentPaint = "";
     private string paintNum = "";
-    private string curSplitEvent = "";
+    private string curSplitEvent = "1";
     private float fadeTime = 2f;
     private int paintIdx = 0;
     private int fadeCnt = 0;
@@ -100,11 +106,11 @@ public class TextManager : MonoBehaviour
     {
         storyText.text = "";
         storyEventName = eventNumber;
-        CheckAudioStat();
 
         // 텍스트 정보 가져오기
         talkDatas = this.GetComponent<Dialogue>().GetObjectDialogue();
         CheckShowText();
+        CheckAudioStat();
         TypingManager.Instance.Typing(talkDatas[0].showText, storyText);
         currentPage++;
 
@@ -185,12 +191,18 @@ public class TextManager : MonoBehaviour
                     truthPiece -= count;
                     SaveLoadManager.Instance.truthPiece = truthPiece;
                     SaveLoadManager.Instance.SaveGameData();
+
+                    audioSource.clip = minus;
+                    audioSource.Play();
                 }
                 else
                 {
                     truthPiece = 0;
                     SaveLoadManager.Instance.truthPiece = truthPiece;
                     SaveLoadManager.Instance.SaveGameData();
+
+                    audioSource.clip = minus;
+                    audioSource.Play();
                 }
 
                 // 플레이어 선택 아이템
@@ -228,12 +240,18 @@ public class TextManager : MonoBehaviour
                     truthPiece += count;
                     SaveLoadManager.Instance.truthPiece = truthPiece;
                     SaveLoadManager.Instance.SaveGameData();
+
+                    audioSource.clip = plus;
+                    audioSource.Play();
                 }
                 else
                 {
                     truthPiece = 5;
                     SaveLoadManager.Instance.truthPiece = truthPiece;
                     SaveLoadManager.Instance.SaveGameData();
+
+                    audioSource.clip = plus;
+                    audioSource.Play();
                 }
 
                 if (text.Contains("체력")) Health.Instance.HealthPlus(count);
@@ -348,33 +366,33 @@ public class TextManager : MonoBehaviour
         if (curSplitEvent == splitEventName) return;
 
         //1,2,3은 같은 음악
-        if (curSplitEvent == "1" && splitEventName == "2" || splitEventName == "3")
+        if (curSplitEvent == "1" && (splitEventName == "2" || splitEventName == "3"))
             return;
 
-        if (curSplitEvent == "2" && splitEventName == "1" || splitEventName == "3")
+        if (curSplitEvent == "2" && (splitEventName == "1" || splitEventName == "3"))
             return;
 
-        if (curSplitEvent == "3" && splitEventName == "1" || splitEventName == "2")
+        if (curSplitEvent == "3" && (splitEventName == "1" || splitEventName == "2"))
             return;
 
         //4,5,6은 같은 음악
-        if (curSplitEvent == "4" && splitEventName == "5" || splitEventName == "6")
+        if (curSplitEvent == "4" && (splitEventName == "5" || splitEventName == "6"))
             return;
 
-        if (curSplitEvent == "5" && splitEventName == "4" || splitEventName == "6")
+        if (curSplitEvent == "5" && (splitEventName == "4" || splitEventName == "6"))
             return;
 
-        if (curSplitEvent == "6" && splitEventName == "4" || splitEventName == "5")
+        if (curSplitEvent == "6" && (splitEventName == "4" || splitEventName == "5"))
             return;
 
         //7,8,9는 같은 음악
-        if (curSplitEvent == "7" && splitEventName == "8" || splitEventName == "9")
+        if (curSplitEvent == "7" && (splitEventName == "8" || splitEventName == "9"))
             return;
 
-        if (curSplitEvent == "8" && splitEventName == "7" || splitEventName == "9")
+        if (curSplitEvent == "8" && (splitEventName == "7" || splitEventName == "9"))
             return;
 
-        if (curSplitEvent == "9" && splitEventName == "7" || splitEventName == "8")
+        if (curSplitEvent == "9" && (splitEventName == "7" || splitEventName == "8"))
             return;
 
         //10,11은 같은 음악

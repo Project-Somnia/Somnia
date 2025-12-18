@@ -42,15 +42,8 @@ public class AudioManager : MonoBehaviour
     void Start()
     {
         IsPlayingTrack1 = true;
-        //SwapTrack(defAmbience);
-    }
-
-    void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.J))
-        {
-            //SwapTrack(defAmbience);
-        }
+        if(GameManager.Instance.IsContinue) SetAudioTrack(SaveLoadManager.Instance.eventNumber.Split('_')[0]);
+        else SetAudioTrack("1");
     }
 
     public void SetAudioTrack(string eventNumber)
