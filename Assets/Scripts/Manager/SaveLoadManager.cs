@@ -11,7 +11,7 @@ using UnityEngine;
 [System.Serializable]
 public class SaveData
 {
-    public SaveData(int health, int mental, int coin, string eventNumber, string paintName, int truthPiece, int gambleItem)
+    public SaveData(int health, int mental, int coin, string eventNumber, string paintName, int truthPiece, int gambleItem, bool[] equips)
     {
         _health = health;
         _mental = mental;
@@ -20,6 +20,7 @@ public class SaveData
         _paintName = paintName;
         _truthPiece = truthPiece;
         _gambleItem = gambleItem;
+        _equips = equips;
     }
 
     public int _health;
@@ -29,6 +30,7 @@ public class SaveData
     public string _paintName;
     public int _truthPiece;
     public int _gambleItem;
+    public bool[] _equips;
 }
 
 public static class SaveSystem
@@ -409,6 +411,7 @@ public class SaveLoadManager : MonoBehaviour
     public string paintName;
     public int truthPiece;
     public int gambleItem;
+    public bool[] equips;
 
     SaveData saveData;
     SaveData loadData;
@@ -424,14 +427,7 @@ public class SaveLoadManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        // 저장데이터 만들기
-        // loadData = SaveSystem.Load();
-        // if (loadData == null) SaveGameData();
     }
-    // void Start()
-    // {
-    //     LoadGameData();
-    // }
 
     public void LoadGameData()
     {
@@ -452,11 +448,12 @@ public class SaveLoadManager : MonoBehaviour
         paintName = loadData._paintName;
         truthPiece = loadData._truthPiece;
         gambleItem = loadData._gambleItem;
+        equips = loadData._equips;
         
     }
     public void SaveGameData()
     {
-        saveData = new SaveData(health, mental, coin, eventNumber, paintName, truthPiece, gambleItem);
+        saveData = new SaveData(health, mental, coin, eventNumber, paintName, truthPiece, gambleItem, equips);
         SaveSystem.Save(saveData);
     }
 
@@ -466,8 +463,12 @@ public class SaveLoadManager : MonoBehaviour
         mental = 3;
         coin = 1;
         eventNumber = "1_0";
+        paintName = "empty";
+        truthPiece = 0;
+        gambleItem = 0;
+        Array.Clear(equips, 0, 3);
 
-        saveData = new SaveData(health, mental, coin, eventNumber, paintName, truthPiece, gambleItem);
+        saveData = new SaveData(health, mental, coin, eventNumber, paintName, truthPiece, gambleItem, equips);
         SaveSystem.Save(saveData);
     }
 }

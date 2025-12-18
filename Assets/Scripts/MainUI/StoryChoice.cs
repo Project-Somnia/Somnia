@@ -137,7 +137,7 @@ public class StoryChoice : MonoBehaviour
             // 진실의 조각 관련 체크
             if (choiceStructs[i].select == "정원사를 알고 있다.")
             {
-                if (GameManager.Instance.truthPiece < 1) choiceStructs[i].IsBlink = true;
+                if (TextManager.Instance.truthPiece < 1) choiceStructs[i].IsBlink = true;
                 else
                 {
                     int ran = UnityEngine.Random.Range(0, 10);
@@ -148,71 +148,93 @@ public class StoryChoice : MonoBehaviour
             else if (choiceStructs[i].select == "그들이 익숙하다.")
             {
                 // 진실의 조각 없으면 투명하게
-                if(GameManager.Instance.truthPiece <= 0) choiceStructs[i].IsBlink = true;
+                if (TextManager.Instance.truthPiece <= 0) choiceStructs[i].IsBlink = true;
                 else choiceStructs[i].IsBlink = false;
             }
-            
-            // 확률에 의한 트리거 이동
-            if(choiceStructs[i].select == "사격한다.")
+
+            // 챕터 4 사격: 확률에 의한 트리거 이동
+            if (choiceStructs[i].select == "사격한다.")
             {
                 Debug.Log("007");
-                if(choiceStructs[i].trigger == "4_2_A_1")
+                if (choiceStructs[i].trigger == "4_2_A_1")
                 {
-                    int ran = UnityEngine.Random.Range(0,10);
-                    if(ran < 3) choiceStructs[i].trigger = "4_2_A_1";
-                    else if(ran >= 3 && ran < 6) choiceStructs[i].trigger = "4_2_A_1_2";
+                    int ran = UnityEngine.Random.Range(0, 10);
+                    if (ran < 3) choiceStructs[i].trigger = "4_2_A_1";
+                    else if (ran >= 3 && ran < 6) choiceStructs[i].trigger = "4_2_A_1_2";
                     else choiceStructs[i].trigger = "4_2_A_1_3";
                 }
-                else if(choiceStructs[i].trigger == "4_2_A_1_2")
+                else if (choiceStructs[i].trigger == "4_2_A_1_2")
                 {
-                    int ran = UnityEngine.Random.Range(0,10);
-                    if(ran < 5) choiceStructs[i].trigger = "4_2_A_1_2";
+                    int ran = UnityEngine.Random.Range(0, 10);
+                    if (ran < 5) choiceStructs[i].trigger = "4_2_A_1_2";
                     else choiceStructs[i].trigger = "4_2_A_1_3";
                 }
             }
 
-            if(choiceStructs[i].select == "물건을 더 둘러본다.")
+            // 챕터 4 상점 : 코인에 따른 선택지 상태변화
+            if (choiceStructs[i].select == "물건을 더 둘러본다.")
             {
-                Debug.Log("앙 아이쇼핑띠"+Health.Instance.coin);
-                if(Health.Instance.coin >= 1) choiceStructs[i].IsBlink = false;
+                if (Health.Instance.coin >= 1) choiceStructs[i].IsBlink = false;
                 else choiceStructs[i].IsBlink = true;
             }
 
-            if(choiceStructs[i].select == "주운 돈을 둔다.")
+            if (choiceStructs[i].select == "주운 돈을 둔다.")
             {
-                if(Health.Instance.coin >= 1) choiceStructs[i].IsBlink = false;
+                if (Health.Instance.coin >= 1) choiceStructs[i].IsBlink = false;
                 else choiceStructs[i].IsBlink = true;
             }
 
-            // 진실의 조각 - 챕터 9
+            // 챕터 9 - 진실의 조각
             if (choiceStructs[i].select == "친구에 관한 이야기")
             {
                 // 진실의 조각 3개 이상 없으면 투명하게
-                if(GameManager.Instance.truthPiece < 3) choiceStructs[i].IsBlink = true;
+                if (TextManager.Instance.truthPiece < 3) choiceStructs[i].IsBlink = true;
                 else choiceStructs[i].IsBlink = false;
             }
             else if (choiceStructs[i].select == "\" 좋아해야만 했어요. \"")
             {
                 // 진실의 조각 1개 이상 없으면 투명하게
-                if(GameManager.Instance.truthPiece < 1) choiceStructs[i].IsBlink = true;
+                if (TextManager.Instance.truthPiece < 1) choiceStructs[i].IsBlink = true;
                 else choiceStructs[i].IsBlink = false;
             }
 
-            // 진실의 조각 - 챕터 10
+            // 챕터 10 - 진실의 조각
             if (choiceStructs[i].select == "\" 시아를 알고있어요. \"")
             {
                 // 진실의 조각 1개 이상 없으면 투명하게
-                if(GameManager.Instance.truthPiece < 1) choiceStructs[i].IsBlink = true;
+                if (TextManager.Instance.truthPiece < 1) choiceStructs[i].IsBlink = true;
                 else choiceStructs[i].IsBlink = false;
             }
             else if (choiceStructs[i].select == "\" 알고 있어요. \"")
             {
                 // 진실의 조각 1개 이상 없으면 투명하게
-                if(GameManager.Instance.truthPiece < 1) choiceStructs[i].IsBlink = true;
+                if (TextManager.Instance.truthPiece < 1) choiceStructs[i].IsBlink = true;
                 else choiceStructs[i].IsBlink = false;
             }
 
+            //챕터8 : 탈출도구
+            if (choiceStructs[i].select == "도구를 찾아본다." || choiceStructs[i].select == "도구를 더 찾는다.")
+            {
+                int ran = UnityEngine.Random.Range(0, 9);
+                if (ran == 0) choiceStructs[i].trigger = "8_2";
+                else choiceStructs[i].trigger = "8_2_" + ran;
+            }
+            else if (choiceStructs[i].select == "배를 띄워본다.")
+            {
+                if (TextManager.Instance.equips[0] && TextManager.Instance.equips[1] && TextManager.Instance.equips[2])
+                {
+                    choiceStructs[i].trigger = "8_2_b";
+                }
+                else
+                {
+                    choiceStructs[i].trigger = "8_2_a";
+                }
+            }
         }
+    }
+    private void CheckEquip()
+    {
+
     }
     public void ChoiceOff()
     {
@@ -261,31 +283,31 @@ public class StoryChoice : MonoBehaviour
     private void CheckChoice(string text)
     {
         // 랜덤 인카운터 - 전투
-        if(text == "그들을 공격한다.")
+        if (text == "그들을 공격한다.")
         {
-            int ran = UnityEngine.Random.Range(0,10);
-            if(ran < 5) Health.Instance.HealthMinus(1);
+            int ran = UnityEngine.Random.Range(0, 10);
+            if (ran < 5) Health.Instance.HealthMinus(1);
         }
-        else if(text == "그들을 밀친다.")
+        else if (text == "그들을 밀친다.")
         {
-            int ran = UnityEngine.Random.Range(0,10);
-            if(ran < 5) Health.Instance.HealthMinus(1);
+            int ran = UnityEngine.Random.Range(0, 10);
+            if (ran < 5) Health.Instance.HealthMinus(1);
         }
 
         // 모자 장수의 슬픔 상담소
-        if(text == "피가 묻은 종이") 
+        if (text == "피가 묻은 종이")
         {
             TextManager.Instance.gambleItem = 0;
             SaveLoadManager.Instance.gambleItem = 0;
             SaveLoadManager.Instance.SaveGameData();
         }
-        else if(text == "찢어진 종이")
+        else if (text == "찢어진 종이")
         {
             TextManager.Instance.gambleItem = 1;
             SaveLoadManager.Instance.gambleItem = 1;
             SaveLoadManager.Instance.SaveGameData();
         }
-        else if(text == "투명한 종이")
+        else if (text == "투명한 종이")
         {
             TextManager.Instance.gambleItem = 2;
             SaveLoadManager.Instance.gambleItem = 2;

@@ -30,8 +30,6 @@ public class TextManager : MonoBehaviour
     private bool IsPreventFadeDup = false;
     private bool IsPaintEmpty = false;
 
-    private float fadeTime = 2f;
-
     [Header("Paint Sets")]
     public Image paint;
     public Image newPaint;
@@ -40,8 +38,13 @@ public class TextManager : MonoBehaviour
     private string currentPaint = "";
     private string paintNum = "";
     private string curSplitEvent = "";
+    private float fadeTime = 2f;
     private int paintIdx = 0;
     private int fadeCnt = 0;
+    
+    [Header("세이브로드 필요한 아이템들")]
+    public bool[] equips = new bool[3]; // 각 순서별로 통나무, 노끈, 노
+    public int truthPiece = 0;
     public int gambleItem = 0;
 
     private static TextManager instance;
@@ -124,10 +127,6 @@ public class TextManager : MonoBehaviour
 
         // 스토리 텍스트 확인
         showTextDup = talkDatas[0].showText[0];
-        //CheckShowText(showTextDup);
-
-
-        //StartCoroutine("WaitAndSet");
     }
 
     public void SetDialogueFromChoice(string triggerEventId)
@@ -180,16 +179,16 @@ public class TextManager : MonoBehaviour
                 int count = int.Parse(Regex.Match(text, @"\d+").Value);
 
                 //진실의 조각
-                if (text.Contains("진실의 조각") && GameManager.Instance.truthPiece - count >= 0)
+                if (text.Contains("진실의 조각") && truthPiece - count >= 0)
                 {
-                    GameManager.Instance.truthPiece -= count;
-                    SaveLoadManager.Instance.truthPiece = GameManager.Instance.truthPiece;
+                    truthPiece -= count;
+                    SaveLoadManager.Instance.truthPiece = truthPiece;
                     SaveLoadManager.Instance.SaveGameData();
                 }
                 else
                 {
-                    GameManager.Instance.truthPiece = 0;
-                    SaveLoadManager.Instance.truthPiece = GameManager.Instance.truthPiece;
+                    truthPiece = 0;
+                    SaveLoadManager.Instance.truthPiece = truthPiece;
                     SaveLoadManager.Instance.SaveGameData();
                 }
 
@@ -223,16 +222,16 @@ public class TextManager : MonoBehaviour
                 //숫자만 자르기
                 int count = int.Parse(Regex.Match(text, @"\d+").Value);
 
-                if (text.Contains("진실의 조각") && GameManager.Instance.truthPiece + count <= 5)
+                if (text.Contains("진실의 조각") && truthPiece + count <= 5)
                 {
-                    GameManager.Instance.truthPiece += count;
-                    SaveLoadManager.Instance.truthPiece = GameManager.Instance.truthPiece;
+                    truthPiece += count;
+                    SaveLoadManager.Instance.truthPiece = truthPiece;
                     SaveLoadManager.Instance.SaveGameData();
                 }
                 else
                 {
-                    GameManager.Instance.truthPiece = 5;
-                    SaveLoadManager.Instance.truthPiece = GameManager.Instance.truthPiece;
+                    truthPiece = 5;
+                    SaveLoadManager.Instance.truthPiece = truthPiece;
                     SaveLoadManager.Instance.SaveGameData();
                 }
 
@@ -241,6 +240,10 @@ public class TextManager : MonoBehaviour
                 else if (text.Contains("돈")) Health.Instance.CoinPlus(count);
             }
         }
+        // 챕터 8 : 탈출도구
+        if(storyEventName == "8_2") equips[0] = true;
+        else if(storyEventName == "8_2_1") equips[1] = true;
+        else if(storyEventName == "8_2_8") equips[2] = true;
     }
     private void SetPaint(string paintName)
     {
@@ -322,6 +325,8 @@ public class TextManager : MonoBehaviour
         // 이어하기면 데이터 불러오기
         if (GameManager.Instance.IsContinue)
         {
+            equips = SaveLoadManager.Instance.equips;
+            truthPiece = SaveLoadManager.Instance.gambleItem;
             gambleItem = SaveLoadManager.Instance.gambleItem;
             currentPaint = SaveLoadManager.Instance.paintName;
             if (currentPaint == "empty") paint.sprite = empty;

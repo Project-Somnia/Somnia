@@ -30,13 +30,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void Start()
-    {
-        if(IsCanContinue) truthPiece = SaveLoadManager.Instance.truthPiece;
-    }
-
     public bool IsCanContinue = false;
     public bool IsContinue = false;
     public bool IsRetry = false;
-    public int truthPiece = 0;
 }
