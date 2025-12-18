@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -41,6 +42,7 @@ public class TextManager : MonoBehaviour
     private string curSplitEvent = "";
     private int paintIdx = 0;
     private int fadeCnt = 0;
+    public int gambleItem = 0;
 
     private static TextManager instance;
     public static TextManager Instance
@@ -76,7 +78,6 @@ public class TextManager : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) IsFastText = true;
             TypingManager.Instance.GetInputDown();
-            //CheckShowText(talkDatas[0].showText[currentPage]);
             if (TypingManager.Instance.isTypingEnd)
             {
                 if (currentPage == talkDatas.Length && TypingManager.Instance.isDialogEnd)
@@ -99,6 +100,7 @@ public class TextManager : MonoBehaviour
 
         // 텍스트 정보 가져오기
         talkDatas = this.GetComponent<Dialogue>().GetObjectDialogue();
+        CheckShowText();
         TypingManager.Instance.Typing(talkDatas[0].showText, storyText);
         currentPage++;
 
@@ -122,7 +124,8 @@ public class TextManager : MonoBehaviour
 
         // 스토리 텍스트 확인
         showTextDup = talkDatas[0].showText[0];
-        CheckShowText(showTextDup);
+        //CheckShowText(showTextDup);
+
 
         //StartCoroutine("WaitAndSet");
     }
@@ -159,7 +162,7 @@ public class TextManager : MonoBehaviour
         SetDialogue(finalId);
     }
 
-    public void CheckShowText(string text)
+    public void CheckShowText()
     {
         // 불러오기 했는데 -나 +가 포함되어 있으면 리턴
         if (GameManager.Instance.IsContinue && !IsPreventDup)
@@ -167,29 +170,76 @@ public class TextManager : MonoBehaviour
             IsPreventDup = true;
             return;
         }
-        if (text.Contains("-1"))
+        string text = "";
+        for (int i = 0; i < talkDatas[0].showText.Length; i++)
         {
-            if (text.Contains("진실의 조각") && GameManager.Instance.truthPiece > 0)
+            text = talkDatas[0].showText[i];
+            if (text.Contains("-"))
             {
-                GameManager.Instance.truthPiece -= 1;
-                SaveLoadManager.Instance.truthPiece = GameManager.Instance.truthPiece;
-                SaveLoadManager.Instance.SaveGameData();
+                //숫자만 자르기
+                int count = int.Parse(Regex.Match(text, @"\d+").Value);
+
+                //진실의 조각
+                if (text.Contains("진실의 조각") && GameManager.Instance.truthPiece - count >= 0)
+                {
+                    GameManager.Instance.truthPiece -= count;
+                    SaveLoadManager.Instance.truthPiece = GameManager.Instance.truthPiece;
+                    SaveLoadManager.Instance.SaveGameData();
+                }
+                else
+                {
+                    GameManager.Instance.truthPiece = 0;
+                    SaveLoadManager.Instance.truthPiece = GameManager.Instance.truthPiece;
+                    SaveLoadManager.Instance.SaveGameData();
+                }
+
+                // 플레이어 선택 아이템
+                if(text.Contains("아까 플레이어가 고른 요소"))
+                {
+                    switch(gambleItem)
+                    {
+                        case 0:
+                            Health.Instance.HealthMinus(1);
+                            talkDatas[0].showText[i] = talkDatas[0].showText[i].Replace("(아까 플레이어가 고른 요소)", "체력");
+                            break;
+                        case 1:
+                            Health.Instance.MentalMinus(1);
+                            talkDatas[0].showText[i] = talkDatas[0].showText[i].Replace("(아까 플레이어가 고른 요소)", "정신력");
+                            break;
+                        case 2:
+                            Health.Instance.CoinMinus(1);
+                            talkDatas[0].showText[i] = talkDatas[0].showText[i].Replace("(아까 플레이어가 고른 요소)", "돈");
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                if (text.Contains("체력")) Health.Instance.HealthMinus(count);
+                else if (text.Contains("정신력")) Health.Instance.MentalMinus(count);
+                else if (text.Contains("돈")) Health.Instance.CoinMinus(count);
             }
-            else if (text.Contains("체력")) Health.healthM();
-            else if (text.Contains("정신력")) Health.mentalM();
-            else if (text.Contains("돈")) Health.coinM();
-        }
-        else if (text.Contains("+1"))
-        {
-            if (text.Contains("진실의 조각") && GameManager.Instance.truthPiece < 5)
+            else if (text.Contains("+"))
             {
-                GameManager.Instance.truthPiece += 1;
-                SaveLoadManager.Instance.truthPiece = GameManager.Instance.truthPiece;
-                SaveLoadManager.Instance.SaveGameData();
+                //숫자만 자르기
+                int count = int.Parse(Regex.Match(text, @"\d+").Value);
+
+                if (text.Contains("진실의 조각") && GameManager.Instance.truthPiece + count <= 5)
+                {
+                    GameManager.Instance.truthPiece += count;
+                    SaveLoadManager.Instance.truthPiece = GameManager.Instance.truthPiece;
+                    SaveLoadManager.Instance.SaveGameData();
+                }
+                else
+                {
+                    GameManager.Instance.truthPiece = 5;
+                    SaveLoadManager.Instance.truthPiece = GameManager.Instance.truthPiece;
+                    SaveLoadManager.Instance.SaveGameData();
+                }
+
+                if (text.Contains("체력")) Health.Instance.HealthPlus(count);
+                else if (text.Contains("정신력")) Health.Instance.MentalPlus(count);
+                else if (text.Contains("돈")) Health.Instance.CoinPlus(count);
             }
-            else if (text.Contains("체력")) Health.healthP();
-            else if (text.Contains("정신력")) Health.mentalP();
-            else if (text.Contains("돈")) Health.coinP();
         }
     }
     private void SetPaint(string paintName)
@@ -269,8 +319,10 @@ public class TextManager : MonoBehaviour
         {
             yield return new WaitForSeconds(0.1f);
         }
+        // 이어하기면 데이터 불러오기
         if (GameManager.Instance.IsContinue)
         {
+            gambleItem = SaveLoadManager.Instance.gambleItem;
             currentPaint = SaveLoadManager.Instance.paintName;
             if (currentPaint == "empty") paint.sprite = empty;
             else
@@ -322,7 +374,7 @@ public class TextManager : MonoBehaviour
         //10,11은 같은 음악
         if (curSplitEvent == "10" && splitEventName == "11")
             return;
-            
+
         curSplitEvent = splitEventName;
         AudioManager.Instance.SetAudioTrack(splitEventName);
     }

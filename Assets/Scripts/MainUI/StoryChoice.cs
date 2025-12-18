@@ -1,10 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using TMPro;
+
 
 public class StoryChoice : MonoBehaviour
 {
@@ -133,7 +135,7 @@ public class StoryChoice : MonoBehaviour
         for (int i = 0; i < 3; i++)
         {
             // 진실의 조각 관련 체크
-            if (choiceStructs[i].select == "정원사를 알고있다.")
+            if (choiceStructs[i].select == "정원사를 알고 있다.")
             {
                 if (GameManager.Instance.truthPiece <= 0) choiceStructs[i].IsBlink = true;
                 else
@@ -171,13 +173,14 @@ public class StoryChoice : MonoBehaviour
 
             if(choiceStructs[i].select == "물건을 더 둘러본다.")
             {
-                if(SaveLoadManager.Instance.coin >= 1) choiceStructs[i].IsBlink = false;
+                Debug.Log("앙 아이쇼핑띠"+Health.Instance.coin);
+                if(Health.Instance.coin >= 1) choiceStructs[i].IsBlink = false;
                 else choiceStructs[i].IsBlink = true;
             }
 
             if(choiceStructs[i].select == "주운 돈을 둔다.")
             {
-                if(SaveLoadManager.Instance.coin >= 1) choiceStructs[i].IsBlink = false;
+                if(Health.Instance.coin >= 1) choiceStructs[i].IsBlink = false;
                 else choiceStructs[i].IsBlink = true;
             }
         }
@@ -228,27 +231,55 @@ public class StoryChoice : MonoBehaviour
 
     private void CheckChoice(string text)
     {
-        if(text.Contains("그들을 공격한다"))
+        // 랜덤 인카운터 - 전투
+        if(text == "그들을 공격한다.")
         {
             int ran = UnityEngine.Random.Range(0,10);
-            if(ran < 5) Health.healthM();
+            if(ran < 5) Health.Instance.HealthMinus(1);
         }
-        else if(text.Contains("그들을 밀친다"))
+        else if(text == "그들을 밀친다.")
         {
             int ran = UnityEngine.Random.Range(0,10);
-            if(ran < 5) Health.healthM();
+            if(ran < 5) Health.Instance.HealthMinus(1);
         }
-        if (text.Contains("-1"))
+
+        // 모자 장수의 슬픔 상담소
+        if(text == "피가 묻은 종이") 
         {
-            if (text.Contains("체력")) Health.healthM();
-            else if (text.Contains("정신력")) Health.mentalM();
-            else if (text.Contains("돈")) Health.coinM();
+            TextManager.Instance.gambleItem = 0;
+            SaveLoadManager.Instance.gambleItem = 0;
+            SaveLoadManager.Instance.SaveGameData();
         }
-        else if (text.Contains("+1"))
+        else if(text == "찢어진 종이")
         {
-            if (text.Contains("체력")) Health.healthP();
-            else if (text.Contains("정신력")) Health.mentalP();
-            else if (text.Contains("돈")) Health.coinP();
+            TextManager.Instance.gambleItem = 1;
+            SaveLoadManager.Instance.gambleItem = 1;
+            SaveLoadManager.Instance.SaveGameData();
+        }
+        else if(text == "투명한 종이")
+        {
+            TextManager.Instance.gambleItem = 2;
+            SaveLoadManager.Instance.gambleItem = 2;
+            SaveLoadManager.Instance.SaveGameData();
+        }
+
+        if (text.Contains("-"))
+        {
+            //숫자만 자르기
+            int count = int.Parse(Regex.Match(text, @"\d+").Value);
+
+            if (text.Contains("체력")) Health.Instance.HealthMinus(count);
+            else if (text.Contains("정신력")) Health.Instance.MentalMinus(count);
+            else if (text.Contains("돈")) Health.Instance.CoinMinus(count);
+        }
+        else if (text.Contains("+"))
+        {
+            //숫자만 자르기
+            int count = int.Parse(Regex.Match(text, @"\d+").Value);
+
+            if (text.Contains("체력")) Health.Instance.HealthPlus(count);
+            else if (text.Contains("정신력")) Health.Instance.MentalPlus(count);
+            else if (text.Contains("돈")) Health.Instance.CoinPlus(count);
         }
     }
 }

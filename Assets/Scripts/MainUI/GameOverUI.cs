@@ -82,12 +82,12 @@ public class GameOverUI : MonoBehaviour
         {
             case GameOverType.HpZero:
                 // 체력 부활 처리
-                Health.healthP();
+                Health.Instance.HealthPlus(1);
                 break;
 
             case GameOverType.MentalZero:
                 // 멘탈 부활 처리
-                Health.mentalP();
+                Health.Instance.MentalPlus(1);
                 break;
         }
 

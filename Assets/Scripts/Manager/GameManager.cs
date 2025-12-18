@@ -32,7 +32,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        truthPiece = SaveLoadManager.Instance.truthPiece;
+        if(IsCanContinue) truthPiece = SaveLoadManager.Instance.truthPiece;
     }
 
     public bool IsCanContinue = false;
