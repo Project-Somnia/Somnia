@@ -137,7 +137,7 @@ public class StoryChoice : MonoBehaviour
             // 진실의 조각 관련 체크
             if (choiceStructs[i].select == "정원사를 알고 있다.")
             {
-                if (GameManager.Instance.truthPiece <= 0) choiceStructs[i].IsBlink = true;
+                if (GameManager.Instance.truthPiece < 1) choiceStructs[i].IsBlink = true;
                 else
                 {
                     int ran = UnityEngine.Random.Range(0, 10);
@@ -183,6 +183,35 @@ public class StoryChoice : MonoBehaviour
                 if(Health.Instance.coin >= 1) choiceStructs[i].IsBlink = false;
                 else choiceStructs[i].IsBlink = true;
             }
+
+            // 진실의 조각 - 챕터 9
+            if (choiceStructs[i].select == "친구에 관한 이야기")
+            {
+                // 진실의 조각 3개 이상 없으면 투명하게
+                if(GameManager.Instance.truthPiece < 3) choiceStructs[i].IsBlink = true;
+                else choiceStructs[i].IsBlink = false;
+            }
+            else if (choiceStructs[i].select == "\" 좋아해야만 했어요. \"")
+            {
+                // 진실의 조각 1개 이상 없으면 투명하게
+                if(GameManager.Instance.truthPiece < 1) choiceStructs[i].IsBlink = true;
+                else choiceStructs[i].IsBlink = false;
+            }
+
+            // 진실의 조각 - 챕터 10
+            if (choiceStructs[i].select == "\" 시아를 알고있어요. \"")
+            {
+                // 진실의 조각 1개 이상 없으면 투명하게
+                if(GameManager.Instance.truthPiece < 1) choiceStructs[i].IsBlink = true;
+                else choiceStructs[i].IsBlink = false;
+            }
+            else if (choiceStructs[i].select == "\" 알고 있어요. \"")
+            {
+                // 진실의 조각 1개 이상 없으면 투명하게
+                if(GameManager.Instance.truthPiece < 1) choiceStructs[i].IsBlink = true;
+                else choiceStructs[i].IsBlink = false;
+            }
+
         }
     }
     public void ChoiceOff()

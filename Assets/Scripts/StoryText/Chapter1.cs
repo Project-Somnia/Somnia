@@ -15,7 +15,7 @@ public class Chapter1 : MonoBehaviour
         {
             yield return new WaitForSeconds(0.1f);
         }
-        if (!GameManager.Instance.IsContinue) TextManager.Instance.SetDialogue("7_1_B");
+        if (!GameManager.Instance.IsContinue) TextManager.Instance.SetDialogue("10_0");
         else TextManager.Instance.SetDialogue(SaveLoadManager.Instance.eventNumber);
     }
 }
