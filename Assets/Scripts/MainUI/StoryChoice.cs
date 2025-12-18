@@ -155,7 +155,6 @@ public class StoryChoice : MonoBehaviour
             // 챕터 4 사격: 확률에 의한 트리거 이동
             if (choiceStructs[i].select == "사격한다.")
             {
-                Debug.Log("007");
                 if (choiceStructs[i].trigger == "4_2_A_1")
                 {
                     int ran = UnityEngine.Random.Range(0, 10);
@@ -286,12 +285,12 @@ public class StoryChoice : MonoBehaviour
         if (text == "그들을 공격한다.")
         {
             int ran = UnityEngine.Random.Range(0, 10);
-            if (ran < 5) Health.Instance.HealthMinus(1);
+            if (ran < 5) TextManager.Instance.IsAttackFail = true;
         }
         else if (text == "그들을 밀친다.")
         {
             int ran = UnityEngine.Random.Range(0, 10);
-            if (ran < 5) Health.Instance.HealthMinus(1);
+            if (ran < 5) TextManager.Instance.IsAttackFail = true;
         }
 
         // 모자 장수의 슬픔 상담소

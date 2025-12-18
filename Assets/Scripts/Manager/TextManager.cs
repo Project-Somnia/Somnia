@@ -28,9 +28,11 @@ public class TextManager : MonoBehaviour
     public bool IsStory = false;
     public bool IsDialogSet = false;
     public bool IsFastText = false;
+    public bool IsAttackFail = false;
     private bool IsPreventDup = false;
     private bool IsPreventFadeDup = false;
     private bool IsPaintEmpty = false;
+
 
     [Header("Audio Sets")]
     public AudioSource audioSource;
@@ -180,6 +182,12 @@ public class TextManager : MonoBehaviour
         for (int i = 0; i < talkDatas[0].showText.Length; i++)
         {
             text = talkDatas[0].showText[i];
+            if(IsAttackFail && text.Contains("체력"))
+            {
+                IsAttackFail = false;
+                text = "\r";
+                talkDatas[0].showText[i] = "\r";
+            }
             if (text.Contains("-") && text.Any(char.IsDigit))
             {
                 //숫자만 자르기
