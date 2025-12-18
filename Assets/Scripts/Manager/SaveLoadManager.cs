@@ -463,7 +463,7 @@ public class SaveLoadManager : MonoBehaviour
         mental = 3;
         coin = 1;
         eventNumber = "1_0";
-        paintName = "empty";
+        paintName = "Empty";
         truthPiece = 0;
         gambleItem = 0;
         Array.Clear(equips, 0, 3);

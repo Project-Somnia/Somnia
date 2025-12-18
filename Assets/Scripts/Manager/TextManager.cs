@@ -253,7 +253,7 @@ public class TextManager : MonoBehaviour
 
         if (paintName == "Empty" || paintName == "") IsPaintEmpty = true;
 
-        if (currentPaint == "" || currentPaint == "empty" || currentPaint != paintName)
+        if (currentPaint == "" || currentPaint == "Empty" || currentPaint != paintName)
         {
             currentPaint = paintName;
             SaveLoadManager.Instance.paintName = paintName;
@@ -330,7 +330,7 @@ public class TextManager : MonoBehaviour
             truthPiece = SaveLoadManager.Instance.gambleItem;
             gambleItem = SaveLoadManager.Instance.gambleItem;
             currentPaint = SaveLoadManager.Instance.paintName;
-            if (currentPaint == "empty") paint.sprite = empty;
+            if (currentPaint == "Empty") paint.sprite = empty;
             else
             {
                 paintIdx = Array.FindIndex(paintSprites, x => currentPaint.Contains(x.name));
