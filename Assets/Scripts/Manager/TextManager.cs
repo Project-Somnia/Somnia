@@ -443,11 +443,7 @@ public class TextManager : MonoBehaviour
         // 오디오 트랙 설정
         string splitEventName = storyEventName.Split('_')[0];
         // 똑같으면 return
-        if (curSplitEvent == splitEventName) 
-        {
-            Debug.Log("똑같다이놈아");
-            return;
-        }
+        if (curSplitEvent == splitEventName) return;
 
         //1,2,3은 같은 음악
         if (curSplitEvent == "1" && (splitEventName == "2" || splitEventName == "3"))
