@@ -76,10 +76,14 @@ public class DialogueParse : MonoBehaviour
                 do
                 {
                     // 텍스트에 .이 포함되어 있으면 엔터 넣기
-                    if (rowValues[2].Contains(".") || rowValues[2].Contains("+") || rowValues[2].Contains("-"))
+                    if (rowValues[2].Contains(".") || rowValues[2].Contains("\""))
                         rowValues[2] += "\n";
 
-                    contextList.Add(rowValues[2].Trim('"', '\r'));
+                    if(rowValues[2].Contains("+") || rowValues[2].Contains("-"))
+                    {
+                        rowValues[2] += "\n  \n";
+                    }
+                    contextList.Add(rowValues[2].Trim('\r'));
                     if (++i < rows.Length) rowValues = ParseCsvLine(rows[i]);
                     else
                         break;

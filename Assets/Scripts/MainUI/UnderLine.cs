@@ -40,15 +40,9 @@ public class Underline : MonoBehaviour
         scrollRect.scrollSensitivity = scrollSensitivity;
     }
 
-    // void OnEnable()
-    // {
-    //     scrollRect = FindObjectOfType<ScrollRect>();
-    // }
-
     public void SetFirstLine()
     {
         float firstLine = 0f;
-
         // 미리 고정으로 그리는 줄(기본 6개)
         for (int i = 0; i < fixedLineCount; i++)
         {
@@ -99,6 +93,7 @@ public class Underline : MonoBehaviour
             }
             underlineImages.Add(img);
             underlineImages[i].enabled = true;
+            scrollRect.verticalNormalizedPosition = 0f;
         }
     }
 
@@ -117,7 +112,6 @@ public class Underline : MonoBehaviour
     // 필요하다면 추가 줄을 동적으로 붙이는 로직
     void LateUpdate()
     {
-        AutoScroll();
         tmpText.ForceMeshUpdate();
         TMP_TextInfo textInfo = tmpText.textInfo;
 
@@ -129,6 +123,7 @@ public class Underline : MonoBehaviour
             if (i >= underlineImages.Count)
             {
                 CreateUnderline();
+                scrollRect.verticalNormalizedPosition = 0f;
             }
 
             TMP_LineInfo line = textInfo.lineInfo[i];
@@ -165,17 +160,5 @@ public class Underline : MonoBehaviour
         img.color = imgCol;
 
         underlineImages.Add(img);
-    }
-
-    private void AutoScroll()
-    {
-        // content의 높이가 커졌는지 감지
-        float currentHeight = tmpText.preferredHeight;
-        if (currentHeight > prevHeight)
-        {
-            // 맨 아래로 자동 스크롤
-            scrollRect.verticalNormalizedPosition = 0f;
-            prevHeight = currentHeight;
-        }
     }
 }
