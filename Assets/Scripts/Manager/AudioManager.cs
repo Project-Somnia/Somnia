@@ -56,7 +56,7 @@ public class AudioManager : MonoBehaviour
             SwapTrack(audioClips[2]);
         else if(eventNumber == "10" || eventNumber == "11")
             SwapTrack(audioClips[3]);
-        else if(eventNumber == "R")
+        else if(eventNumber == "R" || eventNumber == "T" || eventNumber == "D")
             SwapTrack(audioClips[4]);
         else
             Debug.LogError("해당 이벤트에 적용되는 오디오가 없습니다!");

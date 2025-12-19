@@ -185,7 +185,8 @@ public class Health : MonoBehaviour
 
             if (gameOverUI != null)
             {
-                RequestGameOver(PendingGameOverType.HpZero);
+                GameManager.Instance.IsZero = true;
+                //RequestGameOver(PendingGameOverType.HpZero);
             }
             else
             {
@@ -229,7 +230,8 @@ public class Health : MonoBehaviour
 
             if (gameOverUI != null)
             {
-                RequestGameOver(PendingGameOverType.MentalZero);
+                GameManager.Instance.IsZero = true;
+                //RequestGameOver(PendingGameOverType.MentalZero);
             }
             else
             {
@@ -272,7 +274,10 @@ public class Health : MonoBehaviour
         if (pendingGameOver != PendingGameOverType.None) return;
 
         pendingGameOver = type;
-
+        if(type == PendingGameOverType.HpZero)
+            TextManager.Instance.SetDialogueFromChoice("D_1");
+        else if(type == PendingGameOverType.MentalZero)
+            TextManager.Instance.SetDialogueFromChoice("T_1");
         if (!isWaitingGameOver)
             StartCoroutine(WaitStoryEndAndShowGameOver());
     }

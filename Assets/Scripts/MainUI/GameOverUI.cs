@@ -66,6 +66,8 @@ public class GameOverUI : MonoBehaviour
         GameManager.Instance.IsContinue = false;
         GameManager.Instance.IsCanContinue = false;
         GameManager.Instance.IsRetry = true;
+        GameManager.Instance.IsZero = false;
+        GameManager.Instance.IsGameOver = false;
         // 여기서 메인메뉴로 나가거나, 리트라이 씬 로드 등 원하는 동작
         SceneManager.LoadScene("Title");
     }
@@ -82,12 +84,22 @@ public class GameOverUI : MonoBehaviour
         {
             case GameOverType.HpZero:
                 // 체력 부활 처리
+                GameManager.Instance.IsZero = false;
+                GameManager.Instance.IsGameOver = false;
+                GameManager.Instance.IsRebirth = true;
                 Health.Instance.HealthPlus(1);
+                TextManager.Instance.currentPage = 0;
+                TextManager.Instance.SetDialogueFromChoice(TextManager.Instance.originNextEvent);
                 break;
 
             case GameOverType.MentalZero:
                 // 멘탈 부활 처리
+                GameManager.Instance.IsZero = false;
+                GameManager.Instance.IsGameOver = false;
+                GameManager.Instance.IsRebirth = true;
                 Health.Instance.MentalPlus(1);
+                TextManager.Instance.currentPage = 0;
+                TextManager.Instance.SetDialogueFromChoice(TextManager.Instance.originNextEvent);
                 break;
         }
 

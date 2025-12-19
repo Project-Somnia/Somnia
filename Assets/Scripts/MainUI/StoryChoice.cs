@@ -229,11 +229,16 @@ public class StoryChoice : MonoBehaviour
                     choiceStructs[i].trigger = "8_2_a";
                 }
             }
-        }
-    }
-    private void CheckEquip()
-    {
 
+            // 멘탈 제로 인카운터
+            if (choiceStructs[i].select == "괴로운 기억을 잊는다.")
+            {
+                // 진실의 조각 2개 이상 없으면 투명하게
+                if (TextManager.Instance.truthPiece < 2) choiceStructs[i].IsBlink = true;
+                else choiceStructs[i].IsBlink = false;
+            }
+
+        }
     }
     public void ChoiceOff()
     {
@@ -255,6 +260,7 @@ public class StoryChoice : MonoBehaviour
             IsCanSelect = false;
             CheckChoice(choiceText1.text);
             ChoiceOff();
+            if (!GameManager.Instance.IsZero) TextManager.Instance.originNextEvent = choiceStructs[0].trigger;
             TextManager.Instance.SetDialogueFromChoice(choiceStructs[0].trigger);
         }
     }
@@ -265,6 +271,7 @@ public class StoryChoice : MonoBehaviour
             IsCanSelect = false;
             CheckChoice(choiceText2.text);
             ChoiceOff();
+            if (!GameManager.Instance.IsZero) TextManager.Instance.originNextEvent = choiceStructs[1].trigger;
             TextManager.Instance.SetDialogueFromChoice(choiceStructs[1].trigger);
         }
     }
@@ -275,6 +282,7 @@ public class StoryChoice : MonoBehaviour
             IsCanSelect = false;
             CheckChoice(choiceText3.text);
             ChoiceOff();
+            if (!GameManager.Instance.IsZero) TextManager.Instance.originNextEvent = choiceStructs[2].trigger;
             TextManager.Instance.SetDialogueFromChoice(choiceStructs[2].trigger);
         }
     }

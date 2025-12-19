@@ -33,4 +33,8 @@ public class GameManager : MonoBehaviour
     public bool IsCanContinue = false;
     public bool IsContinue = false;
     public bool IsRetry = false;
+    public bool IsZero = false;
+    public bool IsGameOver = false;
+    public bool IsMentalMor = false;
+    public bool IsRebirth = false;
 }
