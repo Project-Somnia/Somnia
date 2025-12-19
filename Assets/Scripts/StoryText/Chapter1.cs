@@ -16,11 +16,15 @@ public class Chapter1 : MonoBehaviour
 
     IEnumerator WaitForSet()
     {
-        while (!TextManager.Instance.IsDialogSet && IsFadeOver)
+        while(!IsFadeOver)
         {
             yield return new WaitForSeconds(0.1f);
         }
-        if (!GameManager.Instance.IsContinue) TextManager.Instance.SetDialogue("1_2");
+        while (!TextManager.Instance.IsDialogSet)
+        {
+            yield return new WaitForSeconds(0.1f);
+        }
+        if (!GameManager.Instance.IsContinue) TextManager.Instance.SetDialogue("1_0");
         else TextManager.Instance.SetDialogue(SaveLoadManager.Instance.eventNumber);
     }
 
