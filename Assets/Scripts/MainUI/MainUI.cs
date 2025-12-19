@@ -162,6 +162,6 @@ public class MainUI : MonoBehaviour
         fadePanel.gameObject.SetActive(true);   
         fadePanel.DOFade(1,fadeTime);
         yield return new WaitForSeconds(fadeTime);
-        SceneManager.LoadScene("GameKabocha2");
+        SceneManager.LoadScene("GameKabocha2_NOAD");
     }
 }
