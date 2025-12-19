@@ -13,6 +13,7 @@ using TMPro;
 public class TextManager : MonoBehaviour
 {
     public GameObject ChapterObject;
+    public GameObject commingsoon;
     public GameOverUI gameOverUI;
     public TextMeshProUGUI storyText;
     string[] dialogStrings;
@@ -48,9 +49,9 @@ public class TextManager : MonoBehaviour
     public Sprite empty;
     public Sprite death;
     public string originNextEvent = "";
+    public string curSplitEvent = "1";
     private string currentPaint = "";
     private string paintNum = "";
-    private string curSplitEvent = "1";
     private string ranHealthEvent = "( -1 체력 )";
     private float fadeTime = 2f;
     private int paintIdx = 0;
@@ -185,6 +186,7 @@ public class TextManager : MonoBehaviour
                 GameManager.Instance.IsRebirth = true;
 
                 pendingMainEventId = originNextEvent;
+                curSplitEvent = storyEventName.Split("_")[0];
                 SetDialogue(originNextEvent);
                 return;
             }
@@ -194,7 +196,7 @@ public class TextManager : MonoBehaviour
 
                 // 한 번 쓰면 비워준다 (다음 랜덤에 영향 없게)
                 pendingMainEventId = null;
-
+                curSplitEvent = storyEventName.Split("_")[0];
                 SetDialogue(mainId);
                 return;
             }
@@ -410,7 +412,6 @@ public class TextManager : MonoBehaviour
             nextPaint.DOFade(0f, fadeTime);
         }
         IsPreventFadeDup = true;
-        Debug.Log("페인트설정"+fadeCnt);
         fadeCnt++;
     }
 
@@ -442,7 +443,11 @@ public class TextManager : MonoBehaviour
         // 오디오 트랙 설정
         string splitEventName = storyEventName.Split('_')[0];
         // 똑같으면 return
-        if (curSplitEvent == splitEventName) return;
+        if (curSplitEvent == splitEventName) 
+        {
+            Debug.Log("똑같다이놈아");
+            return;
+        }
 
         //1,2,3은 같은 음악
         if (curSplitEvent == "1" && (splitEventName == "2" || splitEventName == "3"))
@@ -478,9 +483,9 @@ public class TextManager : MonoBehaviour
         if (curSplitEvent == "10" && splitEventName == "11")
             return;
 
-        if (curSplitEvent == "R" && (splitEventName == "D" || splitEventName == "T"))
-        if (curSplitEvent == "D" && (splitEventName == "R" || splitEventName == "T"))
-        if (curSplitEvent == "T" && (splitEventName == "D" || splitEventName == "R"))
+        if (curSplitEvent == "R" && (splitEventName == "D" || splitEventName == "T")) return;
+        if (curSplitEvent == "D" && (splitEventName == "R" || splitEventName == "T")) return;
+        if (curSplitEvent == "T" && (splitEventName == "D" || splitEventName == "R")) return;
 
         curSplitEvent = splitEventName;
         AudioManager.Instance.SetAudioTrack(splitEventName);
