@@ -17,6 +17,7 @@ public class MainUI : MonoBehaviour
     public Image tapButton;
     public Image tapText;
     public Image newGameButton;
+    public Image fadePanel;
     public TextMeshProUGUI newGameText;
     public Image continueButton;
     public TextMeshProUGUI continueText;
@@ -26,6 +27,7 @@ public class MainUI : MonoBehaviour
     private bool IsFade = false;
     private bool IsCanStart = false;
     private bool IsHalf = false;
+    private bool IsFadeToGame = false;
 
     private float fadeTime = 2.5f;
 
@@ -58,8 +60,8 @@ public class MainUI : MonoBehaviour
             StartCoroutine(FadeIn(bg_3));
             StartCoroutine(FadeIn(newGameButton));
 
-            if(GameManager.Instance.IsCanContinue) StartCoroutine(FadeIn(continueButton));
-            
+            if (GameManager.Instance.IsCanContinue) StartCoroutine(FadeIn(continueButton));
+
             t = newGameText.DOFade(1, fadeTime);
             t = continueText.DOFade(1, fadeTime);
         }
@@ -127,17 +129,39 @@ public class MainUI : MonoBehaviour
     }
     public void StartGame()
     {
-        if (IsCanStart) 
+        if (IsCanStart)
         {
+            Debug.Log("시작!");
             GameManager.Instance.IsRetry = false;
             GameManager.Instance.IsContinue = false;
-            SceneManager.LoadScene("GameKabocha2");
+            StopAllCoroutines();
+            if (!IsFadeToGame)
+            {
+                IsFadeToGame = true;
+                StartCoroutine("FadeToGame");
+            }
+
+            //SceneManager.LoadScene("GameKabocha2");
         }
     }
     public void ContinueGame()
     {
         SaveLoadManager.Instance.LoadGameData();
         GameManager.Instance.IsContinue = true;
+        StopAllCoroutines();
+        if (!IsFadeToGame)
+        {
+            IsFadeToGame = true;
+            StartCoroutine("FadeToGame");
+        }
+        //SceneManager.LoadScene("GameKabocha2");
+    }
+
+    IEnumerator FadeToGame()
+    {
+        fadePanel.gameObject.SetActive(true);   
+        fadePanel.DOFade(1,fadeTime);
+        yield return new WaitForSeconds(fadeTime);
         SceneManager.LoadScene("GameKabocha2");
     }
 }
