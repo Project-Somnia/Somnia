@@ -6,17 +6,8 @@ using UnityEngine.Audio;
 using UnityEngine.UI;
 
 public class Health : MonoBehaviour
-{   
+{
     public ScreenShake screenShake;
-
-    [Header("Actions")]
-    public static Action healthP;
-    public static Action healthM;
-    public static Action mentalP;
-    public static Action mentalM;
-    public static Action coinP;
-    public static Action coinM;
-
     [Header("Audios")]
     public AudioSource audioSource;
     public AudioClip plus;
@@ -48,15 +39,26 @@ public class Health : MonoBehaviour
     private enum PendingGameOverType { None, HpZero, MentalZero }
     private PendingGameOverType pendingGameOver = PendingGameOverType.None;
     private bool isWaitingGameOver = false;
-
+    private static Health instance;
+    public static Health Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                Debug.LogError("No Health Instance");
+            }
+            return instance;
+        }
+    }
     private void Awake()
     {
-        healthP += HealthPlus;
-        healthM += HealthMinus;
-        mentalP += MentalPlus;
-        mentalM += MentalMinus;
-        coinP += CoinPlus;
-        coinM += CoinMinus;
+        if (instance != null && instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        instance = this;
     }
     void Start()
     {
@@ -76,7 +78,13 @@ public class Health : MonoBehaviour
     void HealthUpdate()
     {
         // 체력 업데이트
-        if (health == 1)
+        if (health == 0)
+        {
+            hp_1.gameObject.SetActive(false);
+            hp_2.gameObject.SetActive(false);
+            hp_3.gameObject.SetActive(false);
+        }
+        else if (health == 1)
         {
             hp_1.gameObject.SetActive(true);
             hp_2.gameObject.SetActive(false);
@@ -96,7 +104,13 @@ public class Health : MonoBehaviour
         }
 
         // 정신력 업데이트
-        if (mental == 1)
+        if (mental == 0)
+        {
+            mt_1.gameObject.SetActive(false);
+            mt_2.gameObject.SetActive(false);
+            mt_3.gameObject.SetActive(false);
+        }
+        else if (mental == 1)
         {
             mt_1.gameObject.SetActive(true);
             mt_2.gameObject.SetActive(false);
@@ -114,8 +128,13 @@ public class Health : MonoBehaviour
             mt_2.gameObject.SetActive(true);
             mt_3.gameObject.SetActive(true);
         }
-
         // 코인 업데이트
+        if (coin == 0)
+        {
+            coin_1.gameObject.SetActive(false);
+            coin_2.gameObject.SetActive(false);
+            coin_3.gameObject.SetActive(false);
+        }
         if (coin == 1)
         {
             coin_1.gameObject.SetActive(true);
@@ -136,123 +155,118 @@ public class Health : MonoBehaviour
         }
     }
 
-    public void HealthPlus()
+    public void HealthPlus(int count)
     {
-        if (health < 3)
-        {
-            health += 1;
-            audioSource.PlayOneShot(plus);
+        if (health + count <= 3) health += count;
+        else health = 3;
 
-            SaveLoadManager.Instance.health = health;
-            SaveLoadManager.Instance.mental = mental;
-            SaveLoadManager.Instance.coin = coin;
-            SaveLoadManager.Instance.SaveGameData();
-        }
-        else Debug.Log("이미 풀피!");
+        audioSource.PlayOneShot(plus);
+
+        SaveLoadManager.Instance.health = health;
+        SaveLoadManager.Instance.mental = mental;
+        SaveLoadManager.Instance.coin = coin;
+        SaveLoadManager.Instance.SaveGameData();
     }
-    public void HealthMinus()
-    {   
+    public void HealthMinus(int count)
+    {
         if (screenShake != null)
-        screenShake.Shake(0.4f);
+            screenShake.Shake(0.4f);
 
-        if (health > 0)
-        {
-            health -= 1;
-            audioSource.PlayOneShot(minus);
-        }
+        if (health - count > 0) health -= count;
+        else health = 0;
+
+        audioSource.PlayOneShot(minus);
 
         if (health == 0)
-    {   
-        hp_1.gameObject.SetActive(false);
+        {
+            hp_1.gameObject.SetActive(false);
 
-        Debug.Log("체력이 0입니다.");
+            Debug.Log("체력이 0입니다.");
 
             if (gameOverUI != null)
             {
-                RequestGameOver(PendingGameOverType.HpZero);
+                GameManager.Instance.IsZero = true;
+                //RequestGameOver(PendingGameOverType.HpZero);
             }
             else
             {
                 Debug.LogWarning("Health에 GameOverUI가 할당되어 있지 않습니다.");
             }
+        }
+
+        SaveLoadManager.Instance.health = health;
+        SaveLoadManager.Instance.mental = mental;
+        SaveLoadManager.Instance.coin = coin;
+        SaveLoadManager.Instance.SaveGameData();
     }
-            SaveLoadManager.Instance.health = health;
-            SaveLoadManager.Instance.mental = mental;
-            SaveLoadManager.Instance.coin = coin;
-            SaveLoadManager.Instance.SaveGameData();
-    }
-    public void MentalPlus()
+    public void MentalPlus(int count)
     {
-        if (mental < 3)
-        {
-            mental += 1;
-            audioSource.PlayOneShot(plus);
 
-            SaveLoadManager.Instance.health = health;
-            SaveLoadManager.Instance.mental = mental;
-            SaveLoadManager.Instance.coin = coin;
-            SaveLoadManager.Instance.SaveGameData();
-        }
-        Debug.Log("풀멘탈!");
+        if (mental + count <= 3) mental += count;
+        else mental = 3;
+
+        audioSource.PlayOneShot(plus);
+
+        SaveLoadManager.Instance.health = health;
+        SaveLoadManager.Instance.mental = mental;
+        SaveLoadManager.Instance.coin = coin;
+        SaveLoadManager.Instance.SaveGameData();
     }
-    public void MentalMinus()
-    {   
+    public void MentalMinus(int count)
+    {
         if (screenShake != null)
-        screenShake.Shake(0.4f);
+            screenShake.Shake(0.4f);
 
-        if (mental > 0)
-        {
-            mental -= 1;
-            audioSource.PlayOneShot(minus);
-        }
+        if (mental - count > 0) mental -= count;
+        else mental = 0;
+
+        audioSource.PlayOneShot(minus);
+
         if (mental == 0)
-    {   
-        mt_1.gameObject.SetActive(false);
+        {
+            mt_1.gameObject.SetActive(false);
 
-        Debug.Log("정신력이 0입니다.");
+            Debug.Log("정신력이 0입니다.");
 
             if (gameOverUI != null)
             {
-                RequestGameOver(PendingGameOverType.MentalZero);
+                GameManager.Instance.IsZero = true;
+                //RequestGameOver(PendingGameOverType.MentalZero);
             }
             else
             {
                 Debug.LogWarning("Mental에 GameOverUI가 할당되어 있지 않습니다.");
             }
-    }
-            SaveLoadManager.Instance.health = health;
-            SaveLoadManager.Instance.mental = mental;
-            SaveLoadManager.Instance.coin = coin;
-            SaveLoadManager.Instance.SaveGameData();
-    }
-
-    public void CoinPlus()
-    {
-        if (coin < 3)
-        {
-            coin += 1;
-            audioSource.PlayOneShot(plus);
-
-            SaveLoadManager.Instance.health = health;
-            SaveLoadManager.Instance.mental = mental;
-            SaveLoadManager.Instance.coin = coin;
-            SaveLoadManager.Instance.SaveGameData();
         }
-        else Debug.Log("이미 풀코인!");
+        SaveLoadManager.Instance.health = health;
+        SaveLoadManager.Instance.mental = mental;
+        SaveLoadManager.Instance.coin = coin;
+        SaveLoadManager.Instance.SaveGameData();
     }
-    public void CoinMinus()
-    {
-        if (coin > 0)
-        {
-            coin -= 1;
-            audioSource.PlayOneShot(minus);
 
-            SaveLoadManager.Instance.health = health;
-            SaveLoadManager.Instance.mental = mental;
-            SaveLoadManager.Instance.coin = coin;
-            SaveLoadManager.Instance.SaveGameData();
-        }
-        else Debug.Log("코인 부족!");
+    public void CoinPlus(int count)
+    {
+        if (coin + count <= 3) coin += count;
+        else coin = 3;
+
+        audioSource.PlayOneShot(plus);
+
+        SaveLoadManager.Instance.health = health;
+        SaveLoadManager.Instance.mental = mental;
+        SaveLoadManager.Instance.coin = coin;
+        SaveLoadManager.Instance.SaveGameData();
+    }
+    public void CoinMinus(int count)
+    {
+        if (coin - count > 0) coin -= count;
+        else coin = 0;
+
+        audioSource.PlayOneShot(minus);
+
+        SaveLoadManager.Instance.health = health;
+        SaveLoadManager.Instance.mental = mental;
+        SaveLoadManager.Instance.coin = coin;
+        SaveLoadManager.Instance.SaveGameData();
     }
     private void RequestGameOver(PendingGameOverType type)
     {
@@ -260,7 +274,10 @@ public class Health : MonoBehaviour
         if (pendingGameOver != PendingGameOverType.None) return;
 
         pendingGameOver = type;
-
+        if(type == PendingGameOverType.HpZero)
+            TextManager.Instance.SetDialogueFromChoice("D_1");
+        else if(type == PendingGameOverType.MentalZero)
+            TextManager.Instance.SetDialogueFromChoice("T_1");
         if (!isWaitingGameOver)
             StartCoroutine(WaitStoryEndAndShowGameOver());
     }

@@ -12,7 +12,13 @@ public class DialogueParse : MonoBehaviour
     private string googleCsvUrl = "https://docs.google.com/spreadsheets/d/1XMHN-jTMhUGnjLoJdVjCC6levhM5KZKXHJGdw5wKP08/export?format=csv";
     public TalkData[] GetDialogue(string eventName)
     {
-        return DialogueDictionary[eventName];
+        if (!DialogueDictionary.ContainsKey(eventName))
+        {
+            TextManager.Instance.commingsoon.SetActive(true);
+            Debug.Log($"대화 데이터를 찾을 수 없습니다: {eventName}");
+            return null;  // 또는 빈 배열 return new TalkData[0];
+        }
+        else return DialogueDictionary[eventName];
     }
 
     private static DialogueParse instance;
@@ -87,10 +93,14 @@ public class DialogueParse : MonoBehaviour
                 do
                 {
                     // 텍스트에 .이 포함되어 있으면 엔터 넣기
-                    if (rowValues[2].Contains(".") || rowValues[2].Contains("+") || rowValues[2].Contains("-"))
+                    if (rowValues[2].Contains("."))
                         rowValues[2] += "\n";
 
-                    contextList.Add(rowValues[2].Trim('"', '\r'));
+                    if (rowValues[2].Contains("+") || rowValues[2].Contains("-"))
+                    {
+                        rowValues[2] += "\n";
+                    }
+                    contextList.Add(rowValues[2].Trim('\r'));
                     if (++i < rows.Length) rowValues = ParseCsvLine(rows[i]);
                     else
                         break;
@@ -138,12 +148,16 @@ public class DialogueParse : MonoBehaviour
                 }
                 else
                 {
+                    if (inQuotes)
+                    {
+                        field += '\n';
+                    }
                     inQuotes = !inQuotes;
                 }
             }
             else if (c == ',' && !inQuotes)
             {
-                result.Add(field.Trim());
+                result.Add(field.TrimEnd('\r'));
                 field = "";
             }
             else
@@ -151,8 +165,7 @@ public class DialogueParse : MonoBehaviour
                 field += c;
             }
         }
-
-        result.Add(field.Trim());
+        result.Add(field.TrimEnd('\r'));
         return result.ToArray();
     }
 }

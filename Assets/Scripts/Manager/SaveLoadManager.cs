@@ -11,13 +11,16 @@ using UnityEngine;
 [System.Serializable]
 public class SaveData
 {
-    public SaveData(int health, int mental, int coin, string eventNumber, string paintName)
+    public SaveData(int health, int mental, int coin, string eventNumber, string paintName, int truthPiece, int gambleItem, bool[] equips)
     {
         _health = health;
         _mental = mental;
         _coin = coin;
         _eventNumber = eventNumber;
         _paintName = paintName;
+        _truthPiece = truthPiece;
+        _gambleItem = gambleItem;
+        _equips = equips;
     }
 
     public int _health;
@@ -25,6 +28,9 @@ public class SaveData
     public int _coin;
     public string _eventNumber;
     public string _paintName;
+    public int _truthPiece;
+    public int _gambleItem;
+    public bool[] _equips;
 }
 
 public static class SaveSystem
@@ -110,14 +116,14 @@ public static class SaveSystem
             {
                 string backupPath = SaveFilePath + ".bak";
                 File.Copy(SaveFilePath, backupPath, true);
-                Debug.Log("백업 생성: " + backupPath);
+                //Debug.Log("백업 생성: " + backupPath);
             }
 
             // AES 암호화
             byte[] encryptedBytes = Encrypt(json, key);
 
             File.WriteAllBytes(SaveFilePath, encryptedBytes);
-            Debug.Log("<color=green>Save Success (Encrypted): " + SaveFilePath + "</color>");
+            //Debug.Log("<color=green>Save Success (Encrypted): " + SaveFilePath + "</color>");
         }
         catch (Exception e)
         {
@@ -403,6 +409,9 @@ public class SaveLoadManager : MonoBehaviour
     public int coin = 1;
     public string eventNumber;
     public string paintName;
+    public int truthPiece;
+    public int gambleItem;
+    public bool[] equips;
 
     SaveData saveData;
     SaveData loadData;
@@ -418,14 +427,7 @@ public class SaveLoadManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        // 저장데이터 만들기
-        // loadData = SaveSystem.Load();
-        // if (loadData == null) SaveGameData();
     }
-    // void Start()
-    // {
-    //     LoadGameData();
-    // }
 
     public void LoadGameData()
     {
@@ -444,10 +446,14 @@ public class SaveLoadManager : MonoBehaviour
         coin = loadData._coin;
         eventNumber = loadData._eventNumber;
         paintName = loadData._paintName;
+        truthPiece = loadData._truthPiece;
+        gambleItem = loadData._gambleItem;
+        equips = loadData._equips;
+        
     }
     public void SaveGameData()
     {
-        saveData = new SaveData(health, mental, coin, eventNumber, paintName);
+        saveData = new SaveData(health, mental, coin, eventNumber, paintName, truthPiece, gambleItem, equips);
         SaveSystem.Save(saveData);
     }
 
@@ -457,8 +463,12 @@ public class SaveLoadManager : MonoBehaviour
         mental = 3;
         coin = 1;
         eventNumber = "1_0";
+        paintName = "Empty";
+        truthPiece = 0;
+        gambleItem = 0;
+        Array.Clear(equips, 0, 3);
 
-        saveData = new SaveData(health, mental, coin, eventNumber, paintName);
+        saveData = new SaveData(health, mental, coin, eventNumber, paintName, truthPiece, gambleItem, equips);
         SaveSystem.Save(saveData);
     }
 }

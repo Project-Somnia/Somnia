@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,35 +13,54 @@ using TMPro;
 public class TextManager : MonoBehaviour
 {
     public GameObject ChapterObject;
+    public GameObject commingsoon;
+    public GameOverUI gameOverUI;
     public TextMeshProUGUI storyText;
     string[] dialogStrings;
     TalkData[] talkDatas;
     public string storyEventName;
 
+
     public string[] selectText = new string[3];
     public string[] triggerEvent = new string[3];
     public string showTextDup;
 
-    private int currentPage = 0; // 대화문 개수 변수
+    public int currentPage = 0; // 대화문 개수 변수
     public string pendingMainEventId;
     public bool IsStory = false;
     public bool IsDialogSet = false;
     public bool IsFastText = false;
+    public bool IsAttackFail = false;
     private bool IsPreventDup = false;
     private bool IsPreventFadeDup = false;
     private bool IsPaintEmpty = false;
+    private bool IsPaintDeath = false;
 
-    private float fadeTime = 2f;
+
+    [Header("Audio Sets")]
+    public AudioSource audioSource;
+    public AudioClip plus;
+    public AudioClip minus;
 
     [Header("Paint Sets")]
     public Image paint;
     public Image newPaint;
-    public Sprite[] paintSprites = new Sprite[9];
+    public Sprite[] paintSprites = new Sprite[10];
     public Sprite empty;
+    public Sprite death;
+    public string originNextEvent = "";
+    public string curSplitEvent = "1";
     private string currentPaint = "";
     private string paintNum = "";
+    private string ranHealthEvent = "( -1 체력 )";
+    private float fadeTime = 2f;
     private int paintIdx = 0;
     private int fadeCnt = 0;
+
+    [Header("세이브로드 필요한 아이템들")]
+    public bool[] equips = new bool[3]; // 각 순서별로 통나무, 노끈, 노
+    public int truthPiece = 0;
+    public int gambleItem = 0;
 
     private static TextManager instance;
     public static TextManager Instance
@@ -71,7 +92,6 @@ public class TextManager : MonoBehaviour
 
     private void Update()
     {
-        //if ((Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) && IsStory)
         if (IsStory)
         {
             if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) IsFastText = true;
@@ -80,16 +100,24 @@ public class TextManager : MonoBehaviour
             {
                 if (currentPage == talkDatas.Length && TypingManager.Instance.isDialogEnd)
                 {
-                    //currentPage = talkDatas.Length;
                     IsStory = false;
                     IsFastText = false;
-                    StoryChoice.fadeChoice();
-                    currentPage = 0;
-                    //storyText.text = "";
-                    return;
+                    if (!GameManager.Instance.IsGameOver)
+                    {
+                        StoryChoice.fadeChoice();
+                        currentPage = 0;
+                        return;
+                    }
+                    if(GameManager.Instance.IsGameOver && !GameManager.Instance.IsMentalMor)
+                    {
+                        gameOverUI.ShowHpGameOver();
+                    }
+                    else if(GameManager.Instance.IsGameOver && GameManager.Instance.IsMentalMor)
+                    {
+                        gameOverUI.ShowMentalGameOver();
+                    }
+                    //게임오버상태면 선택지 표시하지 않음
                 }
-                // TypingManager.Instance.Typing(talkDatas[currentPage].showText, storyText);
-                // currentPage++;
             }
         }
     }
@@ -99,7 +127,32 @@ public class TextManager : MonoBehaviour
         storyText.text = "";
         storyEventName = eventNumber;
 
+        // 텍스트 정보 가져오기
         talkDatas = this.GetComponent<Dialogue>().GetObjectDialogue();
+        CheckShowText();
+        // 한번 더 체크
+        if (GameManager.Instance.IsZero)
+        {
+            if (Health.Instance.health == 0 && !GameManager.Instance.IsGameOver) 
+            {
+                GameManager.Instance.IsGameOver = true;
+                SetDialogue("D_1");
+                return;
+            }
+
+            else if(Health.Instance.mental == 0 && !GameManager.Instance.IsMentalMor)
+            {
+                GameManager.Instance.IsMentalMor = true;
+                SetDialogue("T_1");
+                return;
+            }
+            else if(storyEventName == "T_4") GameManager.Instance.IsGameOver = true;
+        }
+
+        //오디오 세팅
+        CheckAudioStat();
+        // 사진 세팅
+        SetPaint(talkDatas[0].eventImage);
         TypingManager.Instance.Typing(talkDatas[0].showText, storyText);
         currentPage++;
 
@@ -115,30 +168,35 @@ public class TextManager : MonoBehaviour
         StoryChoice.setChoiceText();
         IsStory = true;
 
-        // 사진 세팅
-        SetPaint(talkDatas[0].eventImage);
-
         SaveLoadManager.Instance.eventNumber = eventNumber;
         SaveLoadManager.Instance.SaveGameData();
 
         // 스토리 텍스트 확인
         showTextDup = talkDatas[0].showText[0];
-        CheckShowText(showTextDup);
-
-        //StartCoroutine("WaitAndSet");
     }
 
     public void SetDialogueFromChoice(string triggerEventId)
     {
         if (triggerEventId == "RETURN_MAIN")
         {
-            if (!string.IsNullOrEmpty(pendingMainEventId))
+            if(GameManager.Instance.IsMentalMor)
+            {
+                GameManager.Instance.IsZero = false;
+                GameManager.Instance.IsMentalMor = false;
+                GameManager.Instance.IsRebirth = true;
+
+                pendingMainEventId = originNextEvent;
+                curSplitEvent = storyEventName.Split("_")[0];
+                SetDialogue(originNextEvent);
+                return;
+            }
+            else if (!string.IsNullOrEmpty(pendingMainEventId))
             {
                 string mainId = pendingMainEventId;
 
                 // 한 번 쓰면 비워준다 (다음 랜덤에 영향 없게)
                 pendingMainEventId = null;
-
+                curSplitEvent = storyEventName.Split("_")[0];
                 SetDialogue(mainId);
                 return;
             }
@@ -148,39 +206,131 @@ public class TextManager : MonoBehaviour
                 return;
             }
         }
-
         string finalId = triggerEventId;
 
         // EncounterFlowManager가 존재하면 랜덤 인카운터 로직 적용
-        if (EncounterFlowManager.Instance != null)
+        if (EncounterFlowManager.Instance != null && !GameManager.Instance.IsZero)
         {
             // storyEventName = 현재 진행 중인 메인/랜덤 이벤트
             finalId = EncounterFlowManager.Instance.DecideNextEvent(storyEventName, triggerEventId);
         }
-
         SetDialogue(finalId);
     }
 
-    public void CheckShowText(string text)
+    public void CheckShowText()
     {
+        if(GameManager.Instance.IsRebirth)
+        {
+            GameManager.Instance.IsRebirth = false;
+            Underline.reDraw();
+            return;
+        }
         // 불러오기 했는데 -나 +가 포함되어 있으면 리턴
-        if (GameManager.Instance.IsContinue && !IsPreventDup)
+        else if (GameManager.Instance.IsContinue && !IsPreventDup)
         {
             IsPreventDup = true;
             return;
         }
-        if (text.Contains("-1"))
+        string text = "";
+        for (int i = 0; i < talkDatas[0].showText.Length; i++)
         {
-            if (text.Contains("체력")) Health.healthM();
-            else if (text.Contains("정신력")) Health.mentalM();
-            else if (text.Contains("돈")) Health.coinM();
+            text = talkDatas[0].showText[i];
+            if ((IsAttackFail && text.Contains("체력")) && (storyEventName == "R_3_A" || storyEventName == "R_2_A"))
+            {
+                IsAttackFail = false;
+                ranHealthEvent = "\r";
+                text = ranHealthEvent;
+                talkDatas[0].showText[i] = ranHealthEvent;
+            }
+            else if((!IsAttackFail && ranHealthEvent == "\r") && (storyEventName == "R_3_A" || storyEventName == "R_2_A"))
+            {
+                ranHealthEvent = "( -1 체력 )";
+                text = ranHealthEvent;
+                talkDatas[0].showText[i] = ranHealthEvent;
+            }
+            if (text.Contains("-") && text.Any(char.IsDigit))
+            {
+                //숫자만 자르기
+                int count = int.Parse(Regex.Match(text, @"\d+").Value);
+
+                //진실의 조각
+                if (text.Contains("진실의 조각") && truthPiece - count >= 0)
+                {
+                    truthPiece -= count;
+                    SaveLoadManager.Instance.truthPiece = truthPiece;
+                    SaveLoadManager.Instance.SaveGameData();
+
+                    audioSource.clip = minus;
+                    audioSource.Play();
+                }
+                else
+                {
+                    truthPiece = 0;
+                    SaveLoadManager.Instance.truthPiece = truthPiece;
+                    SaveLoadManager.Instance.SaveGameData();
+
+                    audioSource.clip = minus;
+                    audioSource.Play();
+                }
+
+                // 플레이어 선택 아이템
+                if (text.Contains("아까 플레이어가 고른 요소"))
+                {
+                    switch (gambleItem)
+                    {
+                        case 0:
+                            Health.Instance.HealthMinus(1);
+                            talkDatas[0].showText[i] = talkDatas[0].showText[i].Replace("(아까 플레이어가 고른 요소)", "체력");
+                            break;
+                        case 1:
+                            Health.Instance.MentalMinus(1);
+                            talkDatas[0].showText[i] = talkDatas[0].showText[i].Replace("(아까 플레이어가 고른 요소)", "정신력");
+                            break;
+                        case 2:
+                            Health.Instance.CoinMinus(1);
+                            talkDatas[0].showText[i] = talkDatas[0].showText[i].Replace("(아까 플레이어가 고른 요소)", "돈");
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                if (text.Contains("체력")) Health.Instance.HealthMinus(count);
+                else if (text.Contains("정신력")) Health.Instance.MentalMinus(count);
+                else if (text.Contains("돈")) Health.Instance.CoinMinus(count);
+            }
+            else if (text.Contains("+") && text.Any(char.IsDigit))
+            {
+                //숫자만 자르기
+                int count = int.Parse(Regex.Match(text, @"\d+").Value);
+
+                if (text.Contains("진실의 조각") && truthPiece + count <= 5)
+                {
+                    truthPiece += count;
+                    SaveLoadManager.Instance.truthPiece = truthPiece;
+                    SaveLoadManager.Instance.SaveGameData();
+
+                    audioSource.clip = plus;
+                    audioSource.Play();
+                }
+                else
+                {
+                    truthPiece = 5;
+                    SaveLoadManager.Instance.truthPiece = truthPiece;
+                    SaveLoadManager.Instance.SaveGameData();
+
+                    audioSource.clip = plus;
+                    audioSource.Play();
+                }
+
+                if (text.Contains("체력")) Health.Instance.HealthPlus(count);
+                else if (text.Contains("정신력")) Health.Instance.MentalPlus(count);
+                else if (text.Contains("돈")) Health.Instance.CoinPlus(count);
+            }
         }
-        else if (text.Contains("+1"))
-        {
-            if (text.Contains("체력")) Health.healthP();
-            else if (text.Contains("정신력")) Health.mentalP();
-            else if (text.Contains("돈")) Health.coinP();
-        }
+        // 챕터 8 : 탈출도구
+        if (storyEventName == "8_2") equips[0] = true;
+        else if (storyEventName == "8_2_1") equips[1] = true;
+        else if (storyEventName == "8_2_8") equips[2] = true;
     }
     private void SetPaint(string paintName)
     {
@@ -189,12 +339,16 @@ public class TextManager : MonoBehaviour
 
         if (paintName == "Empty" || paintName == "") IsPaintEmpty = true;
 
-        if (currentPaint == "" || currentPaint != paintName)
+        else if(paintName == "Death") IsPaintDeath = true;
+
+        if (currentPaint == "" || currentPaint == "Empty" || currentPaint == "Death" || currentPaint != paintName)
         {
             currentPaint = paintName;
             SaveLoadManager.Instance.paintName = paintName;
             SaveLoadManager.Instance.SaveGameData();
+
             paintIdx = Array.FindIndex(paintSprites, x => currentPaint.Contains(x.name));
+
             FadePaint(paint, newPaint);
         }
     }
@@ -210,6 +364,11 @@ public class TextManager : MonoBehaviour
             {
                 IsPaintEmpty = false;
                 nextPaint.sprite = empty;
+            }
+            else if(IsPaintDeath)
+            {
+                IsPaintDeath = false;
+                nextPaint.sprite = death;
             }
             else nextPaint.sprite = paintSprites[paintIdx];
 
@@ -234,6 +393,11 @@ public class TextManager : MonoBehaviour
                 IsPaintEmpty = false;
                 curPaint.sprite = empty;
             }
+            else if(IsPaintDeath)
+            {
+                IsPaintDeath = false;
+                curPaint.sprite = death;
+            }
             else curPaint.sprite = paintSprites[paintIdx];
 
             Color curCol = curPaint.color;
@@ -247,8 +411,8 @@ public class TextManager : MonoBehaviour
             curPaint.DOFade(1f, fadeTime);
             nextPaint.DOFade(0f, fadeTime);
         }
-        fadeCnt++;
         IsPreventFadeDup = true;
+        fadeCnt++;
     }
 
     IEnumerator WaitAndSet()
@@ -257,10 +421,14 @@ public class TextManager : MonoBehaviour
         {
             yield return new WaitForSeconds(0.1f);
         }
+        // 이어하기면 데이터 불러오기
         if (GameManager.Instance.IsContinue)
         {
+            equips = SaveLoadManager.Instance.equips;
+            truthPiece = SaveLoadManager.Instance.gambleItem;
+            gambleItem = SaveLoadManager.Instance.gambleItem;
             currentPaint = SaveLoadManager.Instance.paintName;
-            if (currentPaint == "empty") paint.sprite = empty;
+            if (currentPaint == "Empty") paint.sprite = empty;
             else
             {
                 paintIdx = Array.FindIndex(paintSprites, x => currentPaint.Contains(x.name));
@@ -268,6 +436,59 @@ public class TextManager : MonoBehaviour
             }
         }
         paint.DOFade(1f, fadeTime);
+    }
+
+    void CheckAudioStat()
+    {
+        // 오디오 트랙 설정
+        string splitEventName = storyEventName.Split('_')[0];
+        // 똑같으면 return
+        if (curSplitEvent == splitEventName) 
+        {
+            Debug.Log("똑같다이놈아");
+            return;
+        }
+
+        //1,2,3은 같은 음악
+        if (curSplitEvent == "1" && (splitEventName == "2" || splitEventName == "3"))
+            return;
+
+        if (curSplitEvent == "2" && (splitEventName == "1" || splitEventName == "3"))
+            return;
+
+        if (curSplitEvent == "3" && (splitEventName == "1" || splitEventName == "2"))
+            return;
+
+        //4,5,6은 같은 음악
+        if (curSplitEvent == "4" && (splitEventName == "5" || splitEventName == "6"))
+            return;
+
+        if (curSplitEvent == "5" && (splitEventName == "4" || splitEventName == "6"))
+            return;
+
+        if (curSplitEvent == "6" && (splitEventName == "4" || splitEventName == "5"))
+            return;
+
+        //7,8,9는 같은 음악
+        if (curSplitEvent == "7" && (splitEventName == "8" || splitEventName == "9"))
+            return;
+
+        if (curSplitEvent == "8" && (splitEventName == "7" || splitEventName == "9"))
+            return;
+
+        if (curSplitEvent == "9" && (splitEventName == "7" || splitEventName == "8"))
+            return;
+
+        //10,11은 같은 음악
+        if (curSplitEvent == "10" && splitEventName == "11")
+            return;
+
+        if (curSplitEvent == "R" && (splitEventName == "D" || splitEventName == "T")) return;
+        if (curSplitEvent == "D" && (splitEventName == "R" || splitEventName == "T")) return;
+        if (curSplitEvent == "T" && (splitEventName == "D" || splitEventName == "R")) return;
+
+        curSplitEvent = splitEventName;
+        AudioManager.Instance.SetAudioTrack(splitEventName);
     }
 
 }
