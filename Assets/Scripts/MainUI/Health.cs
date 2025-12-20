@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class Health : MonoBehaviour
 {
@@ -12,6 +13,9 @@ public class Health : MonoBehaviour
     public AudioSource audioSource;
     public AudioClip plus;
     public AudioClip minus;
+    public RectTransform hpUIRect;
+    public RectTransform mtUIRect;
+    public RectTransform coinUIRect;
 
     [Header("HP")]
     public Image hp_1;
@@ -172,6 +176,8 @@ public class Health : MonoBehaviour
         if (screenShake != null)
             screenShake.Shake(0.4f);
 
+        //ShakeUI(hpUIRect);
+
         if (health - count > 0) health -= count;
         else health = 0;
 
@@ -309,6 +315,11 @@ public class Health : MonoBehaviour
         // 이후 재사용 대비
         pendingGameOver = PendingGameOverType.None;
         isWaitingGameOver = false;
+    }
+    private void ShakeUI(RectTransform targetRect)
+    {   // 파라미터: 시간, 강도, 빈도(진동 횟수), 랜덤성
+        targetRect.DOKill(true);
+        targetRect.DOShakeAnchorPos(0.5f, 20f, 30, 90, false, true);
     }
 }
 

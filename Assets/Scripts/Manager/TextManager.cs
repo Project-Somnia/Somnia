@@ -29,7 +29,7 @@ public class TextManager : MonoBehaviour
     public string pendingMainEventId;
     public bool IsStory = false;
     public bool IsDialogSet = false;
-    public bool IsFastText = false;
+    public int charSpeedLevel = 0;
     public bool IsAttackFail = false;
     private bool IsPreventDup = false;
     private bool IsPreventFadeDup = false;
@@ -94,14 +94,14 @@ public class TextManager : MonoBehaviour
     {
         if (IsStory)
         {
-            if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) IsFastText = true;
+            //if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) IsFastText = true;
             TypingManager.Instance.GetInputDown();
             if (TypingManager.Instance.isTypingEnd)
             {
                 if (currentPage == talkDatas.Length && TypingManager.Instance.isDialogEnd)
                 {
                     IsStory = false;
-                    IsFastText = false;
+                    //IsFastText = false;
                     if (!GameManager.Instance.IsGameOver)
                     {
                         StoryChoice.fadeChoice();
@@ -436,6 +436,7 @@ public class TextManager : MonoBehaviour
             }
         }
         paint.DOFade(1f, fadeTime);
+        //FadePaint(paint,newPaint);
     }
 
     void CheckAudioStat()
