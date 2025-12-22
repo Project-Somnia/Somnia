@@ -29,7 +29,7 @@ public class TextManager : MonoBehaviour
     public string pendingMainEventId;
     public bool IsStory = false;
     public bool IsDialogSet = false;
-    public bool IsFastText = false;
+    public int charSpeedLevel = 0;
     public bool IsAttackFail = false;
     private bool IsPreventDup = false;
     private bool IsPreventFadeDup = false;
@@ -94,14 +94,14 @@ public class TextManager : MonoBehaviour
     {
         if (IsStory)
         {
-            if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) IsFastText = true;
+            //if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) IsFastText = true;
             TypingManager.Instance.GetInputDown();
             if (TypingManager.Instance.isTypingEnd)
             {
                 if (currentPage == talkDatas.Length && TypingManager.Instance.isDialogEnd)
                 {
                     IsStory = false;
-                    IsFastText = false;
+                    //IsFastText = false;
                     if (!GameManager.Instance.IsGameOver)
                     {
                         StoryChoice.fadeChoice();
@@ -331,6 +331,8 @@ public class TextManager : MonoBehaviour
         if (storyEventName == "8_2") equips[0] = true;
         else if (storyEventName == "8_2_1") equips[1] = true;
         else if (storyEventName == "8_2_8") equips[2] = true;
+        SaveLoadManager.Instance.equips = equips;
+        SaveLoadManager.Instance.SaveGameData();
     }
     private void SetPaint(string paintName)
     {
@@ -428,6 +430,7 @@ public class TextManager : MonoBehaviour
             truthPiece = SaveLoadManager.Instance.gambleItem;
             gambleItem = SaveLoadManager.Instance.gambleItem;
             currentPaint = SaveLoadManager.Instance.paintName;
+            Debug.Log("차례대로"+"그리고"+truthPiece+"그리고"+gambleItem+"그리고"+currentPaint);
             if (currentPaint == "Empty") paint.sprite = empty;
             else
             {
@@ -435,7 +438,9 @@ public class TextManager : MonoBehaviour
                 paint.sprite = paintSprites[paintIdx];
             }
         }
+        paint.gameObject.SetActive(true);
         paint.DOFade(1f, fadeTime);
+        //FadePaint(paint,newPaint);
     }
 
     void CheckAudioStat()
@@ -443,11 +448,7 @@ public class TextManager : MonoBehaviour
         // 오디오 트랙 설정
         string splitEventName = storyEventName.Split('_')[0];
         // 똑같으면 return
-        if (curSplitEvent == splitEventName) 
-        {
-            Debug.Log("똑같다이놈아");
-            return;
-        }
+        if (curSplitEvent == splitEventName) return;
 
         //1,2,3은 같은 음악
         if (curSplitEvent == "1" && (splitEventName == "2" || splitEventName == "3"))

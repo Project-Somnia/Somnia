@@ -65,52 +65,90 @@ public class DialogueParse : MonoBehaviour
 
     public void SetTalkDictionary(string csvText)
     {
-        string[] rows = csvText.Split(new char[] { '\n' });
+        // 윈도우/맥 줄바꿈 호환성을 위해 \r 제거 후 분리
+        string[] rows = csvText.Replace("\r", "").Split('\n');
 
         for (int i = 1; i < rows.Length; i++)
         {
             string[] rowValues = ParseCsvLine(rows[i]);
 
-            if (rowValues[0].Trim() == "" || rowValues[0].Contains("#")) continue;
-
+            // 데이터가 없거나 주석(#)인 경우 스킵
+            if (rowValues.Length < 1 || string.IsNullOrWhiteSpace(rowValues[0]) || rowValues[0].StartsWith("#")) continue;
 
             List<TalkData> talkDataList = new List<TalkData>();
             string eventName = rowValues[0].Trim();
 
-            while (rowValues[0].Trim() != "end")
+            // 같은 이벤트 그룹(end가 나올 때까지) 처리
+            while (i < rows.Length && rowValues.Length > 0 && rowValues[0].Trim() != "end")
             {
                 List<string> contextList = new List<string>();
                 TalkData talkData = new TalkData();
 
+                // 기본 데이터 매핑
                 talkData.selectEventNumber = rowValues[0].Trim();
-                talkData.eventImage = rowValues[1].Trim();
-                talkData.selectText1 = rowValues[3].Trim();
-                talkData.triggerEvent1 = rowValues[4].Trim();
-                talkData.selectText2 = rowValues[5].Trim();
-                talkData.triggerEvent2 = rowValues[6].Trim();
-                talkData.selectText3 = rowValues[7].Trim();
-                talkData.triggerEvent3 = rowValues[8].Trim();
+                talkData.eventImage = rowValues.Length > 1 ? rowValues[1].Trim() : "";
+
+                // 선택지 데이터가 있는 경우에만 매핑 (인덱스 에러 방지)
+                if (rowValues.Length > 8)
+                {
+                    talkData.selectText1 = rowValues[3].Trim();
+                    talkData.triggerEvent1 = rowValues[4].Trim();
+                    talkData.selectText2 = rowValues[5].Trim();
+                    talkData.triggerEvent2 = rowValues[6].Trim();
+                    talkData.selectText3 = rowValues[7].Trim();
+                    talkData.triggerEvent3 = rowValues[8].Trim();
+                }
+
+                // --- 텍스트(대사) 여러 줄 파싱 로직 시작 ---
                 do
                 {
-                    // 텍스트에 .이 포함되어 있으면 엔터 넣기
-                    if (rowValues[2].Contains("."))
-                        rowValues[2] += "\n";
+                    // Trim()을 사용하여 앞뒤에 숨겨진 공백이나 유령 문자를 먼저 제거합니다.
+                    string rawText = (rowValues.Length > 2) ? rowValues[2].Trim() : "";
 
-                    if (rowValues[2].Contains("+") || rowValues[2].Contains("-"))
+                    if (!string.IsNullOrWhiteSpace(rawText))
                     {
-                        rowValues[2] += "\n";
-                    }
-                    contextList.Add(rowValues[2].Trim('\r'));
-                    if (++i < rows.Length) rowValues = ParseCsvLine(rows[i]);
-                    else
-                        break;
+                        // 1. 따옴표가 포함된 경우 (대사/생각)
+                        if (rawText.Contains("\""))
+                        {
+                            // 앞뒤로 엔터를 두 번씩 넣어 확실하게 빈 줄을 만듭니다.
+                            // \n 하나는 줄바꿈, 두 개는 빈 줄 생성입니다.
+                            rawText = "\n" + rawText + "\n\n";
+                        }
+                        // 2. 따옴표가 없는 일반 문장 (마침표 등)
+                        else
+                        {
+                            if (rawText.Contains("."))
+                            {
+                                rawText += "\n";
+                            }
 
-                } while (rowValues[1].Trim() != "end" && rowValues[0].Trim() != "end");
+                            if (rawText.Contains("+") || rawText.Contains("-"))
+                            {
+                                rawText += "\n\n";
+                            }
+                        }
+
+                        contextList.Add(rawText);
+                    }
+
+                    if (++i < rows.Length) rowValues = ParseCsvLine(rows[i]);
+                    else break;
+
+                } while (rowValues.Length > 0 && rowValues[1].Trim() != "end" && rowValues[0].Trim() != "end");
+
+                // --- 텍스트 파싱 끝 ---
 
                 talkData.showText = contextList.ToArray();
                 talkDataList.Add(talkData);
+
+                // 루프 조건 재확인을 위해 (do-while 탈출 후 현재 rowValues 상태가 중요)
+                // 이미 위에서 i++ 하고 rowValues를 갱신했으므로 그대로 진행
             }
-            DialogueDictionary.Add(eventName, talkDataList.ToArray());
+
+            if (!DialogueDictionary.ContainsKey(eventName))
+            {
+                DialogueDictionary.Add(eventName, talkDataList.ToArray());
+            }
         }
     }
 
@@ -140,24 +178,22 @@ public class DialogueParse : MonoBehaviour
 
             if (c == '"')
             {
-                // 이중 따옴표 처리
+                // 이중 따옴표("") 처리: 엑셀에서 따옴표 하나를 표현할 때 사용함
                 if (inQuotes && i + 1 < line.Length && line[i + 1] == '"')
                 {
-                    field += '"';
-                    i++; // skip one more
+                    field += '"'; // 따옴표 하나를 문자로 추가
+                    i++; // 다음 따옴표 건너뜀
                 }
                 else
                 {
-                    if (inQuotes)
-                    {
-                        field += '\n';
-                    }
+                    // 문법적인 따옴표(시작과 끝)를 만났을 때
+                    // field += '"'; // <--- 만약 모든 따옴표를 다 보고 싶다면 이 주석을 해제하세요.
                     inQuotes = !inQuotes;
                 }
             }
             else if (c == ',' && !inQuotes)
             {
-                result.Add(field.TrimEnd('\r'));
+                result.Add(field.Trim());
                 field = "";
             }
             else
@@ -165,7 +201,7 @@ public class DialogueParse : MonoBehaviour
                 field += c;
             }
         }
-        result.Add(field.TrimEnd('\r'));
+        result.Add(field.Trim());
         return result.ToArray();
     }
 }

@@ -20,10 +20,11 @@ public class TypingManager : MonoBehaviour
     }
  
     [Header("Times for each character")]
-    public float timeForCharacter; //0.08이 기본.
+    public float timeForCharacter; //기본.
  
     [Header("Times for each character when speed up")]
-    public float timeForCharacter_Fast; //0.03이 빠른 텍스트.
+    public float timeForCharacter_Fast; //빠른 텍스트.
+    public float timeForCharacter_Very_Fast; //제일 빠른 텍스트.
  
     float characterTime; // 실제 적용되는 문자열 속도.
  
@@ -82,10 +83,9 @@ public class TypingManager : MonoBehaviour
                 GetInputUp();
                 Typing(dialogsSave, tmpSave);
             }
-            else if(TextManager.Instance.IsFastText)
-            {
-                characterTime = timeForCharacter_Fast; //빠른 문장 넘김.
-            }
+            if(TextManager.Instance.charSpeedLevel == 0) characterTime = timeForCharacter; //기본
+            else if(TextManager.Instance.charSpeedLevel == 1) characterTime = timeForCharacter_Fast; //기본
+            else if(TextManager.Instance.charSpeedLevel == 2) characterTime = timeForCharacter_Very_Fast; //기본
         }
     }
  
