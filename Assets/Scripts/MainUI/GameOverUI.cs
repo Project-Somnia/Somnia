@@ -3,10 +3,11 @@ using UnityEngine.SceneManagement;  // 씬 이동용(필요하면)
 
 public class GameOverUI : MonoBehaviour
 {
-     [Header("GameOver Panels")]
+    [Header("GameOver Panels")]
     public GameObject hpGameOverPanel;      // 체력 0일 때 패널
     public GameObject mentalGameOverPanel;  // 멘탈 0일 때 패널
 
+    public Reward reward;
     private enum GameOverType
     {
         None,
@@ -24,7 +25,7 @@ public class GameOverUI : MonoBehaviour
 
     // ----------------- 체력 0일 때 호출 -----------------
     public void ShowHpGameOver()
-    {   
+    {
         currentType = GameOverType.HpZero;
 
         hpGameOverPanel.SetActive(true);
@@ -53,43 +54,47 @@ public class GameOverUI : MonoBehaviour
         GameManager.Instance.IsRetry = true;
         GameManager.Instance.IsZero = false;
         GameManager.Instance.IsGameOver = false;
+        GameManager.Instance.IsMentalMor = false;
+        GameManager.Instance.IsRebirth = false;
+
+        SaveLoadManager.Instance.CleanUp();
         // 여기서 메인메뉴로 나가거나, 리트라이 씬 로드 등 원하는 동작
         SceneManager.LoadScene("Title");
     }
 
-    // // 광고를 끝까지 봐서 리워드를 받았을 때 실행될 함수
-    // void OnRewardSuccess()
-    // {
-    //     hpGameOverPanel.SetActive(false);
-    //     mentalGameOverPanel.SetActive(false);
+    // 광고를 끝까지 봐서 리워드를 받았을 때 실행될 함수
+    void OnRewardSuccess()
+    {
+        hpGameOverPanel.SetActive(false);
+        mentalGameOverPanel.SetActive(false);
 
-    //     Time.timeScale = 1f;
+        Time.timeScale = 1f;
 
-    //     switch (currentType)
-    //     {
-    //         case GameOverType.HpZero:
-    //             // 체력 부활 처리
-    //             GameManager.Instance.IsZero = false;
-    //             GameManager.Instance.IsGameOver = false;
-    //             GameManager.Instance.IsRebirth = true;
-    //             Health.Instance.HealthPlus(1);
-    //             TextManager.Instance.currentPage = 0;
-    //             TextManager.Instance.SetDialogueFromChoice(TextManager.Instance.originNextEvent);
-    //             break;
+        switch (currentType)
+        {
+            case GameOverType.HpZero:
+                // 체력 부활 처리
+                GameManager.Instance.IsZero = false;
+                GameManager.Instance.IsGameOver = false;
+                GameManager.Instance.IsRebirth = true;
+                Health.Instance.HealthPlus(1);
+                TextManager.Instance.currentPage = 0;
+                TextManager.Instance.SetDialogueFromChoice(TextManager.Instance.originNextEvent);
+                break;
 
-    //         case GameOverType.MentalZero:
-    //             // 멘탈 부활 처리
-    //             GameManager.Instance.IsZero = false;
-    //             GameManager.Instance.IsGameOver = false;
-    //             GameManager.Instance.IsRebirth = true;
-    //             Health.Instance.MentalPlus(1);
-    //             TextManager.Instance.currentPage = 0;
-    //             TextManager.Instance.SetDialogueFromChoice(TextManager.Instance.originNextEvent);
-    //             break;
-    //     }
+            case GameOverType.MentalZero:
+                // 멘탈 부활 처리
+                GameManager.Instance.IsZero = false;
+                GameManager.Instance.IsGameOver = false;
+                GameManager.Instance.IsRebirth = true;
+                Health.Instance.MentalPlus(1);
+                TextManager.Instance.currentPage = 0;
+                TextManager.Instance.SetDialogueFromChoice(TextManager.Instance.originNextEvent);
+                break;
+        }
 
-    //     // 필요하면 다음 광고를 위해 다시 로드
-    //     reward.LoadRewardAd();
-    //     currentType = GameOverType.None;
-    // }
+        // 필요하면 다음 광고를 위해 다시 로드
+        reward.LoadRewardAd();
+        currentType = GameOverType.None;
+    }
 }

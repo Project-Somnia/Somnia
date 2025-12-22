@@ -8,7 +8,8 @@ public class DialogueParse : MonoBehaviour
 {
     public Dictionary<string, TalkData[]> DialogueDictionary = new Dictionary<string, TalkData[]>();
     [SerializeField] List<ShowTalkData> ShowTalkDataList = new List<ShowTalkData>();
-    [SerializeField] private TextAsset csvFile = null;
+
+    private string googleCsvUrl = "https://docs.google.com/spreadsheets/d/1XMHN-jTMhUGnjLoJdVjCC6levhM5KZKXHJGdw5wKP08/export?format=csv";
     public TalkData[] GetDialogue(string eventName)
     {
         if (!DialogueDictionary.ContainsKey(eventName))
@@ -42,14 +43,24 @@ public class DialogueParse : MonoBehaviour
         }
         instance = this;
 
-        GetSetCsv();
+        StartCoroutine(DownloadAndParseCSV());
     }
 
-    void GetSetCsv()
+    IEnumerator DownloadAndParseCSV()
     {
-        string csvText = csvFile.text.Substring(0, csvFile.text.Length - 1);
-        SetTalkDictionary(csvText);
-        SetShowTalkData();
+        UnityWebRequest www = UnityWebRequest.Get(googleCsvUrl);
+        yield return www.SendWebRequest();
+
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.LogError("CSV 다운로드 실패: " + www.error);
+        }
+        else
+        {
+            string csvText = www.downloadHandler.text;
+            SetTalkDictionary(csvText);
+            SetShowTalkData();
+        }
     }
 
     public void SetTalkDictionary(string csvText)
@@ -90,40 +101,40 @@ public class DialogueParse : MonoBehaviour
 
                 // --- 텍스트(대사) 여러 줄 파싱 로직 시작 ---
                 do
-{
-    // Trim()을 사용하여 앞뒤에 숨겨진 공백이나 유령 문자를 먼저 제거합니다.
-    string rawText = (rowValues.Length > 2) ? rowValues[2].Trim() : "";
+                {
+                    // Trim()을 사용하여 앞뒤에 숨겨진 공백이나 유령 문자를 먼저 제거합니다.
+                    string rawText = (rowValues.Length > 2) ? rowValues[2].Trim() : "";
 
-    if (!string.IsNullOrWhiteSpace(rawText))
-    {
-        // 1. 따옴표가 포함된 경우 (대사/생각)
-        if (rawText.Contains("\""))
-        {
-            // 앞뒤로 엔터를 두 번씩 넣어 확실하게 빈 줄을 만듭니다.
-            // \n 하나는 줄바꿈, 두 개는 빈 줄 생성입니다.
-            rawText = "\n" + rawText + "\n\n"; 
-        }
-        // 2. 따옴표가 없는 일반 문장 (마침표 등)
-        else 
-        {
-            if (rawText.Contains("."))
-            {
-                rawText += "\n";
-            }
-            
-            if (rawText.Contains("+") || rawText.Contains("-"))
-            {
-                rawText += "\n\n";
-            }
-        }
+                    if (!string.IsNullOrWhiteSpace(rawText))
+                    {
+                        // 1. 따옴표가 포함된 경우 (대사/생각)
+                        if (rawText.Contains("\""))
+                        {
+                            // 앞뒤로 엔터를 두 번씩 넣어 확실하게 빈 줄을 만듭니다.
+                            // \n 하나는 줄바꿈, 두 개는 빈 줄 생성입니다.
+                            rawText = "\n" + rawText + "\n\n";
+                        }
+                        // 2. 따옴표가 없는 일반 문장 (마침표 등)
+                        else
+                        {
+                            if (rawText.Contains("."))
+                            {
+                                rawText += "\n";
+                            }
 
-        contextList.Add(rawText);
-    }
+                            if (rawText.Contains("+") || rawText.Contains("-"))
+                            {
+                                rawText += "\n\n";
+                            }
+                        }
 
-    if (++i < rows.Length) rowValues = ParseCsvLine(rows[i]);
-    else break;
+                        contextList.Add(rawText);
+                    }
 
-} while (rowValues.Length > 0 && rowValues[1].Trim() != "end" && rowValues[0].Trim() != "end");
+                    if (++i < rows.Length) rowValues = ParseCsvLine(rows[i]);
+                    else break;
+
+                } while (rowValues.Length > 0 && rowValues[1].Trim() != "end" && rowValues[0].Trim() != "end");
 
                 // --- 텍스트 파싱 끝 ---
 

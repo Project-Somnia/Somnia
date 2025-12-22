@@ -30,7 +30,7 @@ public class SaveData
     public string _paintName;
     public int _truthPiece;
     public int _gambleItem;
-    public bool[] _equips;
+    public bool[] _equips = new bool[3];
 }
 
 public static class SaveSystem
@@ -411,7 +411,7 @@ public class SaveLoadManager : MonoBehaviour
     public string paintName;
     public int truthPiece;
     public int gambleItem;
-    public bool[] equips;
+    public bool[] equips = new bool[3];
 
     SaveData saveData;
     SaveData loadData;
@@ -466,7 +466,9 @@ public class SaveLoadManager : MonoBehaviour
         paintName = "Empty";
         truthPiece = 0;
         gambleItem = 0;
-        Array.Clear(equips, 0, 3);
+        equips[0] = false;
+        equips[1] = false;
+        equips[2] = false;
 
         saveData = new SaveData(health, mental, coin, eventNumber, paintName, truthPiece, gambleItem, equips);
         SaveSystem.Save(saveData);

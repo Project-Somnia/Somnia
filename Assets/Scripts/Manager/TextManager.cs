@@ -331,6 +331,8 @@ public class TextManager : MonoBehaviour
         if (storyEventName == "8_2") equips[0] = true;
         else if (storyEventName == "8_2_1") equips[1] = true;
         else if (storyEventName == "8_2_8") equips[2] = true;
+        SaveLoadManager.Instance.equips = equips;
+        SaveLoadManager.Instance.SaveGameData();
     }
     private void SetPaint(string paintName)
     {
@@ -428,6 +430,7 @@ public class TextManager : MonoBehaviour
             truthPiece = SaveLoadManager.Instance.gambleItem;
             gambleItem = SaveLoadManager.Instance.gambleItem;
             currentPaint = SaveLoadManager.Instance.paintName;
+            Debug.Log("차례대로"+"그리고"+truthPiece+"그리고"+gambleItem+"그리고"+currentPaint);
             if (currentPaint == "Empty") paint.sprite = empty;
             else
             {
@@ -435,6 +438,7 @@ public class TextManager : MonoBehaviour
                 paint.sprite = paintSprites[paintIdx];
             }
         }
+        paint.gameObject.SetActive(true);
         paint.DOFade(1f, fadeTime);
         //FadePaint(paint,newPaint);
     }

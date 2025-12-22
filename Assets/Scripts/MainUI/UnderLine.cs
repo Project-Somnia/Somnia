@@ -23,10 +23,16 @@ public class Underline : MonoBehaviour
 
     private List<Image> underlineImages = new List<Image>();
 
-    void Awake()
+    void OnEnable()
     {
         reDraw += ClearUnderlines;
         reDraw += SetFirstLine;
+    }
+
+    void OnDisable()
+    {
+        reDraw -= ClearUnderlines;
+        reDraw -= SetFirstLine;
     }
     void Start()
     {
