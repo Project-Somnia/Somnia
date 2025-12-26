@@ -137,7 +137,7 @@ public class StoryChoice : MonoBehaviour
             // 진실의 조각 관련 체크
             if (choiceStructs[i].select == "정원사를 알고 있다.")
             {
-                if (TextManager.Instance.truthPiece < 1) choiceStructs[i].IsBlink = true;
+                if (TriggerManager.Instance.truthPiece < 1) choiceStructs[i].IsBlink = true;
                 else
                 {
                     int ran = UnityEngine.Random.Range(0, 10);
@@ -148,7 +148,7 @@ public class StoryChoice : MonoBehaviour
             else if (choiceStructs[i].select == "그들이 익숙하다.")
             {
                 // 진실의 조각 없으면 투명하게
-                if (TextManager.Instance.truthPiece <= 0) choiceStructs[i].IsBlink = true;
+                if (TriggerManager.Instance.truthPiece <= 0) choiceStructs[i].IsBlink = true;
                 else choiceStructs[i].IsBlink = false;
             }
 
@@ -187,13 +187,13 @@ public class StoryChoice : MonoBehaviour
             if (choiceStructs[i].select == "친구에 관한 이야기")
             {
                 // 진실의 조각 3개 이상 없으면 투명하게
-                if (TextManager.Instance.truthPiece < 3) choiceStructs[i].IsBlink = true;
+                if (TriggerManager.Instance.truthPiece < 3) choiceStructs[i].IsBlink = true;
                 else choiceStructs[i].IsBlink = false;
             }
             else if (choiceStructs[i].select == "\" 좋아해야만 했어요. \"")
             {
                 // 진실의 조각 1개 이상 없으면 투명하게
-                if (TextManager.Instance.truthPiece < 1) choiceStructs[i].IsBlink = true;
+                if (TriggerManager.Instance.truthPiece < 1) choiceStructs[i].IsBlink = true;
                 else choiceStructs[i].IsBlink = false;
             }
 
@@ -201,13 +201,13 @@ public class StoryChoice : MonoBehaviour
             if (choiceStructs[i].select == "\" 시아를 알고있어요. \"")
             {
                 // 진실의 조각 1개 이상 없으면 투명하게
-                if (TextManager.Instance.truthPiece < 1) choiceStructs[i].IsBlink = true;
+                if (TriggerManager.Instance.truthPiece < 1) choiceStructs[i].IsBlink = true;
                 else choiceStructs[i].IsBlink = false;
             }
             else if (choiceStructs[i].select == "\" 알고 있어요. \"")
             {
                 // 진실의 조각 1개 이상 없으면 투명하게
-                if (TextManager.Instance.truthPiece < 1) choiceStructs[i].IsBlink = true;
+                if (TriggerManager.Instance.truthPiece < 1) choiceStructs[i].IsBlink = true;
                 else choiceStructs[i].IsBlink = false;
             }
 
@@ -220,7 +220,7 @@ public class StoryChoice : MonoBehaviour
             }
             else if (choiceStructs[i].select == "배를 띄워본다.")
             {
-                if (TextManager.Instance.equips[0] && TextManager.Instance.equips[1] && TextManager.Instance.equips[2])
+                if (TriggerManager.Instance.equips[0] && TriggerManager.Instance.equips[1] && TriggerManager.Instance.equips[2])
                 {
                     choiceStructs[i].trigger = "8_2_b";
                 }
@@ -234,7 +234,7 @@ public class StoryChoice : MonoBehaviour
             if (choiceStructs[i].select == "괴로운 기억을 잊는다.")
             {
                 // 진실의 조각 2개 이상 없으면 투명하게
-                if (TextManager.Instance.truthPiece < 2) choiceStructs[i].IsBlink = true;
+                if (TriggerManager.Instance.truthPiece < 2) choiceStructs[i].IsBlink = true;
                 else choiceStructs[i].IsBlink = false;
             }
 
@@ -293,30 +293,30 @@ public class StoryChoice : MonoBehaviour
         if (text == "그들을 공격한다.")
         {
             int ran = UnityEngine.Random.Range(0, 10);
-            if (ran < 5) TextManager.Instance.IsAttackFail = true;
+            if (ran < 5) TriggerManager.Instance.IsAttackFail = true;
         }
         else if (text == "그들을 밀친다.")
         {
             int ran = UnityEngine.Random.Range(0, 10);
-            if (ran < 5) TextManager.Instance.IsAttackFail = true;
+            if (ran < 5) TriggerManager.Instance.IsAttackFail = true;
         }
 
         // 모자 장수의 슬픔 상담소
         if (text == "피가 묻은 종이")
         {
-            TextManager.Instance.gambleItem = 0;
+            TriggerManager.Instance.gambleItem = 0;
             SaveLoadManager.Instance.gambleItem = 0;
             SaveLoadManager.Instance.SaveGameData();
         }
         else if (text == "찢어진 종이")
         {
-            TextManager.Instance.gambleItem = 1;
+            TriggerManager.Instance.gambleItem = 1;
             SaveLoadManager.Instance.gambleItem = 1;
             SaveLoadManager.Instance.SaveGameData();
         }
         else if (text == "투명한 종이")
         {
-            TextManager.Instance.gambleItem = 2;
+            TriggerManager.Instance.gambleItem = 2;
             SaveLoadManager.Instance.gambleItem = 2;
             SaveLoadManager.Instance.SaveGameData();
         }
