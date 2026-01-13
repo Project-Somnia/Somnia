@@ -173,10 +173,10 @@ public class Health : MonoBehaviour
     }
     public void HealthMinus(int count)
     {
-        if (screenShake != null)
-            screenShake.Shake(0.4f);
+        // if (screenShake != null)
+        //     screenShake.Shake(0.4f);
 
-        //ShakeUI(hpUIRect);
+        ShakeUI(hpUIRect);
 
         if (health - count > 0) health -= count;
         else health = 0;
@@ -220,8 +220,10 @@ public class Health : MonoBehaviour
     }
     public void MentalMinus(int count)
     {
-        if (screenShake != null)
-            screenShake.Shake(0.4f);
+        // if (screenShake != null)
+        //     screenShake.Shake(0.4f);
+
+        ShakeUI(mtUIRect);
 
         if (mental - count > 0) mental -= count;
         else mental = 0;
@@ -266,6 +268,8 @@ public class Health : MonoBehaviour
     {
         if (coin - count > 0) coin -= count;
         else coin = 0;
+
+        ShakeUI(coinUIRect);
 
         audioSource.PlayOneShot(minus);
 

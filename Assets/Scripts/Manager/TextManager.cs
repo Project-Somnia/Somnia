@@ -62,14 +62,14 @@ public class TextManager : MonoBehaviour
     {
         if (IsStory)
         {
-            //if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) IsFastText = true;
             TypingManager.Instance.GetInputDown();
             if (TypingManager.Instance.isTypingEnd)
             {
                 if (currentPage == talkDatas.Length && TypingManager.Instance.isDialogEnd)
                 {
+                    TypingManager.Instance.IsSkipDialog = false;
                     IsStory = false;
-                    //IsFastText = false;
+                    //TypingManager.Instance.IsSkipDialog = false;
                     if (!GameManager.Instance.IsGameOver)
                     {
                         StoryChoice.fadeChoice();
