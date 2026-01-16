@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 using DG.Tweening;
 
@@ -40,6 +42,17 @@ public class Health : MonoBehaviour
     [Header("GameOver")]
     public GameOverUI gameOverUI;
 
+    [Header("Global Volume")]
+    public Volume volume;
+    private Vignette vignette;
+    private Color hpPlusCol = new Color32(20, 255, 0, 255);
+    private Color hpMinusCol = new Color32(255, 0, 0, 255);
+    private Color mtPlusCol = new Color32(0, 13, 255, 255);
+    private Color mtMinusCol = new Color32(122, 0, 255, 255);
+    private Color coinPlusCol = new Color32(255, 232, 0, 255);
+    private Color coinMinusCol = new Color32(255, 245, 134, 255);
+    private bool IsEffectFade = false;
+
     private enum PendingGameOverType { None, HpZero, MentalZero }
     private PendingGameOverType pendingGameOver = PendingGameOverType.None;
     private bool isWaitingGameOver = false;
@@ -71,6 +84,11 @@ public class Health : MonoBehaviour
             health = SaveLoadManager.Instance.health;
             mental = SaveLoadManager.Instance.mental;
             coin = SaveLoadManager.Instance.coin;
+        }
+        if(volume.profile.TryGet<Vignette>(out vignette))
+        {
+            Debug.Log("Vignette 효과를 찾았습니다");
+            vignette.smoothness.value = 0.5f;
         }
     }
 
@@ -164,6 +182,7 @@ public class Health : MonoBehaviour
         if (health + count <= 3) health += count;
         else health = 3;
 
+        SetEffectCol(0);
         audioSource.PlayOneShot(plus);
 
         SaveLoadManager.Instance.health = health;
@@ -176,6 +195,7 @@ public class Health : MonoBehaviour
         // if (screenShake != null)
         //     screenShake.Shake(0.4f);
 
+        SetEffectCol(1);
         ShakeUI(hpUIRect);
 
         if (health - count > 0) health -= count;
@@ -211,6 +231,7 @@ public class Health : MonoBehaviour
         if (mental + count <= 3) mental += count;
         else mental = 3;
 
+        SetEffectCol(2);
         audioSource.PlayOneShot(plus);
 
         SaveLoadManager.Instance.health = health;
@@ -223,6 +244,7 @@ public class Health : MonoBehaviour
         // if (screenShake != null)
         //     screenShake.Shake(0.4f);
 
+        SetEffectCol(3);
         ShakeUI(mtUIRect);
 
         if (mental - count > 0) mental -= count;
@@ -257,6 +279,7 @@ public class Health : MonoBehaviour
         if (coin + count <= 3) coin += count;
         else coin = 3;
 
+        SetEffectCol(4);
         audioSource.PlayOneShot(plus);
 
         SaveLoadManager.Instance.health = health;
@@ -269,6 +292,7 @@ public class Health : MonoBehaviour
         if (coin - count > 0) coin -= count;
         else coin = 0;
 
+        SetEffectCol(5);
         ShakeUI(coinUIRect);
 
         audioSource.PlayOneShot(minus);
@@ -324,6 +348,34 @@ public class Health : MonoBehaviour
     {   // 파라미터: 시간, 강도, 빈도(진동 횟수), 랜덤성
         targetRect.DOKill(true);
         targetRect.DOShakeAnchorPos(0.5f, 20f, 30, 90, false, true);
+    }
+    private void SetEffectCol(int num)
+    {
+        if(IsEffectFade) return;
+
+        if(num == 0) StartCoroutine(EffectFade(hpPlusCol));
+        else if(num == 1) StartCoroutine(EffectFade(hpMinusCol));
+        else if(num == 2) StartCoroutine(EffectFade(mtPlusCol));
+        else if(num == 3) StartCoroutine(EffectFade(mtMinusCol));
+        else if(num == 4) StartCoroutine(EffectFade(coinPlusCol));
+        else if(num == 5) StartCoroutine(EffectFade(coinMinusCol));
+    }
+
+    IEnumerator EffectFade(Color col)
+    {
+        IsEffectFade = true;
+        vignette.color.value = col;
+        while(vignette.intensity.value < 0.3f)
+        {
+            vignette.intensity.value += 0.05f;
+            yield return new WaitForSeconds(0.05f);
+        }
+        while(vignette.intensity.value > 0f)
+        {
+            vignette.intensity.value -= 0.05f;
+            yield return new WaitForSeconds(0.05f);
+        }
+        IsEffectFade = false;
     }
 }
 
