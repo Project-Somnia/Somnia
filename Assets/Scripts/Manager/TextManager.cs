@@ -9,8 +9,12 @@ public class TextManager : MonoBehaviour
 {
     public GameObject ChapterObject;
     public GameObject commingsoon;
+    public GameObject textLogBox;
+    public Transform contentTr;
     public GameOverUI gameOverUI;
     public TextMeshProUGUI storyText;
+    public ScrollRect scrollRect;
+
     string[] dialogStrings;
     public TalkData[] talkDatas;
     public string storyEventName;
@@ -27,6 +31,7 @@ public class TextManager : MonoBehaviour
     public int charSpeedLevel = 0;
     public string originNextEvent = "";
     public string curSplitEvent = "1";
+    private float scrollSensitivity = 10f;
 
 
 
@@ -56,6 +61,8 @@ public class TextManager : MonoBehaviour
     void Start()
     {
         StartCoroutine("WaitAndSet");
+        scrollRect.movementType = ScrollRect.MovementType.Clamped;
+        scrollRect.scrollSensitivity = scrollSensitivity;
     }
 
     private void Update()
@@ -123,6 +130,12 @@ public class TextManager : MonoBehaviour
         PaintManager.Instance.SetPaint(talkDatas[0].eventImage);
         TypingManager.Instance.Typing(talkDatas[0].showText, storyText);
         currentPage++;
+        
+        //로그에 기록
+        GameObject newLog = Instantiate(textLogBox,contentTr);
+        TextMeshProUGUI textLog = newLog.GetComponentInChildren<TextMeshProUGUI>();
+        for(int i=0;i<talkDatas[0].showText.Length;i++) textLog.text += talkDatas[0].showText[i];
+        scrollRect.verticalNormalizedPosition = 0f;
 
         // 선택지 세팅
         selectText[0] = talkDatas[0].selectText1;

@@ -2,12 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.UI;
 
 public class SpeedButton : MonoBehaviour
 {
     public GameObject speed2X;
     public GameObject speed4X;
     public AudioSource audioSource;
+    public Canvas canvasLog;
 
     private bool IsDoubleClicked;
 
@@ -21,7 +23,6 @@ public class SpeedButton : MonoBehaviour
 
         if (IsDoubleClicked)
         {
-            Debug.Log("더블클릭!");
             IsDoubleClicked = false;
             TypingManager.Instance.IsSkipDialog = true;
         }
@@ -40,8 +41,6 @@ public class SpeedButton : MonoBehaviour
         {
             if ((Time.time - doubleClickedTime) < interval)
             {
-                // --- 더블 클릭 성공 ---
-                Debug.Log("Global double click!");
                 IsDoubleClicked = true;
                 // 더블 클릭 후 시간 초기화 (연속 클릭 방지)
                 doubleClickedTime = -1.0f;
@@ -79,5 +78,10 @@ public class SpeedButton : MonoBehaviour
         //     speed2X.SetActive(true);
         //     TextManager.Instance.charSpeedLevel = 0;
         // }
+    }
+
+    public void LogOn()
+    {
+        canvasLog.enabled = true;
     }
 }
