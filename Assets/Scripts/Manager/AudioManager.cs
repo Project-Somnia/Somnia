@@ -35,6 +35,7 @@ public class AudioManager : MonoBehaviour
     public AudioSource track1, track2;
     public AudioClip[] audioClips = new AudioClip[5];
     private bool IsPlayingTrack1;
+    private string curNum;
 
     float fadeTime = 2f;
     float timeElp = 0;
@@ -101,6 +102,54 @@ public class AudioManager : MonoBehaviour
             track2.Stop();
         }
         timeElp = 0;
+    }
+    public void CheckAudioStat(string eventNum)
+    {
+        curNum = TextManager.Instance.curSplitEvent;
+        // 똑같으면 return
+        if (curNum == eventNum) return;
+
+        //1,2,3은 같은 음악
+        if (curNum == "1" && (eventNum == "2" || eventNum == "3"))
+            return;
+
+        if (curNum == "2" && (eventNum == "1" || eventNum == "3"))
+            return;
+
+        if (curNum == "3" && (eventNum == "1" || eventNum == "2"))
+            return;
+
+        //4,5,6은 같은 음악
+        if (curNum == "4" && (eventNum == "5" || eventNum == "6"))
+            return;
+
+        if (curNum == "5" && (eventNum == "4" || eventNum == "6"))
+            return;
+
+        if (curNum == "6" && (eventNum == "4" || eventNum == "5"))
+            return;
+
+        //7,8,9는 같은 음악
+        if (curNum == "7" && (eventNum == "8" || eventNum == "9"))
+            return;
+
+        if (curNum == "8" && (eventNum == "7" || eventNum == "9"))
+            return;
+
+        if (curNum == "9" && (eventNum == "7" || eventNum == "8"))
+            return;
+
+        //10,11은 같은 음악
+        if (curNum == "10" && eventNum == "11")
+            return;
+
+        if (curNum == "R" && (eventNum == "D" || eventNum == "T")) return;
+        if (curNum == "D" && (eventNum == "R" || eventNum == "T")) return;
+        if (curNum == "T" && (eventNum == "D" || eventNum == "R")) return;
+
+        curNum = eventNum;
+        TextManager.Instance.curSplitEvent = curNum;
+        SetAudioTrack(eventNum);
     }
 
 

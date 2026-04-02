@@ -1,23 +1,23 @@
-using System;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using DG.Tweening;
 using TMPro;
 
 public class TextManager : MonoBehaviour
 {
     public GameObject ChapterObject;
     public GameObject commingsoon;
+    public GameObject textLogBox;
+    public Transform contentTr;
     public GameOverUI gameOverUI;
     public TextMeshProUGUI storyText;
+    public ScrollRect logScrollRect;
+    public ScrollRect storyScrollRect;
+
     string[] dialogStrings;
-    TalkData[] talkDatas;
+    public TalkData[] talkDatas;
     public string storyEventName;
 
 
@@ -26,41 +26,29 @@ public class TextManager : MonoBehaviour
     public string showTextDup;
 
     public int currentPage = 0; // 대화문 개수 변수
+    private int curDialog = 0;
     public string pendingMainEventId;
     public bool IsStory = false;
     public bool IsDialogSet = false;
     public int charSpeedLevel = 0;
-    public bool IsAttackFail = false;
-    private bool IsPreventDup = false;
-    private bool IsPreventFadeDup = false;
-    private bool IsPaintEmpty = false;
-    private bool IsPaintDeath = false;
-
-
-    [Header("Audio Sets")]
-    public AudioSource audioSource;
-    public AudioClip plus;
-    public AudioClip minus;
-
-    [Header("Paint Sets")]
-    public Image paint;
-    public Image newPaint;
-    public Sprite[] paintSprites = new Sprite[10];
-    public Sprite empty;
-    public Sprite death;
     public string originNextEvent = "";
     public string curSplitEvent = "1";
-    private string currentPaint = "";
-    private string paintNum = "";
-    private string ranHealthEvent = "( -1 체력 )";
-    private float fadeTime = 2f;
-    private int paintIdx = 0;
-    private int fadeCnt = 0;
+    private float scrollSensitivity = 10f;
+    private bool IsTextFadeEnd = false;
+    private bool IsDialogEnd = false;
+    public bool IsSkipDialog = false;
 
-    [Header("세이브로드 필요한 아이템들")]
-    public bool[] equips = new bool[3]; // 각 순서별로 통나무, 노끈, 노
-    public int truthPiece = 0;
-    public int gambleItem = 0;
+    [Header("Text Fade")]
+
+    // The speed at which the text fades in. Higher values result in faster fading.
+    [SerializeField] private float fadeSpeed = 50.0f;
+
+    // The number of characters affected at a time, creating a smoother transition effect.
+    [SerializeField] private int characterSpread = 20;
+
+    // Stores the running coroutine instance.
+    private Coroutine _fadeCoroutine;
+    private int _textCount;
 
     private static TextManager instance;
     public static TextManager Instance
@@ -88,31 +76,47 @@ public class TextManager : MonoBehaviour
     void Start()
     {
         StartCoroutine("WaitAndSet");
+        logScrollRect.movementType = ScrollRect.MovementType.Clamped;
+        logScrollRect.scrollSensitivity = scrollSensitivity;
     }
 
     private void Update()
     {
         if (IsStory)
         {
-            //if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) IsFastText = true;
             TypingManager.Instance.GetInputDown();
-            if (TypingManager.Instance.isTypingEnd)
+            if (IsSkipDialog)
             {
-                if (currentPage == talkDatas.Length && TypingManager.Instance.isDialogEnd)
+                IsDialogEnd = true;
+                IsTextFadeEnd = true;
+                IsSkipDialog = false;
+                StopCoroutine("FadeText");
+                SetAllCharactersAlpha(255);
+                Color color = storyText.color;
+                color.a = 1f;
+                storyText.color = color;
+                storyScrollRect.verticalNormalizedPosition = 0f;
+            }
+            //if (TypingManager.Instance.isTypingEnd)
+            if (IsTextFadeEnd)
+            {
+                //if (currentPage == talkDatas.Length && TypingManager.Instance.isDialogEnd)
+                if (currentPage == talkDatas.Length && IsDialogEnd)
                 {
+                    TypingManager.Instance.IsSkipDialog = false;
                     IsStory = false;
-                    //IsFastText = false;
+                    //TypingManager.Instance.IsSkipDialog = false;
                     if (!GameManager.Instance.IsGameOver)
                     {
                         StoryChoice.fadeChoice();
                         currentPage = 0;
                         return;
                     }
-                    if(GameManager.Instance.IsGameOver && !GameManager.Instance.IsMentalMor)
+                    if (GameManager.Instance.IsGameOver && !GameManager.Instance.IsMentalMor)
                     {
                         gameOverUI.ShowHpGameOver();
                     }
-                    else if(GameManager.Instance.IsGameOver && GameManager.Instance.IsMentalMor)
+                    else if (GameManager.Instance.IsGameOver && GameManager.Instance.IsMentalMor)
                     {
                         gameOverUI.ShowMentalGameOver();
                     }
@@ -127,34 +131,51 @@ public class TextManager : MonoBehaviour
         storyText.text = "";
         storyEventName = eventNumber;
 
+        IsDialogEnd = false;
+        curDialog = 0;
+
         // 텍스트 정보 가져오기
         talkDatas = this.GetComponent<Dialogue>().GetObjectDialogue();
-        CheckShowText();
+        TriggerManager.Instance.CheckShowText(talkDatas[0].showText);
         // 한번 더 체크
         if (GameManager.Instance.IsZero)
         {
-            if (Health.Instance.health == 0 && !GameManager.Instance.IsGameOver) 
+            if (Health.Instance.health == 0 && !GameManager.Instance.IsGameOver)
             {
                 GameManager.Instance.IsGameOver = true;
                 SetDialogue("D_1");
                 return;
             }
 
-            else if(Health.Instance.mental == 0 && !GameManager.Instance.IsMentalMor)
+            else if (Health.Instance.mental == 0 && !GameManager.Instance.IsMentalMor)
             {
                 GameManager.Instance.IsMentalMor = true;
                 SetDialogue("T_1");
                 return;
             }
-            else if(storyEventName == "T_4") GameManager.Instance.IsGameOver = true;
+            else if (storyEventName == "T_4") GameManager.Instance.IsGameOver = true;
         }
 
         //오디오 세팅
-        CheckAudioStat();
+        AudioManager.Instance.CheckAudioStat(storyEventName.Split('_')[0]);
         // 사진 세팅
-        SetPaint(talkDatas[0].eventImage);
-        TypingManager.Instance.Typing(talkDatas[0].showText, storyText);
+        PaintManager.Instance.SetPaint(talkDatas[0].eventImage);
+        //TypingManager.Instance.Typing(talkDatas[0].showText, storyText);
+
+        for (int i = 0; i < talkDatas[0].showText.Length; i++)
+        {
+            storyText.text += talkDatas[0].showText[i];
+        }
+        StartCoroutine("FadeText");
+
+        IsDialogEnd = true;
         currentPage++;
+
+        //로그에 기록
+        GameObject newLog = Instantiate(textLogBox, contentTr);
+        TextMeshProUGUI textLog = newLog.GetComponentInChildren<TextMeshProUGUI>();
+        for (int i = 0; i < talkDatas[0].showText.Length; i++) textLog.text += talkDatas[0].showText[i];
+        logScrollRect.verticalNormalizedPosition = 0f;
 
         // 선택지 세팅
         selectText[0] = talkDatas[0].selectText1;
@@ -179,7 +200,7 @@ public class TextManager : MonoBehaviour
     {
         if (triggerEventId == "RETURN_MAIN")
         {
-            if(GameManager.Instance.IsMentalMor)
+            if (GameManager.Instance.IsMentalMor)
             {
                 GameManager.Instance.IsZero = false;
                 GameManager.Instance.IsMentalMor = false;
@@ -217,279 +238,166 @@ public class TextManager : MonoBehaviour
         SetDialogue(finalId);
     }
 
-    public void CheckShowText()
-    {
-        if(GameManager.Instance.IsRebirth)
-        {
-            GameManager.Instance.IsRebirth = false;
-            Underline.reDraw();
-            return;
-        }
-        // 불러오기 했는데 -나 +가 포함되어 있으면 리턴
-        else if (GameManager.Instance.IsContinue && !IsPreventDup)
-        {
-            IsPreventDup = true;
-            return;
-        }
-        string text = "";
-        for (int i = 0; i < talkDatas[0].showText.Length; i++)
-        {
-            text = talkDatas[0].showText[i];
-            if ((IsAttackFail && text.Contains("체력")) && (storyEventName == "R_3_A" || storyEventName == "R_2_A"))
-            {
-                IsAttackFail = false;
-                ranHealthEvent = "\r";
-                text = ranHealthEvent;
-                talkDatas[0].showText[i] = ranHealthEvent;
-            }
-            else if((!IsAttackFail && ranHealthEvent == "\r") && (storyEventName == "R_3_A" || storyEventName == "R_2_A"))
-            {
-                ranHealthEvent = "( -1 체력 )";
-                text = ranHealthEvent;
-                talkDatas[0].showText[i] = ranHealthEvent;
-            }
-            if (text.Contains("-") && text.Any(char.IsDigit))
-            {
-                //숫자만 자르기
-                int count = int.Parse(Regex.Match(text, @"\d+").Value);
-
-                //진실의 조각
-                if (text.Contains("진실의 조각") && truthPiece - count >= 0)
-                {
-                    truthPiece -= count;
-                    SaveLoadManager.Instance.truthPiece = truthPiece;
-                    SaveLoadManager.Instance.SaveGameData();
-
-                    audioSource.clip = minus;
-                    audioSource.Play();
-                }
-                else
-                {
-                    truthPiece = 0;
-                    SaveLoadManager.Instance.truthPiece = truthPiece;
-                    SaveLoadManager.Instance.SaveGameData();
-
-                    audioSource.clip = minus;
-                    audioSource.Play();
-                }
-
-                // 플레이어 선택 아이템
-                if (text.Contains("아까 플레이어가 고른 요소"))
-                {
-                    switch (gambleItem)
-                    {
-                        case 0:
-                            Health.Instance.HealthMinus(1);
-                            talkDatas[0].showText[i] = talkDatas[0].showText[i].Replace("(아까 플레이어가 고른 요소)", "체력");
-                            break;
-                        case 1:
-                            Health.Instance.MentalMinus(1);
-                            talkDatas[0].showText[i] = talkDatas[0].showText[i].Replace("(아까 플레이어가 고른 요소)", "정신력");
-                            break;
-                        case 2:
-                            Health.Instance.CoinMinus(1);
-                            talkDatas[0].showText[i] = talkDatas[0].showText[i].Replace("(아까 플레이어가 고른 요소)", "돈");
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                if (text.Contains("체력")) Health.Instance.HealthMinus(count);
-                else if (text.Contains("정신력")) Health.Instance.MentalMinus(count);
-                else if (text.Contains("돈")) Health.Instance.CoinMinus(count);
-            }
-            else if (text.Contains("+") && text.Any(char.IsDigit))
-            {
-                //숫자만 자르기
-                int count = int.Parse(Regex.Match(text, @"\d+").Value);
-
-                if (text.Contains("진실의 조각") && truthPiece + count <= 5)
-                {
-                    truthPiece += count;
-                    SaveLoadManager.Instance.truthPiece = truthPiece;
-                    SaveLoadManager.Instance.SaveGameData();
-
-                    audioSource.clip = plus;
-                    audioSource.Play();
-                }
-                else
-                {
-                    truthPiece = 5;
-                    SaveLoadManager.Instance.truthPiece = truthPiece;
-                    SaveLoadManager.Instance.SaveGameData();
-
-                    audioSource.clip = plus;
-                    audioSource.Play();
-                }
-
-                if (text.Contains("체력")) Health.Instance.HealthPlus(count);
-                else if (text.Contains("정신력")) Health.Instance.MentalPlus(count);
-                else if (text.Contains("돈")) Health.Instance.CoinPlus(count);
-            }
-        }
-        // 챕터 8 : 탈출도구
-        if (storyEventName == "8_2") equips[0] = true;
-        else if (storyEventName == "8_2_1") equips[1] = true;
-        else if (storyEventName == "8_2_8") equips[2] = true;
-        SaveLoadManager.Instance.equips = equips;
-        SaveLoadManager.Instance.SaveGameData();
-    }
-    private void SetPaint(string paintName)
-    {
-        paintName = paintName.Replace(".png", "");
-        paintNum = paintName.Split("_")[0];
-
-        if (paintName == "Empty" || paintName == "") IsPaintEmpty = true;
-
-        else if(paintName == "Death") IsPaintDeath = true;
-
-        if (currentPaint == "" || currentPaint == "Empty" || currentPaint == "Death" || currentPaint != paintName)
-        {
-            currentPaint = paintName;
-            SaveLoadManager.Instance.paintName = paintName;
-            SaveLoadManager.Instance.SaveGameData();
-
-            paintIdx = Array.FindIndex(paintSprites, x => currentPaint.Contains(x.name));
-
-            FadePaint(paint, newPaint);
-        }
-    }
-
-    void FadePaint(Image curPaint, Image nextPaint)
-    {
-        curPaint.gameObject.SetActive(true);
-        nextPaint.gameObject.SetActive(true);
-        // 짝수
-        if (fadeCnt % 2 == 0)
-        {
-            if (IsPaintEmpty)
-            {
-                IsPaintEmpty = false;
-                nextPaint.sprite = empty;
-            }
-            else if(IsPaintDeath)
-            {
-                IsPaintDeath = false;
-                nextPaint.sprite = death;
-            }
-            else nextPaint.sprite = paintSprites[paintIdx];
-
-            if (IsPreventFadeDup)
-            {
-                Color curCol = curPaint.color;
-                curCol.a = 1f;
-                curPaint.color = curCol;
-            }
-
-            Color nextCol = nextPaint.color;
-            nextCol.a = 0f;
-            nextPaint.color = nextCol;
-
-            curPaint.DOFade(0f, fadeTime);
-            nextPaint.DOFade(1f, fadeTime);
-        }
-        else
-        {
-            if (IsPaintEmpty)
-            {
-                IsPaintEmpty = false;
-                curPaint.sprite = empty;
-            }
-            else if(IsPaintDeath)
-            {
-                IsPaintDeath = false;
-                curPaint.sprite = death;
-            }
-            else curPaint.sprite = paintSprites[paintIdx];
-
-            Color curCol = curPaint.color;
-            curCol.a = 0f;
-            curPaint.color = curCol;
-
-            Color nextCol = nextPaint.color;
-            nextCol.a = 1f;
-            nextPaint.color = nextCol;
-
-            curPaint.DOFade(1f, fadeTime);
-            nextPaint.DOFade(0f, fadeTime);
-        }
-        IsPreventFadeDup = true;
-        fadeCnt++;
-    }
-
     IEnumerator WaitAndSet()
     {
         while (!IsDialogSet)
         {
             yield return new WaitForSeconds(0.1f);
         }
-        // 이어하기면 데이터 불러오기
-        if (GameManager.Instance.IsContinue)
-        {
-            equips = SaveLoadManager.Instance.equips;
-            truthPiece = SaveLoadManager.Instance.gambleItem;
-            gambleItem = SaveLoadManager.Instance.gambleItem;
-            currentPaint = SaveLoadManager.Instance.paintName;
-            Debug.Log("차례대로"+"그리고"+truthPiece+"그리고"+gambleItem+"그리고"+currentPaint);
-            if (currentPaint == "Empty") paint.sprite = empty;
-            else
-            {
-                paintIdx = Array.FindIndex(paintSprites, x => currentPaint.Contains(x.name));
-                paint.sprite = paintSprites[paintIdx];
-            }
-        }
-        paint.gameObject.SetActive(true);
-        paint.DOFade(1f, fadeTime);
-        //FadePaint(paint,newPaint);
     }
 
-    void CheckAudioStat()
+    public IEnumerator FadeText()
     {
-        // 오디오 트랙 설정
-        string splitEventName = storyEventName.Split('_')[0];
-        // 똑같으면 return
-        if (curSplitEvent == splitEventName) return;
+        // 1. 현재 대화 인덱스 체크 (안전 장치)
+        if (curDialog >= talkDatas[0].showText.Length)
+        {
+            IsDialogEnd = true;
+            yield break;
+        }
 
-        //1,2,3은 같은 음악
-        if (curSplitEvent == "1" && (splitEventName == "2" || splitEventName == "3"))
-            return;
+        IsTextFadeEnd = false;
 
-        if (curSplitEvent == "2" && (splitEventName == "1" || splitEventName == "3"))
-            return;
+        // 2. 텍스트 초기화 및 강제 업데이트
+        Color color = storyText.color;
+        color.a = 0f;
+        storyText.color = color;
+        storyText.ForceMeshUpdate(true);
 
-        if (curSplitEvent == "3" && (splitEventName == "1" || splitEventName == "2"))
-            return;
+        TMP_TextInfo textInfo = storyText.textInfo;
+        int totalChars = textInfo.characterCount;
 
-        //4,5,6은 같은 음악
-        if (curSplitEvent == "4" && (splitEventName == "5" || splitEventName == "6"))
-            return;
+        // 3. 모든 문자를 투명하게 (초기화)
+        SetAllCharactersAlpha(0);
+        yield return null; // 메쉬 안정화를 위한 1프레임 대기
 
-        if (curSplitEvent == "5" && (splitEventName == "4" || splitEventName == "6"))
-            return;
+        // ---------------------------------------------------------
+        // [중요] 실제로 눈에 보이는 마지막 글자의 인덱스를 미리 찾습니다.
+        // 문장 끝에 공백(Space)이나 줄바꿈이 있을 경우를 대비합니다.
+        int lastVisibleCharIndex = -1;
+        for (int i = totalChars - 1; i >= 0; i--)
+        {
+            if (textInfo.characterInfo[i].isVisible)
+            {
+                lastVisibleCharIndex = i;
+                break;
+            }
+        }
+        storyScrollRect.verticalNormalizedPosition = 1f;
+        // ---------------------------------------------------------
 
-        if (curSplitEvent == "6" && (splitEventName == "4" || splitEventName == "5"))
-            return;
+        byte fadeStep = (byte)Mathf.Max(1, 255 / characterSpread);
+        int charsProcessed = 0;
+        bool done = false;
+        Vector3[] viewportCorners = new Vector3[4];
 
-        //7,8,9는 같은 음악
-        if (curSplitEvent == "7" && (splitEventName == "8" || splitEventName == "9"))
-            return;
+        // 4. 페이드 효과 루프
+        while (!done)
+        {
+            // 보여줄 글자가 하나도 없다면(공백만 있는 경우 등) 즉시 종료
+            if (lastVisibleCharIndex == -1)
+            {
+                done = true;
+                break;
+            }
 
-        if (curSplitEvent == "8" && (splitEventName == "7" || splitEventName == "9"))
-            return;
+            // 각 글자의 알파값 증가 로직
+            for (int i = 0; i < charsProcessed + 1 && i < totalChars; i++)
+            {
+                TMP_CharacterInfo charInfo = textInfo.characterInfo[i];
+                if (!charInfo.isVisible) continue;
 
-        if (curSplitEvent == "9" && (splitEventName == "7" || splitEventName == "8"))
-            return;
+                int matIdx = charInfo.materialReferenceIndex;
+                int vertIdx = charInfo.vertexIndex;
 
-        //10,11은 같은 음악
-        if (curSplitEvent == "10" && splitEventName == "11")
-            return;
+                Color32[] newVertexColors = textInfo.meshInfo[matIdx].colors32;
 
-        if (curSplitEvent == "R" && (splitEventName == "D" || splitEventName == "T")) return;
-        if (curSplitEvent == "D" && (splitEventName == "R" || splitEventName == "T")) return;
-        if (curSplitEvent == "T" && (splitEventName == "D" || splitEventName == "R")) return;
+                byte currentAlpha = newVertexColors[vertIdx].a;
 
-        curSplitEvent = splitEventName;
-        AudioManager.Instance.SetAudioTrack(splitEventName);
+                // 이미 255면 연산 건너뛰기 (최적화)
+                if (currentAlpha == 255) continue;
+
+                byte nextAlpha = (byte)Mathf.Clamp(currentAlpha + fadeStep, 0, 255);
+
+                for (int j = 0; j < 4; j++)
+                {
+                    newVertexColors[vertIdx + j].a = nextAlpha;
+                }
+            }
+
+            storyText.UpdateVertexData(TMP_VertexDataUpdateFlags.Colors32);
+            if (charsProcessed < totalChars)
+            {
+                storyScrollRect.viewport.GetWorldCorners(viewportCorners);
+                float viewportBottomY = viewportCorners[0].y; // 뷰포트의 하단 Y 좌표
+
+                // 2. 현재 처리 중인 글자의 정보를 가져옵니다.
+                TMP_CharacterInfo cInfo = textInfo.characterInfo[charsProcessed];
+                if (cInfo.isVisible)
+                {
+                    // 3. 글자의 왼쪽 아래(BottomLeft) 좌표를 월드 좌표로 변환
+                    // (characterInfo의 좌표는 텍스트 오브젝트 기준 로컬 좌표이므로 변환 필요)
+                    Vector3 charBottomPos = storyText.transform.TransformPoint(cInfo.bottomLeft);
+
+                    // 4. 글자의 바닥이 뷰포트 바닥보다 아래에 있다면? -> 스크롤 내림
+                    if (charBottomPos.y < viewportBottomY)
+                    {
+                        //storyScrollRect.verticalNormalizedPosition = 0f;
+                        storyScrollRect.verticalNormalizedPosition = Mathf.Lerp(storyScrollRect.verticalNormalizedPosition, 0f, Time.deltaTime * 10f);
+                        // 만약 너무 딱딱하게 내려가는 게 싫다면 Lerp 사용 (선택 사항)
+                        // scrollRect.verticalNormalizedPosition = Mathf.Lerp(scrollRect.verticalNormalizedPosition, 0f, Time.deltaTime * 10f);
+                    }
+                }
+                charsProcessed++;
+            }
+
+            // ---------------------------------------------------------
+            // [탈출 조건 수정]
+            // 처리된 글자 순서(charsProcessed)가 실제 마지막 글자 순서를 지났는지 확인하고,
+            // 실제 마지막 글자의 알파값이 255(완전 불투명)가 되었는지 확인합니다.
+            // ---------------------------------------------------------
+            if (charsProcessed > lastVisibleCharIndex)
+            {
+                var lastCharInfo = textInfo.characterInfo[lastVisibleCharIndex];
+                int mIdx = lastCharInfo.materialReferenceIndex;
+                int vIdx = lastCharInfo.vertexIndex;
+
+                // 실제 메쉬 데이터에서 알파값 확인
+                byte finalAlpha = textInfo.meshInfo[mIdx].colors32[vIdx].a;
+
+                if (finalAlpha >= 255)
+                {
+                    done = true;
+                }
+            }
+            storyText.UpdateVertexData(TMP_VertexDataUpdateFlags.Colors32);
+            //storyScrollRect.verticalNormalizedPosition = 0f;
+            yield return new WaitForSeconds(0.02f);
+        }
+        // 5. 후처리
+        IsTextFadeEnd = true;
+        curDialog++;
+    }
+
+    /// <summary>
+    /// Sets every visible character’s vertex alpha to the given value (0–255).
+    /// </summary>
+    /// <param name="alpha">
+    /// The alpha value to apply to all characters (0 = fully transparent, 255 = fully opaque).
+    /// </param>
+    public void SetAllCharactersAlpha(byte alpha)
+    {
+        storyText.ForceMeshUpdate(true);
+        TMP_TextInfo textInfo = storyText.textInfo;
+
+        for (int i = 0; i < textInfo.meshInfo.Length; i++)
+        {
+            Color32[] colors = textInfo.meshInfo[i].colors32;
+            for (int j = 0; j < colors.Length; j++)
+            {
+                colors[j].a = alpha;
+            }
+        }
+        storyText.UpdateVertexData(TMP_VertexDataUpdateFlags.Colors32);
     }
 
 }
