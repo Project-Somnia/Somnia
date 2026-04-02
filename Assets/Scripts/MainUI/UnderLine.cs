@@ -118,7 +118,7 @@ public class Underline : MonoBehaviour
     // 필요하다면 추가 줄을 동적으로 붙이는 로직
     void LateUpdate()
     {
-        tmpText.ForceMeshUpdate();
+        //tmpText.ForceMeshUpdate();
         TMP_TextInfo textInfo = tmpText.textInfo;
 
         int lineCount = textInfo.lineCount;

@@ -152,7 +152,58 @@ public class StoryChoice : MonoBehaviour
                 else choiceStructs[i].IsBlink = false;
             }
 
-            // 챕터 4 사격: 확률에 의한 트리거 이동
+            // 트리거 이벤트 : 거래
+            if (choiceStructs[i].select == "돈을 준다.")
+            {
+                if (Health.Instance.coin >= 1) choiceStructs[i].IsBlink = false;
+                else choiceStructs[i].IsBlink = true;
+            }
+
+            if (choiceStructs[i].select == "약병을 구매한다.")
+            {
+                if (Health.Instance.coin >= 1) choiceStructs[i].IsBlink = false;
+                else choiceStructs[i].IsBlink = true;
+            }
+
+            if (choiceStructs[i].select == "꽃잎을 구매한다.")
+            {
+                if (Health.Instance.coin >= 1) choiceStructs[i].IsBlink = false;
+                else choiceStructs[i].IsBlink = true;
+            }
+
+            if (choiceStructs[i].select == "상자를 구매한다.")
+            {
+                if (Health.Instance.coin >= 1) choiceStructs[i].IsBlink = false;
+                else choiceStructs[i].IsBlink = true;
+            }
+
+            if (choiceStructs[i].select == "돈으로 회유한다.")
+            {
+                if (Health.Instance.coin >= 1) choiceStructs[i].IsBlink = false;
+                else choiceStructs[i].IsBlink = true;
+            }
+
+            // 챕터 3 뽑기 : 인형뽑기
+            if (choiceStructs[i].select == "인형을 뽑는다.")
+            {
+                if (Health.Instance.coin >= 1) choiceStructs[i].IsBlink = false;
+                else choiceStructs[i].IsBlink = true;
+            }
+
+            if (choiceStructs[i].select == "인형을 계속 뽑는다.")
+            {
+                if (Health.Instance.coin >= 1) choiceStructs[i].IsBlink = false;
+                else choiceStructs[i].IsBlink = true;
+            }
+
+            // 챕터 3 사격에 도전한다
+            if (choiceStructs[i].select == "사격에 도전한다.")
+            {
+                if (Health.Instance.coin >= 1) choiceStructs[i].IsBlink = false;
+                else choiceStructs[i].IsBlink = true;
+            }
+
+            // 챕터 3 사격: 확률에 의한 트리거 이동
             if (choiceStructs[i].select == "사격한다.")
             {
                 if (choiceStructs[i].trigger == "4_2_A_1")

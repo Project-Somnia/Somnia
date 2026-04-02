@@ -25,6 +25,7 @@ public class SpeedButton : MonoBehaviour
         {
             IsDoubleClicked = false;
             TypingManager.Instance.IsSkipDialog = true;
+            TextManager.Instance.IsSkipDialog = true;
         }
     }
 
@@ -32,6 +33,7 @@ public class SpeedButton : MonoBehaviour
     {
         yield return new WaitForSeconds(doubleClickActiveTime);
         TypingManager.Instance.IsSkipDialog = false;
+        TextManager.Instance.IsSkipDialog = false;
     }
 
     public void DoubleClick()
@@ -83,5 +85,9 @@ public class SpeedButton : MonoBehaviour
     public void LogOn()
     {
         canvasLog.enabled = true;
+    }
+    public void LogOff()
+    {
+        canvasLog.enabled = false;
     }
 }

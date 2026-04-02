@@ -289,7 +289,7 @@ public class Health : MonoBehaviour
     }
     public void CoinMinus(int count)
     {
-        if (coin - count > 0) coin -= count;
+        if (coin - count >= 0) coin -= count;
         else coin = 0;
 
         SetEffectCol(5);
