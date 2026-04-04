@@ -45,6 +45,16 @@ public class GameOverUI : MonoBehaviour
         Time.timeScale = 0f;
     }
 
+    // "광고 보고 계속하기" 공통 버튼
+    public void OnClickWatchAd()
+    {   
+        // 광고를 보고 나서 콜백으로 부활 처리
+            if(!RemoveAd.isAdRemoved){
+                reward.ShowRewardAd(OnRewardSuccess);
+            }
+            else OnRewardSuccess();
+    }
+    
     // "그냥 나가기" 버튼에 연결할 함수
     public void OnClickQuit()
     {
