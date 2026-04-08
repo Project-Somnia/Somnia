@@ -95,7 +95,7 @@ public class TextManager : MonoBehaviour
                 Color color = storyText.color;
                 color.a = 1f;
                 storyText.color = color;
-                storyScrollRect.verticalNormalizedPosition = 0f;
+                storyScrollRect.verticalNormalizedPosition = 1f;
             }
             //if (TypingManager.Instance.isTypingEnd)
             if (IsTextFadeEnd)
@@ -112,13 +112,24 @@ public class TextManager : MonoBehaviour
                         currentPage = 0;
                         return;
                     }
-                    if (GameManager.Instance.IsGameOver && !GameManager.Instance.IsMentalMor)
+                    // if (GameManager.Instance.IsGameOver && !GameManager.Instance.IsMentalMor)
+                    // {
+                    //     gameOverUI.ShowHpGameOver();
+                    // }
+                    // else if (GameManager.Instance.IsGameOver && GameManager.Instance.IsMentalMor)
+                    // {
+                    //     gameOverUI.ShowMentalGameOver();
+                    // }
+
+                    // 각 경우에 따라 체력, 멘탈 게임종료 UI 띄움
+                    if(GameManager.Instance.IsGameOver)
                     {
-                        gameOverUI.ShowHpGameOver();
-                    }
-                    else if (GameManager.Instance.IsGameOver && GameManager.Instance.IsMentalMor)
-                    {
-                        gameOverUI.ShowMentalGameOver();
+                        if(GameManager.Instance.IsMentalMor)
+                        {
+                            if(Health.Instance.health <= 0) gameOverUI.ShowHpGameOver();
+                            else gameOverUI.ShowMentalGameOver();
+                        }
+                        else gameOverUI.ShowHpGameOver();
                     }
                     //게임오버상태면 선택지 표시하지 않음
                 }

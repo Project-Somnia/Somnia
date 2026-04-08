@@ -41,7 +41,7 @@ public class Reward : MonoBehaviour
         {
             // This callback is called once the MobileAds SDK is initialized.
         });
-
+        LoadRewardAd();
         // Create our request used to load the ad.
 
     }
